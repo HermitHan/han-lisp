@@ -5,14 +5,14 @@
 ## Syntax · 语法
 
 ```text
-(han.path:relative-path target &optional (base (truename "."))) → pathname
+(han.path:relative-path target &optional (base (han.host:working-directory-pathname))) → pathname
 ```
 
 ## Description · 说明
 
-Resolves each argument independently against the current directory. Removes their common directory prefix and adds parent steps as needed. With different pathname hosts or devices it returns the absolute target. To interpret a relative target inside a specified base, resolve it against that base first.
+Resolves each argument independently against the current directory. Removes their common directory prefix and adds parent steps as needed. The result keeps the target's host and device. It returns the absolute target when the hosts or devices differ, or when a logical pathname would need a parent step. Logical namestrings have no notation for that step. To interpret a relative target inside a specified base, resolve it against that base first.
 
-先分别以当前目录补全两个参数，再去掉共同目录前缀，并按需要插入上行目录分量。host 或 device 不同时返回绝对目标；若相对目标应位于给定基准内，先用 `absolute-pathname` 按那个基准补全。
+先分别以当前目录补全两个参数，再去掉共同目录前缀，并按需要插入上行目录分量。结果保留目标的 host 和 device。两者的 host 或 device 不同时返回绝对目标。若逻辑路径需要向上一级，也返回绝对目标，因为逻辑路径的 namestring 没有上行写法。若相对目标应位于给定基准内，先用 `absolute-pathname` 按那个基准补全。
 
 ## Examples · 示例
 

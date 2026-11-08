@@ -5,7 +5,7 @@
 ## Syntax · 语法
 
 ```text
-(han.path:absolute-pathname x &optional (base (truename "."))) → pathname
+(han.path:absolute-pathname x &optional base) → pathname
 ```
 
 ## Description · 说明

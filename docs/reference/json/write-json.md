@@ -40,4 +40,4 @@ Build a JSON Lines stream by adding a newline after each compact value.
 ;; => ("true" "null")
 ```
 
-[`encode-json`](encode-json.md) · [`write-json-file`](write-json-file.md) · [Source · 源码](../../../json/core.lisp#L497) · [Index · 索引](../README.md)
+[`encode-json`](encode-json.md) · [`write-json-file`](write-json-file.md) · [Source · 源码](../../../json/core.lisp#L488) · [Index · 索引](../README.md)

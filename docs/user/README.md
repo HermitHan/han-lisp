@@ -12,7 +12,9 @@ From a REPL in the checkout, `(load "load-han.lisp")` loads the runtime and all 
 (asdf:load-system "han")
 ```
 
-In another ASDF project, make the Han checkout discoverable to ASDF and add `"han"` to that system's `:depends-on` list. Refer to symbols by package, for example `han.os:run-program`. For help from the running version, try `(han.os:help)`. Pass `nil` as the stream to return the help text without printing it.
+In your own ASDF project, add `"han"` to the system’s `:depends-on` list. If your checkout is outside ASDF’s search path, evaluate `(asdf:load-asd (truename "/path/to/han-lisp/han.asd"))` with the actual path in your REPL before loading your system.
+
+Refer to symbols by package, for example `han.os:run-program`. For help from the running version, try `(han.os:help)`. Pass `nil` as the stream to return the help text without printing it.
 
 ## Read a command's JSON output
 

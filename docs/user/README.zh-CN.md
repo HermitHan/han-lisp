@@ -12,7 +12,9 @@
 (asdf:load-system "han")
 ```
 
-在自己的 ASDF 项目里，让 ASDF 能找到 Han 的源码目录，再把 `"han"` 加到项目的 `:depends-on` 列表即可。调用函数时写出包名，例如 `han.os:run-program`。在 REPL 里可以用 `(han.os:help)` 查看已加载版本的帮助；把流参数传为 `nil`，可以只取回帮助字符串。
+在自己的 ASDF 项目里，把 `"han"` 加到系统的 `:depends-on` 列表。如果源码放在 ASDF 搜索路径之外，在当前 REPL 中先执行 `(asdf:load-asd (truename "/path/to/han-lisp/han.asd"))`，把示例路径换成本机的实际路径，再加载自己的系统。
+
+调用函数时写出包名，例如 `han.os:run-program`。在 REPL 里可以用 `(han.os:help)` 查看已加载版本的帮助；把流参数传为 `nil`，可以只取回帮助字符串。
 
 ## 读取外部程序输出的 JSON
 

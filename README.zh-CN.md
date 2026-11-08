@@ -1,52 +1,64 @@
 # Han Lisp
 
-[English](README.md) · [用户手册](docs/user/README.zh-CN.md) · [开发者手册](docs/developer/README.zh-CN.md) · [公开符号参考](docs/reference/README.md)
+[English](README.md) · [快速开始](#加载并试用) · [设计哲学](#设计哲学) · [包与分工](#包与分工)
 
-Han 是一个 Common Lisp 基础库。写命令行工具时，我们常常需要解释一组参数、找文件、启动另一个程序，再把结果写成 JSON。Han 把这些可以在项目之间复用的工作组织成一个 ASDF 系统 `han`，让应用专心定义自己的行为。它最初在 TAFFISH 的开发中形成，可以独立加载。
+Han 是一个用于编写命令行工具的 Common Lisp 基础库。从解析参数、定位输入文件，到启动子进程、读取它输出的 JSON，这些常用操作都可以交给 Han。七个包通过一个 ASDF 系统 `han` 一起加载。
 
-## 设计取舍
+## 文档
 
-- **应用决定如何回应用户。** 参数绑定器可以指出缺了哪个必填项。怎样提示、用哪种语言、程序应当以什么状态退出，由调用方决定。
-- **返回值保留下一步判断需要的信息。** 运行子进程可以分别拿到标准输出、标准错误和退出码。查询 JSON 字段可以同时拿到字段值和存在标志，从而区分“显式设为假”和“没有配置”。
-- **把实现差异收在宿主层。** SBCL 与 LispWorks 获取进程句柄、配置终端流的方式不同，`han.host` 为上层提供共同的调用接口。运行系统没有声明第三方 Lisp 库依赖。
+- **[用户手册](docs/user/README.zh-CN.md)** 介绍怎样在自己的项目里加载 Han，以及怎样组合使用各个包，例如读取外部命令输出的 JSON。
+- **[公开符号参考](docs/reference/README.md)** 可以按包浏览，也可以用[字母索引](docs/reference/symbols.md)按名称查找。条目用中英文说明用法。查函数时，可以看到它接受的参数、返回值和能在 REPL 里运行的示例。
+- **[开发者手册](docs/developer/README.zh-CN.md)** 说明七个包怎样协作，并用一次命令行参数冲突演示怎样从行为找到源码、确定该改哪个包。具体的修改和验证步骤见[开发流程](docs/developer/workflow.zh-CN.md)。
 
 ## 加载并试用
 
-克隆[这个仓库](https://github.com/HermitHan/han-lisp)，从仓库根目录启动 Lisp REPL。下面的小例子读取命令行上的名字，返回一段 JSON。
+装有 Git 和 SBCL 时，在终端运行以下命令，即可进入已加载 Han 的 Lisp REPL。
 
-```lisp
-(load "load-han.lisp")
-
-(let* ((option (han.args:parse-arg-spec "(--/-n)name=world"))
-       (spec (han.args:parse-args-spec (list option) "greet"))
-       (input (han.args:parse-args-input '("greet" "-n" "Ada")))
-       (result (han.args:bind-args spec input)))
-  (han.json:encode-json
-   (han.json:json-object (cons "hello" (han.args:get-arg "name" result)))
-   :indent nil))
-;; => "{\"hello\":\"Ada\"}"
+```sh
+git clone https://github.com/HermitHan/han-lisp.git
+cd han-lisp
+sbcl --load load-han.lisp
 ```
 
-把输入换成只有命令名的 `'("greet")`，同一份规格就会给出默认值 `"world"`。处理用户实际传入的 argv 时，要先检查 `args-result-diagnostics` 中有无错误，再使用参数值。两种写法同时出现时的结果见[参数冲突示例](docs/developer/README.zh-CN.md)。
+在 REPL 里读一份配置。它明确关闭了重试，但没有指定超时时间。用 `multiple-value-list` 可以一起看到每次查询的两个返回值。
 
-ASDF 能找到本仓库后，其他系统可以通过 `:depends-on ("han")` 引用它。[加载和日常使用](docs/user/README.zh-CN.md)
+```lisp
+(defparameter *settings* (han.json:parse-json "{\"retry\":false}"))
+
+(multiple-value-list (han.json:get-json *settings* "retry"))
+;; => (NIL T)
+
+(multiple-value-list (han.json:get-json *settings* "timeout"))
+;; => (NIL NIL)
+```
+
+`get-json` 返回字段的值以及键是否存在。两次查询的第一个值都是 `NIL`，第二个值则区分了“显式设为假”和“没有设置”。
+
+要在自己的 ASDF 系统中使用 Han，让 ASDF 能找到本仓库，再把 `"han"` 加入系统的 `:depends-on` 列表。[在程序中加载 Han](docs/user/README.zh-CN.md#把-han-加载到自己的程序里)
+
+## 设计哲学
+
+除 `han.host` 外，六个运行时包在所有平台和 Lisp 实现上共用一套 ANSI Common Lisp 源码。实现专属调用、操作系统约定，以及 `#+`、`#-` 这类平台或实现条件分支，统一放在 `han.host`。ASDF 选择 SBCL 或 LispWorks 适配器。例如，`han.json` 负责解析四位十六进制数、合并代理对；把所得 Unicode 标量映射为 Lisp 字符、以 UTF-8 打开文件，则是宿主层的职责。
+
+同一接口保证的是调用含义。查找程序时，匹配顺序取决于本机的搜索路径；查询子进程时，瞬时状态取决于后端此刻能观察到什么。需要正常退出码时，应先等待进程结束。具体保证见[开发者手册的可移植性边界](docs/developer/README.zh-CN.md#可移植性边界)。
 
 ## 包与分工
 
-| 包 | 它负责的事 |
-| --- | --- |
-| [han.args](docs/user/args.zh-CN.md) | 声明命令行参数，保留输入位置，绑定参数值并返回诊断 |
-| [han.os](docs/user/os.zh-CN.md) | 读取流和文件、查环境变量、运行外部命令 |
-| [han.path](docs/user/path.zh-CN.md) | 构造、解析和检查路径，操作文件和目录 |
-| [han.host](docs/user/host.zh-CN.md) | 适配 SBCL 和 LispWorks，管理进程句柄、终端 I/O 和文件锁 |
-| [han.json](docs/user/json.zh-CN.md) | 在 JSON 和 Lisp 值之间转换，查询对象，读写 JSON 文件 |
-| [han.source](docs/user/source.zh-CN.md) | 在字符串上移动游标、保存位置、取出解析器识别的一段原文 |
-| [han.test](docs/user/test.zh-CN.md) | 定义测试、检查预期值、运行已登记的用例 |
+| 包手册 | 负责的事 | 示例条目 |
+| --- | --- | --- |
+| [`han.args`](docs/user/args.zh-CN.md) | 声明选项与位置参数，绑定输入并检查诊断信息。 | [`get-arg`](docs/reference/args/get-arg.md) |
+| [`han.path`](docs/user/path.zh-CN.md) | 构造路径、列举目录、复制文件。 | [`join-path`](docs/reference/path/join-path.md) |
+| [`han.os`](docs/user/os.zh-CN.md) | 读取文本、查询环境变量、获取外部命令的输出。 | [`run-program`](docs/reference/os/run-program.md) |
+| [`han.host`](docs/user/host.zh-CN.md) | 操作运行中的进程句柄、终端流和文件锁。 | [`process-wait`](docs/reference/host/process-wait.md) |
+| [`han.json`](docs/user/json.zh-CN.md) | 解析和写出 JSON，按键查询对象字段。 | [`get-json`](docs/reference/json/get-json.md) |
+| [`han.source`](docs/user/source.zh-CN.md) | 编写文本解析器时移动字符游标、保存位置、截取原文。 | [`source-reset`](docs/reference/source/source-reset.md) |
+| [`han.test`](docs/user/test.zh-CN.md) | 定义用例、编写断言、运行已登记的测试。 | [`deftest`](docs/reference/test/deftest.md) |
 
 ## 运行测试
 
-在新的 Lisp 进程加载开发系统 `han.dev`，即可登记库自带的测试。开发者手册提供[完整测试命令](docs/developer/workflow.zh-CN.md)和[源码结构与包的边界](docs/developer/README.zh-CN.md)。
+- **库测试。** 在仓库根目录启动新的 REPL，加载 `load-han.dev.lisp`，再调用 `(han.test:run-all-tests)`。[终端命令与运行条件](docs/developer/workflow.zh-CN.md#从仓库运行全套测试)
+- **参考示例。** 在仓库根目录运行 `sbcl --script scripts/check-reference.lisp`，即可核对导出符号并执行参考页中的示例。[示例的校验方式](docs/developer/workflow.zh-CN.md#验证符号参考)
 
 ## 来源与许可
 
-独立仓库的首个版本取自 [TAFFISH v0.11.0 的 Han 源码](https://github.com/taffish/taffish/tree/4697321b9b8570e5b9862423c62620191bd21522/vendor/han)。Han 采用 [MIT 许可证](LICENSE)。
+Han 最初是 TAFFISH 的 `vendor/han` 基础库。独立项目以 [TAFFISH v0.11.0 中的源码](https://github.com/taffish/taffish/tree/4697321b9b8570e5b9862423c62620191bd21522/vendor/han) 为起点，采用 [MIT 许可证](LICENSE)。

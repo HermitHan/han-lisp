@@ -37,7 +37,7 @@ To keep a regression test like this one, add the `deftest` form alongside the bi
 
 ## Run the suite from the checkout
 
-Use a fresh process. The suite exercises Unix processes and files and needs a writable temporary directory and ASDF cache, ordinary shell utilities and a set `USER` environment variable. This command exits unsuccessfully for a failed test or an empty suite.
+Use a fresh process. The suite exercises Unix processes and files and needs a writable temporary directory and ASDF cache, plus ordinary Unix shell utilities. This command exits unsuccessfully for a failed test or an empty suite.
 
 ```sh
 sbcl --noinform --no-sysinit --no-userinit --disable-debugger \
@@ -46,7 +46,40 @@ sbcl --noinform --no-sysinit --no-userinit --disable-debugger \
             (uiop:quit (if (and (plusp passed) (zerop failed)) 0 1)))'
 ```
 
-In a LispWorks REPL with ASDF available, load `load-han.dev.lisp` from the checkout and evaluate `(han.test:run-all-tests)`. The two returned integers are the number passed and failed. For an adapter change, record the OS and Lisp implementation actually exercised and keep any other combination visibly unverified. See [the runtime loader](../../load-han.lisp) and [the development loader](../../load-han.dev.lisp) when diagnosing a load that succeeds but registers no module tests.
+In a LispWorks REPL with ASDF available, load `load-han.dev.lisp` from the checkout and evaluate `(han.test:run-all-tests)`. The two returned integers are the number passed and failed. See [the runtime loader](../../load-han.lisp) and [the development loader](../../load-han.dev.lisp) when diagnosing a load that succeeds but registers no module tests.
+
+For portability changes, run the same source and regression cases on **macOS/SBCL, macOS/LispWorks, Linux/SBCL and Linux/LispWorks**, the four maintainer targets. Record the OS and Lisp versions and the outcome for each target, marking any combination that was not run.
+
+For a synchronous process, compare the ordinary exit code and captured stderr with a direct run of the same tool on that machine. Check stdout, stderr and exit status in return order, then repeat a nonzero exit with `:ignore-error-status nil` and assert `simple-error`. Exercise signal termination separately using the historical convention for that backend. For an encoding promise compare file bytes, and for a pathname compare the components the API promises. [Portability boundary](README.md#portability-boundary)
+
+## Measure runtime coverage on SBCL
+
+With a fresh compilation cache, run `XDG_CACHE_HOME="$(mktemp -d)" sbcl --script scripts/check-coverage.lisp /tmp/han-coverage/`. Open `cover-index.html` in the chosen report directory to see which expressions and branch outcomes the module and CLI tests exercised. The [coverage script](../../scripts/check-coverage.lisp) selects the runtime files from `han.asd` and starts counting after loading. It measures the current SBCL process. The symbol reference examples and LispWorks suite run separately.
+
+## Compare network failures and malformed UTF-8
+
+Run the optional probe on macOS or Linux with Python 3, curl with Unix socket, HTTPS and DNS-over-HTTPS (DoH) support, and the `openssl` command-line tool. The three commands select SBCL, a batch-capable LispWorks installation, or an interactive LispWorks Listener, respectively.
+
+```sh
+python3 scripts/check-host-boundaries.py
+python3 scripts/check-host-boundaries.py --lispworks /path/to/lispworks
+python3 scripts/check-host-boundaries.py --listener
+```
+
+For Personal Edition, open a fresh Listener and run the third command in a terminal. Evaluate the printed `(load ...)` form in the Listener. Keep the terminal command running until the local services receive the requests and the probe reports its results.
+
+The probe runs curl directly on the same machine to obtain a reference exit status, then compares it with the result from `han.os:run-program`. In ordinary mode (`:ignore-error-status t`, the default), the three return values for these failures are empty stdout, a diagnostic on stderr and curl’s nonzero exit code. Strict mode (`:ignore-error-status nil`) signals `simple-error` for a nonzero exit. [Probe script](../../scripts/check-host-boundaries.py)
+
+Each `RESULT` line records both diagnostics verbatim and the condition reported by Han in strict mode. The comparison ignores elapsed milliseconds, which can change between calls. Two machines can report different native errors for the same unavailable proxy.
+
+| Case | What the probe exercises |
+| --- | --- |
+| Connection and read timeout | curl tries an unusable Unix socket and a loopback TCP port with no listener. A separate local HTTP server accepts requests and sends no response, so the client times out after connecting. |
+| DNS | curl asks the probe’s loopback HTTPS server to resolve `han-probe.invalid.` over DoH. The server replies `NXDOMAIN` (the name does not exist). The probe uses `--doh-insecure` only for the connection to this self-signed resolver. All DNS queries stay on loopback. |
+| Proxy | curl is explicitly directed through an unreachable loopback proxy. Its failure is compared with a direct invocation of curl using the same proxy settings. |
+| TLS trust | A separate request tests the origin server’s certificate verification. The local HTTPS server presents a temporary self-signed certificate. The failure is paired with a successful request to the same origin using `--cacert` and the temporary certificate. |
+
+The probe also records how the host UTF-8 decoder handles an invalid continuation byte and a truncated sequence at end of file. Inspect the returned characters or the condition type to distinguish decoder behavior from a JSON syntax error.
 
 ## Verify the symbol reference
 

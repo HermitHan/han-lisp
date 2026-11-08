@@ -10,9 +10,9 @@
 
 ## Description · 说明
 
-Returns the exit status when it is available, otherwise `nil`. Inspect it after `process-wait` for a completed child. For an ordinary nonzero exit it returns that integer. LispWorks also translates a termination signal to 128 plus the signal number when only a signal was reported.
+Returns the exit status when it is available, otherwise `nil`. Inspect it after `process-wait` for a completed child. Both backends preserve ordinary exit codes, including zero. On Unix, when a signal terminates the child, SBCL returns the signal number and LispWorks returns 128 plus that number. For example, SIGTERM gives 15 on SBCL and 143 on LispWorks. An ordinary exit can use the same integer.
 
-已有退出状态时返回整数，当前不可用时返回 `nil`。要得到已结束子进程的结果，可先调用 `process-wait`。正常退出但状态非零时返回该整数。LispWorks 在仅取得终止信号时会将其转换为 128 加信号编号。
+已有退出状态时返回整数，当前不可用时返回 `nil`。要取得已结束子进程的结果，可以先调用 `process-wait`。两个后端都原样返回正常退出码，包括零。在 Unix 上，子进程被信号终止时，SBCL 返回信号编号，LispWorks 返回 128 加信号编号。例如，SIGTERM 在 SBCL 上对应 15，在 LispWorks 上对应 143。正常退出也可以使用相同的整数。
 
 ## Examples · 示例
 

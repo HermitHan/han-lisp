@@ -40,4 +40,4 @@ A top-level Unicode string can be the entire file.
 ;; => "样本"
 ```
 
-[`parse-json-file`](parse-json-file.md) · [`get-json`](get-json.md) · [Source · 源码](../../../json/core.lisp#L400) · [Index · 索引](../README.md)
+[`parse-json-file`](parse-json-file.md) · [`get-json`](get-json.md) · [Source · 源码](../../../json/core.lisp#L384) · [Index · 索引](../README.md)

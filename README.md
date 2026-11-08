@@ -1,52 +1,64 @@
 # Han Lisp
 
-[简体中文](README.zh-CN.md) · [User guide](docs/user/README.md) · [Developer guide](docs/developer/README.md) · [Symbol reference](docs/reference/README.md)
+[简体中文](README.zh-CN.md) · [Quick start](#load-han) · [Design philosophy](#design-philosophy) · [Packages](#packages)
 
-Han is a Common Lisp foundation library for programs that work with command lines, files, processes and structured data. Its purpose is to let an application describe its own work in Lisp while sharing the code that interprets arguments, talks to the operating system and reports results. The library grew out of TAFFISH and loads independently as the ASDF system `han`.
+Han is a Common Lisp library for command-line tools. It handles work these tools share, from parsing arguments and locating input files to running a subprocess and reading its JSON output. All seven packages load together as the ASDF system `han`.
 
-## Design
+## Documentation
 
-- **Keep application decisions with the caller.** The argument binder can report a missing required option. The program using it chooses the message, its language and the exit code.
-- **Return enough information to act.** A subprocess call can return standard output, standard error and an exit code as three values. A JSON lookup returns both a value and a presence flag, so a configuration can explicitly set a field to false.
-- **Give implementation differences a home.** SBCL and LispWorks implement process handles and runtime I/O differently. The `han.host` package provides a shared interface that the other packages can use. The runtime system has no declared third-party Lisp dependencies.
+- **[User guide](docs/user/README.md)** — Load Han into your own project and learn to use the packages together, for example to read JSON from a command’s output.
+- **[Symbol reference](docs/reference/README.md)** — Browse the public API by package, or use the [A–Z index](docs/reference/symbols.md) if you know the name. Entries document usage in English and Chinese, including function arguments, return values and examples you can run in the REPL.
+- **[Developer guide](docs/developer/README.md)** — See how the packages fit together, trace an argument conflict through the source and decide where a change belongs. The [development workflow](docs/developer/workflow.md) covers writing and testing that change.
 
 ## Load Han
 
-Clone [this repository](https://github.com/HermitHan/han-lisp) and start a Lisp REPL in its root directory. Load the library and try turning an argument into a JSON result.
+With Git and SBCL installed, run these commands in a terminal to open a REPL with Han loaded.
 
-```lisp
-(load "load-han.lisp")
-
-(let* ((option (han.args:parse-arg-spec "(--/-n)name=world"))
-       (spec (han.args:parse-args-spec (list option) "greet"))
-       (input (han.args:parse-args-input '("greet" "-n" "Ada")))
-       (result (han.args:bind-args spec input)))
-  (han.json:encode-json
-   (han.json:json-object (cons "hello" (han.args:get-arg "name" result)))
-   :indent nil))
-;; => "{\"hello\":\"Ada\"}"
+```sh
+git clone https://github.com/HermitHan/han-lisp.git
+cd han-lisp
+sbcl --load load-han.lisp
 ```
 
-With just `'("greet")` as input the same specification supplies `"world"`. When accepting argv from a user, check `args-result-diagnostics` for errors before using the value. The [worked example](docs/developer/README.md) shows what happens when both spellings are supplied.
+At the REPL, read a configuration that turns retries off and leaves the timeout unspecified. Use `multiple-value-list` to see both values returned by each lookup.
 
-Once ASDF can find this checkout, another system can declare `:depends-on ("han")`. [Loading and everyday use](docs/user/README.md)
+```lisp
+(defparameter *settings* (han.json:parse-json "{\"retry\":false}"))
+
+(multiple-value-list (han.json:get-json *settings* "retry"))
+;; => (NIL T)
+
+(multiple-value-list (han.json:get-json *settings* "timeout"))
+;; => (NIL NIL)
+```
+
+`get-json` returns the field’s value and a flag indicating whether the key exists. Both lookups return `NIL` as the first value. The second value distinguishes the explicit setting from the missing field.
+
+To use Han from your own ASDF system, add `"han"` to its `:depends-on` list once ASDF can find the checkout. [Loading Han in your program](docs/user/README.md#load-the-library-in-your-program)
+
+## Design philosophy
+
+The six runtime packages outside `han.host` use one ANSI Common Lisp codebase. Implementation calls, operating-system conventions and reader conditionals such as `#+` and `#-` belong in `han.host`. ASDF selects the SBCL or LispWorks adapter. For example, `han.json` parses four hex digits and combines surrogate pairs; the host maps the resulting Unicode scalar to a Lisp character and opens files in UTF-8.
+
+A shared interface promises the same meaning, not identical observations from different machines. Executable lookup preserves each machine’s search order; a child’s live status reflects what its backend can observe. To obtain an ordinary exit code, wait for the child first. [Portability contracts and limits](docs/developer/README.md#portability-boundary)
 
 ## Packages
 
-| Package | What it owns |
-| --- | --- |
-| [han.args](docs/user/args.md) | Command-line argument specifications, token positions, bindings and diagnostics |
-| [han.os](docs/user/os.md) | Reading streams and files, environment lookups and running commands |
-| [han.path](docs/user/path.md) | Building, resolving and inspecting pathnames and working with files and directories |
-| [han.host](docs/user/host.md) | SBCL and LispWorks adapters, process handles, terminal I/O and file locking |
-| [han.json](docs/user/json.md) | Translating between JSON and Lisp values, querying objects and writing files |
-| [han.source](docs/user/source.md) | Moving a cursor through text, saving positions and extracting spans for parsers |
-| [han.test](docs/user/test.md) | Defining tests, checking expectations and running registered cases |
+| Package guide | What it does | Example entry |
+| --- | --- | --- |
+| [`han.args`](docs/user/args.md) | Declare options and positional arguments, bind input and inspect diagnostics. | [`get-arg`](docs/reference/args/get-arg.md) |
+| [`han.path`](docs/user/path.md) | Construct paths, list directories and copy files. | [`join-path`](docs/reference/path/join-path.md) |
+| [`han.os`](docs/user/os.md) | Read text, look up environment variables and capture command output. | [`run-program`](docs/reference/os/run-program.md) |
+| [`han.host`](docs/user/host.md) | Work with live process handles, terminal streams and file locks. | [`process-wait`](docs/reference/host/process-wait.md) |
+| [`han.json`](docs/user/json.md) | Parse or write JSON and look up fields in an object. | [`get-json`](docs/reference/json/get-json.md) |
+| [`han.source`](docs/user/source.md) | Build a text parser with a character cursor, saved positions and source spans. | [`source-reset`](docs/reference/source/source-reset.md) |
+| [`han.test`](docs/user/test.md) | Define tests, make assertions and run registered cases. | [`deftest`](docs/reference/test/deftest.md) |
 
 ## Run the tests
 
-Load the development system `han.dev` in a fresh Lisp process to register the library’s own tests. The developer guide includes the [test command](docs/developer/workflow.md) and the [source map and package boundaries](docs/developer/README.md).
+- **Library tests.** From a fresh REPL in the checkout, load `load-han.dev.lisp` and call `(han.test:run-all-tests)`. [Shell command and prerequisites](docs/developer/workflow.md#run-the-suite-from-the-checkout)
+- **Reference examples.** Run `sbcl --script scripts/check-reference.lisp` in the checkout to check the exported symbols and execute the examples printed in the reference. [How examples are checked](docs/developer/workflow.md#verify-the-symbol-reference)
 
 ## Origin and license
 
-The first standalone revision contains [the Han sources from TAFFISH v0.11.0](https://github.com/taffish/taffish/tree/4697321b9b8570e5b9862423c62620191bd21522/vendor/han). Han is distributed under the [MIT License](LICENSE).
+Han began as the `vendor/han` library in TAFFISH. The standalone project started with the [TAFFISH v0.11.0 sources](https://github.com/taffish/taffish/tree/4697321b9b8570e5b9862423c62620191bd21522/vendor/han) and is distributed under the [MIT License](LICENSE).

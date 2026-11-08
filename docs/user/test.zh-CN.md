@@ -37,15 +37,7 @@
 ;; => (1 0)
 ```
 
-在 Han 0.1.0 中，如果 `check-error` 的测试体正常执行完毕，宏会在自己的处理器作用域内发出一个 `simple-error`。如果期望类型是 `error`、`simple-error` 或 `condition`，处理器可能捕获这条兜底错误，导致测试误报通过。确实要检查“发生任意错误”时，可以先记录执行结果，再在处理器外做断言。
-
-```lisp
-(han.test:check-true
- (handler-case
-     (progn (han.json:parse-json "[1,]") nil)
-   (error () t)))
-;; => T
-```
+如果只需确认发生了错误，可以直接用 `(check-error (error) ...)`。测试体正常返回时，断言仍会失败。
 
 ## 在脚本中运行
 
@@ -60,7 +52,7 @@
 | [`(run-all-tests)`](../reference/test/run-all-tests.md) | 按注册顺序运行当前注册表中的测试，打印每项结果及汇总，依次返回通过数、失败数两个整数。空套件返回两个零。 |
 | [`(check-true form)`](../reference/test/check-true.md)、[`(check-false form)`](../reference/test/check-false.md) | 宏。分别要求表达式的主值为非 `nil` 或 `nil`。成功返回 `t`，失败发出错误。 |
 | [`(check-equal expected form)`](../reference/test/check-equal.md) | 宏。两个表达式各求值一次，用 `equal` 比较主值，成功返回 `t`，失败发出错误。要检查多个返回值时，可先用 `multiple-value-list` 收集。 |
-| [`(check-error (condition-type) &body body)`](../reference/test/check-error.md) | 宏。捕获到给定类型的条件时返回 `t`，测试体发出的其他类型错误继续向外传递。期望的类型应足够具体，以免捕获上文所述的兜底错误。 |
+| [`(check-error (condition-type) &body body)`](../reference/test/check-error.md) | 宏。捕获到给定类型的条件时返回 `t`，测试体发出的其他类型错误继续向外传递。 |
 | [`(help &optional stream)`](../reference/test/help.md)、[`(version &optional stream)`](../reference/test/version.md) | 返回帮助或版本字符串，默认也打印到标准输出。传入 `nil` 时只返回字符串，传入流则另向该流打印。 |
 
 [导出声明](../../test/package.lisp) · [运行器与断言实现](../../test/core.lisp) · [测试套件示例](../../json/test.lisp)

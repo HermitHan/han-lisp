@@ -40,6 +40,8 @@ A command list keeps the program name and every argument separate. To supply lit
 | [`escape-sh-token value`](../reference/os/escape-sh-token.md) | Returns one POSIX-shell-quoted token, including surrounding quotes. `nil` becomes a quoted empty string. Use this only when inserting one argument into shell text. |
 | [`run-shell-command command &key (wait t) (lines t) shell`](../reference/os/run-shell-command.md) | Runs shell text with `-c`. A supplied `shell` is an executable file path. The default searches for `bash` and then `sh`. With `wait` true, returns stdout lines, stderr lines, and the exit code. Use `:lines nil` for strings that preserve final newlines. |
 
+For a portable argv call, supply the executable's full path. To look up a program by name, use [find-executable](../reference/host/find-executable.md) and check for `nil` first. When a child such as curl reports a connection failure, its diagnostic text and exit code come from the program running on that machine. Use the exit code to detect failure and keep stderr for the diagnostic.
+
 A shell is useful for redirections. The quoted argument below contains both an apostrophe and a dollar sign. Each reaches `printf` literally. The caller can examine diagnostics even when the command exits with a nonzero code.
 
 ```lisp

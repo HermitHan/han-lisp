@@ -52,6 +52,11 @@
 | --- | --- |
 | [`argv &optional keep-first`](../reference/host/argv.md) | 默认从宿主的参数列表中去掉首项，传真值可保留代表程序的首项。 |
 | [`getenv name`](../reference/host/getenv.md)、[`cwd`](../reference/host/cwd.md)、[`current-process-id`](../reference/host/current-process-id.md) | 分别返回环境变量的字符串值或 `nil`、当前目录名称字符串或 `nil`、当前 Lisp 进程的系统 PID。 |
+| [`working-directory-pathname`](../reference/host/working-directory-pathname.md)、[`pathname-directory-list`](../reference/host/pathname-directory-list.md) | 前者解析 Lisp 工作目录，失败时报错；后者取得 pathname 的目录层级，无须访问文件系统。 |
+| [`current-user`](../reference/host/current-user.md)、[`home-directory`](../reference/host/home-directory.md) | 分别取得用户名和已存在的主目录名称字符串；无法取得时返回 `nil`。 |
+| [`find-executable`](../reference/host/find-executable.md)、[`shell-command-argv`](../reference/host/shell-command-argv.md) | 查找程序时以多个值返回不同的候选路径；需要 shell 解释命令时构造对应的 argv。 |
+| [`with-open-utf8-file`](../reference/host/with-open-utf8-file.md) | 打开 UTF-8 字符文件，流的作用域和宏体返回值与 `with-open-file` 一致。 |
+| [`unicode-scalar-char`](../reference/host/unicode-scalar-char.md)、[`char-unicode-scalar`](../reference/host/char-unicode-scalar.md) | 在 Unicode 标量和 Lisp 字符之间转换；没有映射时返回 `nil`。 |
 | [`standard-input-terminal-p`](../reference/host/standard-input-terminal-p.md)、[`standard-error-terminal-p`](../reference/host/standard-error-terminal-p.md) | 判断文件描述符 0 或 2 是否连接终端。重新绑定 Lisp 的标准流不会影响查询结果。 |
 | [`prepare-runtime-io`](../reference/host/prepare-runtime-io.md)（宏）、[`configure-runtime-io`](../reference/host/configure-runtime-io.md) | 在交付的 CLI 入口先调用 prepare，再调用 configure。LispWorks 下前者设置完整字符类型和 UTF-8 控制台策略，后者还将 `*standard-output*`、`*error-output*` 和 `*trace-output*` 绑定到实际文件描述符，trace 写入标准错误。SBCL 下二者均返回 `t`，保留原流。 |
 | [`with-character-output-to-string (stream) &body body`](../reference/host/with-character-output-to-string.md) | 宏。将字符写入局部输出流，返回完整字符类型的字符串，可以保留非 ASCII 字符。 |

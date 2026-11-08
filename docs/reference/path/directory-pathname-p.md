@@ -10,9 +10,9 @@
 
 ## Description · 说明
 
-Tests whether the interpreted pathname has neither a name nor a type. It inspects syntax and performs no filesystem probe. A Unix string ending in a slash is a typical directory designator.
+Tests whether both the name and type are absent. Each can be `nil` or `:unspecific` in a native pathname. It inspects syntax and performs no filesystem probe. A Unix string ending in a slash is a typical directory designator.
 
-判断所表示的 pathname 是否同时没有名称和类型分量，仅查看形式，不访问文件系统。Unix 路径末尾的斜杠通常用来表示目录。
+判断 pathname 的名称和类型分量是否都缺失。原生 pathname 可以用 `nil` 或 `:unspecific` 表示这两种分量缺失。这个判断只查看路径形式，无需访问文件系统。Unix 路径末尾的斜杠通常用来表示目录。
 
 ## Examples · 示例
 

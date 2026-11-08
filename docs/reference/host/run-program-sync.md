@@ -10,9 +10,13 @@
 
 ## Description · 说明
 
-Waits for the program and returns three values. A string list denotes argv and a command string invokes shell syntax. Absent input gives EOF. `t` selects standard input, and a character stream supplies its remaining content. For output, `:string` captures text, while `t` or a supplied stream replays text after completion and returns `nil` for that channel. Capture uses temporary files. Set `ignore-error-status` to `nil` to signal an error for a nonzero integer status.
+Waits for the program and returns three values. A string list denotes argv and a command string invokes shell syntax. Absent input gives EOF. `t` selects standard input, and a character stream supplies its remaining content. For output, `:string` captures text, while `t` or a supplied stream replays text after completion and returns `nil` for that channel. Capture uses temporary files.
 
-等待命令结束并返回三个值。字符串列表直接传 argv，命令字符串按 shell 语法执行。默认输入为 EOF，`t` 表示标准输入，字符流提供其剩余内容。输出选项 `:string` 捕获文本；`t` 或输出流会在结束后重放文本，对应返回值为 `nil`。捕获使用临时文件。若希望非零整数退出码触发错误，将 `ignore-error-status` 设为 `nil`。
+等待命令结束并返回三个值。字符串列表直接传 argv，命令字符串按 shell 语法执行。默认输入为 EOF，`t` 表示标准输入，字符流提供其剩余内容。输出选项 `:string` 捕获文本；`t` 或输出流会在结束后重放文本，对应返回值为 `nil`。捕获使用临时文件。
+
+An ordinary exit supplies the program's exit code. When a Unix signal terminates the child, SBCL returns the signal number and LispWorks returns 128 plus that number. Set `ignore-error-status` to `nil` to signal an error for either kind of nonzero status. With direct argv, a missing program or a file lacking execute permission signals a launch error even with the default `ignore-error-status` of `t`.
+
+正常退出时返回程序自己的退出码。子进程被 Unix 信号终止时，SBCL 返回信号编号，LispWorks 返回 128 加信号编号。将 `ignore-error-status` 设为 `nil`，这两种情况下的非零状态都会触发错误。直接传 argv 时，如果程序文件不存在或缺少执行权限，即使用默认的 `ignore-error-status t` 也会在启动时触发错误。
 
 ## Examples · 示例
 

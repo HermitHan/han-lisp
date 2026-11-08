@@ -40,6 +40,8 @@
 | [`escape-sh-token value`](../reference/os/escape-sh-token.md) | 把单个参数写成带引号的 POSIX shell 词。`nil` 会转为空字符串的引号形式。拼接 shell 文本时可用它嵌入一个参数。 |
 | [`run-shell-command command &key (wait t) (lines t) shell`](../reference/os/run-shell-command.md) | 通过 shell 的 `-c` 执行命令文本。可用 `shell` 指定可执行文件路径，默认先查找 `bash` 再查找 `sh`。等待模式下返回标准输出行列表、标准错误行列表和退出码。传 `:lines nil` 可得到字符串，保留输出结尾的换行符。 |
 
+要让 argv 调用在两个后端都能启动，请传入可执行文件的完整路径。只有程序名时，可先用 [find-executable](../reference/host/find-executable.md) 查找并检查结果是否为 `nil`。当 curl 等子程序报告连接失败时，诊断文本和退出码来自本机实际运行的程序。调用方可以用退出码判定失败，并保留标准错误以便排查。
+
 有重定向时可以交给 shell。下面的参数包含单引号和美元符号，二者都会按原样传给 `printf`。即使退出码非零，调用方也能取到错误输出。
 
 ```lisp

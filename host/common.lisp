@@ -25,7 +25,7 @@
                             :element-type 'character
                             :adjustable t
                             :fill-pointer 0
-                            :initial-element (code-char #x10000))))
+                            :initial-element (or (unicode-scalar-char #x10000) #\Space))))
     (with-output-to-string (out buffer)
       (funcall function out))
     buffer))
@@ -35,6 +35,16 @@
   `(%call-with-character-output-string
     (lambda (,stream)
       ,@body)))
+
+(defmacro with-open-utf8-file ((stream filespec &rest options
+                                &key direction if-exists if-does-not-exist)
+                               &body body)
+  "Like WITH-OPEN-FILE, with a character stream in the host's UTF-8 format."
+  (declare (ignore direction if-exists if-does-not-exist))
+  `(with-open-file (,stream ,filespec :element-type 'character
+                   :external-format #+clisp charset:utf-8 #-clisp :utf-8
+                   ,@options)
+     ,@body))
 
 (defun %utf8-line-string (line)
   "Return LINE followed by one newline as a full CHARACTER string."
@@ -58,51 +68,54 @@
     (ignore-errors
      (close stream))))
 
+(defun working-directory-pathname ()
+  "Return the truename of the current working directory, signaling on failure."
+  (truename "./"))
+
 (defun cwd ()
   "Return the current working directory namestring, or NIL if unavailable."
-  (ignore-errors (namestring (truename "."))))
+  (ignore-errors (namestring (working-directory-pathname))))
 
-(defun %normalize-directory-list (dir &optional (default-kind :relative))
-  (cond
-    ((null dir)
-     (list default-kind))
-    ((and (consp dir)
-          (keywordp (first dir)))
-     dir)
-    (t
-     (cons default-kind dir))))
+(defun current-user ()
+  "Return USER, then LOGNAME, or NIL if neither is set."
+  (or (getenv "USER") (getenv "LOGNAME")))
 
 (defun %->pathname (x)
-  (let ((p (etypecase x
-             (pathname x)
-             (string (pathname x)))))
-    (make-pathname
-     :host (pathname-host p)
-     :device (pathname-device p)
-     :directory (%normalize-directory-list (pathname-directory p))
-     :name (pathname-name p)
-     :type (pathname-type p)
-     :version (pathname-version p)
-     :defaults p)))
+  (etypecase x
+    (pathname x)
+    (string (pathname x))))
+
+(defun pathname-directory-list (path)
+  "Return the directory levels of PATH, starting with :ABSOLUTE or :RELATIVE.
+Signal an error if the pathname host cannot represent those levels."
+  (let* ((p (%->pathname path))
+         (directory (pathname-directory p)))
+    ;; Let the pathname host choose :WILD or :WILD-INFERIORS as appropriate.
+    (when (eq directory :wild)
+      (setf directory (pathname-directory
+                       (make-pathname :directory :wild :defaults p))))
+    (cond ((null directory) (list :relative))
+          ((stringp directory) (list :absolute directory))
+          ((and (consp directory) (member (first directory) '(:absolute :relative)))
+           directory)
+          (t (error "Cannot determine directory levels for ~S (directory component ~S)."
+                    p directory)))))
 
 (defun %directory-pathname-p (x)
   (let ((p (%->pathname x)))
-    (and (null (pathname-name p))
-         (null (pathname-type p)))))
+    (and (member (pathname-name p) '(nil :unspecific))
+         (member (pathname-type p) '(nil :unspecific))
+         t)))
 
 (defun %directory-pathname (x)
-  (let* ((p (%->pathname x))
-         (dir (%normalize-directory-list (pathname-directory p))))
-    (if (%directory-pathname-p p)
+  (let ((p (%->pathname x)))
+    (if (and (null (pathname-name p)) (null (pathname-type p)))
         p
-        (let ((last (file-namestring p)))
+        (let ((file (unless (%directory-pathname-p p) (file-namestring p))))
           (make-pathname
-           :host (pathname-host p)
-           :device (pathname-device p)
-           :directory (append dir
-                              (if (and last (not (string= last "")))
-                                  (list last)
-                                  '()))
+           :directory (if (plusp (length file))
+                          (append (pathname-directory-list p) (list file))
+                          (pathname-directory p))
            :name nil
            :type nil
            :version nil
@@ -203,6 +216,16 @@ signaling an error. Zero makes a single nonblocking attempt."
          (%probe-directory-found-p dir found)
          (%directory-pathname found))))
 
+(defun home-directory ()
+  "Return the namestring of an existing home directory, or NIL.
+Try HOME first, then the implementation's user home directory."
+  (flet ((existing-directory (path)
+           (when (or (stringp path) (pathnamep path))
+             (let ((dir (directory-exists-p path)))
+               (when dir (namestring dir))))))
+    (or (existing-directory (getenv "HOME"))
+        (existing-directory (ignore-errors (user-homedir-pathname))))))
+
 (defun %directory-entry-wildcard (directory)
   (make-pathname :name :wild
                  :type :wild
@@ -210,7 +233,7 @@ signaling an error. Zero makes a single nonblocking attempt."
 
 (defun %subdirectory-wildcard (directory)
   (let* ((dir (%directory-pathname directory))
-         (dir-list (%normalize-directory-list (pathname-directory dir))))
+         (dir-list (pathname-directory-list dir)))
     (make-pathname :host (pathname-host dir)
                    :device (pathname-device dir)
                    :directory (append dir-list (list :wild))
@@ -235,8 +258,8 @@ signaling an error. Zero makes a single nonblocking attempt."
         (right-path (%->pathname right)))
     (and (equal (pathname-host left-path) (pathname-host right-path))
          (equal (pathname-device left-path) (pathname-device right-path))
-         (equal (pathname-directory left-path)
-                (pathname-directory right-path)))))
+         (equal (pathname-directory-list left-path)
+                (pathname-directory-list right-path)))))
 
 (defun %direct-file-child-p (directory file)
   (%same-pathname-location-p
@@ -250,7 +273,7 @@ signaling an error. Zero makes a single nonblocking attempt."
   (let* ((parent (or (directory-exists-p directory)
                      (%directory-pathname directory)))
          (child-path (%directory-pathname child))
-         (child-directory (pathname-directory child-path)))
+         (child-directory (pathname-directory-list child-path)))
     (and (cdr child-directory)
          (%same-pathname-location-p
           parent
@@ -314,22 +337,42 @@ signaling an error. Zero makes a single nonblocking attempt."
 (defparameter *default-executable-search-paths*
   '("/usr/local/bin" "/usr/bin" "/bin" "/usr/sbin" "/sbin"
     "/opt/homebrew/bin" "/opt/local/bin")
-  "Fallback executable search paths used by host internals.")
+  "Unix directories searched after the entries in PATH.")
 
-(defun %find-executable (program)
+(defun %find-executable (program &key all)
   (let ((search-dirs (append
                       (let ((path (getenv "PATH")))
                         (when path
                           (%split-string path #\:)))
-                      *default-executable-search-paths*)))
-    (loop for dir-path in search-dirs
-          for dir = (directory-exists-p
-                     (if (string= dir-path "") "." dir-path))
-          when dir
-            do (let ((found (file-exists-p
-                             (merge-pathnames program dir))))
-                 (when found
-                   (return (namestring found)))))))
+                      *default-executable-search-paths*))
+        (matches '()))
+    (dolist (entry search-dirs)
+      (let* ((dir (directory-exists-p (if (string= entry "") "." entry)))
+             (file (and dir (file-exists-p (merge-pathnames program dir)))))
+        (when file
+          (unless all
+            (return-from %find-executable (namestring file)))
+          (pushnew (namestring file) matches :test #'string=))))
+    (when matches (values-list (nreverse matches)))))
+
+(defun find-executable (program)
+  "Return existing files named PROGRAM as separate namestring values, or NIL.
+A path containing a slash or backslash is tried directly first. Otherwise
+search PATH, then the Unix fallback directories. Only file existence is tested."
+  (when (and (stringp program) (plusp (length program)))
+    (when (or (find #\/ program) (find #\\ program))
+      (let ((file (file-exists-p program)))
+        (when file (return-from find-executable (namestring file)))))
+    (%find-executable program :all t)))
+
+(defun shell-command-argv (command &optional shell)
+  "Build an argument list for running COMMAND with SHELL.
+When SHELL is NIL, search for bash first, then sh. An explicit SHELL names a file."
+  (let ((shell-path (or shell (find-executable "bash") (find-executable "sh")
+                        (error "No shell executable found."))))
+    (unless (file-exists-p shell-path)
+      (error "Shell executable does not exist: ~A" shell-path))
+    (list shell-path "-c" command)))
 
 (defun delete-directory-tree (directory &key (validate t) (if-does-not-exist :ignore))
   "Delete DIRECTORY recursively."
@@ -405,7 +448,7 @@ signaling an error. Zero makes a single nonblocking attempt."
            (unique-token ()
              (or (urandom-token)
                  (random 1000000000))))
-    (loop repeat 1000
+    (loop for attempt below 1000
           for path = (merge-pathnames
                       (make-pathname
                        :name (format nil "~A-~36R-~A-~36R-~36R-~36R"
@@ -511,10 +554,10 @@ signaling an error. Zero makes a single nonblocking attempt."
     (%delete-file-safely file)))
 
 (defun %signal-exit-code (exit-code signal-code)
-  (cond
-    ((integerp exit-code) exit-code)
-    ((integerp signal-code) (+ 128 signal-code))
-    (t exit-code)))
+  ;; LispWorks can return (values 0 signal) for a child killed by a signal.
+  (if (typep signal-code '(integer 1))
+      (+ 128 signal-code)
+      exit-code))
 
 (defun %check-sync-exit-code (command exit-code ignore-error-status)
   (when (and (not ignore-error-status)

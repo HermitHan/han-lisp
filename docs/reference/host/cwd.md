@@ -10,9 +10,9 @@
 
 ## Description · 说明
 
-Returns the namestring of `(truename ".")`, or `nil` when the current directory cannot be resolved. This returns a value suitable for display or for conversion to a pathname.
+Returns the namestring of the resolved working directory, or `nil` if resolution fails. This returns a value suitable for display or for conversion to a pathname.
 
-返回 `(truename ".")` 的目录名称字符串，无法解析时为 `nil`。结果可直接显示，也可以转换为 pathname。
+返回工作目录解析后的名称字符串，无法解析时为 `nil`。结果可直接显示，也可以转换为 pathname。
 
 ## Examples · 示例
 
@@ -40,4 +40,4 @@ Resolve a file supplied relative to a temporary working directory.
 ;; => T
 ```
 
-[`han.host:directory-exists-p`](directory-exists-p.md) · [`han.os:current-directory`](../os/current-directory.md) · [common.lisp](../../../host/common.lisp) · [Index · 索引](../README.md)
+[`han.host:working-directory-pathname`](working-directory-pathname.md) · [`han.os:current-directory`](../os/current-directory.md) · [common.lisp](../../../host/common.lisp) · [Index · 索引](../README.md)

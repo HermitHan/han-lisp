@@ -10,9 +10,9 @@
 
 ## Description · 说明
 
-Tests whether the pathname’s directory list begins with `:absolute`. The target need not exist. Use it when a caller accepts both relative and absolute names.
+Recognizes a directory list beginning with `:absolute`, a top-level directory represented by a string, and a bare `:wild` directory. It checks pathname components without probing the file system.
 
-检查 pathname 的目录序列是否以 `:absolute` 开头。目标无需实际存在。程序既接受相对路径也接受绝对路径时可以据此分支。
+能识别以 `:absolute` 开头的目录列表、由字符串表示的顶层目录，以及仅为 `:wild` 的目录分量。判断只读取 pathname 的分量，无需访问文件系统。
 
 ## Examples · 示例
 

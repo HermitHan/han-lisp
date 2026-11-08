@@ -10,9 +10,9 @@
 
 ## Description · 说明
 
-Accepts a string or pathname and constructs a pathname from its components. A missing directory component becomes relative. Strings use the Lisp implementation’s namestring syntax. The path can describe a file that does not yet exist.
+Accepts a string or pathname. Strings use the Lisp implementation’s namestring syntax. A missing directory component becomes relative. Other directory components keep their host-defined representation, including wildcards. The path can describe a file that does not yet exist.
 
-接受字符串或 pathname，按其各个部分构造 pathname。缺少目录部分时按相对路径处理。字符串按当前 Lisp 实现的 namestring 语法解析，所指文件可以尚不存在。
+接受字符串或 pathname。字符串按当前 Lisp 实现的 namestring 语法解析。缺少目录分量时按相对路径处理，已有的目录分量保留其宿主表示，包括通配符。所指文件可以尚不存在。
 
 ## Examples · 示例
 

@@ -37,7 +37,7 @@
 
 ## 从仓库运行全套测试
 
-另起进程运行。用例会调用 Unix 工具并操作文件，需要可写的临时目录与 ASDF 缓存、常用 shell 命令以及已设置的 `USER` 环境变量。以下命令在出现失败或没有登记任何用例时返回非零退出码。
+另起进程运行。用例会调用 Unix 工具并操作文件，需要可写的临时目录与 ASDF 缓存，以及常用的 Unix 命令。以下命令在出现失败或没有登记任何用例时返回非零退出码。
 
 ```sh
 sbcl --noinform --no-sysinit --no-userinit --disable-debugger \
@@ -46,7 +46,40 @@ sbcl --noinform --no-sysinit --no-userinit --disable-debugger \
             (uiop:quit (if (and (plusp passed) (zerop failed)) 0 1)))'
 ```
 
-使用 LispWorks 时，在能加载 ASDF 的 REPL 中从仓库加载 `load-han.dev.lisp`，再求值 `(han.test:run-all-tests)`。返回的两个整数依次是通过数和失败数。验证宿主改动时，请记录实际运行的操作系统和 Lisp 实现，其余组合单列为待验。如果系统能加载却找不到模块测试，可以对照[运行加载器](../../load-han.lisp)和[开发加载器](../../load-han.dev.lisp)。
+使用 LispWorks 时，在能加载 ASDF 的 REPL 中从仓库加载 `load-han.dev.lisp`，再求值 `(han.test:run-all-tests)`。返回的两个整数依次是通过数和失败数。如果系统能加载却找不到模块测试，可以对照[运行加载器](../../load-han.lisp)和[开发加载器](../../load-han.dev.lisp)。
+
+改动可移植性边界时，用同一份源码和回归用例验证维护者选定的四种组合，即 **macOS/SBCL、macOS/LispWorks、Linux/SBCL 和 Linux/LispWorks**。逐项记录操作系统版本、Lisp 版本和结果，未运行的组合标为待验。
+
+测试同步进程时，在同一台机器上直接运行同一工具，对照其正常退出时的退出码和标准错误文本。核对标准输出、标准错误、退出状态三个返回值的顺序，再以 `:ignore-error-status nil` 重跑非零退出用例，确认触发 `simple-error`。信号终止应单独测试，按对应后端沿用的信号约定断言。对于编码，比较接口承诺写出的字节。对于 pathname，比较接口承诺的组件。[可移植性边界](README.zh-CN.md#可移植性边界)
+
+## 测量 SBCL 运行时代码覆盖率
+
+使用新编译缓存运行 `XDG_CACHE_HOME="$(mktemp -d)" sbcl --script scripts/check-coverage.lisp /tmp/han-coverage/`。打开输出目录中的 `cover-index.html`，即可按文件查看模块测试和命令行集成测试执行了哪些表达式、走过哪些分支。[覆盖率脚本](../../scripts/check-coverage.lisp)按 `han.asd` 选取运行时文件，从系统加载完毕后开始计数。报告统计当前 SBCL 进程，符号手册示例和 LispWorks 套件另行运行。
+
+## 对照网络失败和非法 UTF-8 的行为
+
+这项可选检查可在 macOS 或 Linux 上运行，需要 Python 3、支持 Unix 套接字、HTTPS 和 DNS-over-HTTPS（DoH）的 curl，以及 `openssl` 命令行工具。三个命令分别适用于 SBCL、支持批处理的 LispWorks 以及图形界面的 LispWorks Listener。
+
+```sh
+python3 scripts/check-host-boundaries.py
+python3 scripts/check-host-boundaries.py --lispworks /path/to/lispworks
+python3 scripts/check-host-boundaries.py --listener
+```
+
+使用 Personal Edition 时先打开新的 Listener，再在终端运行第三条命令。在 Listener 中求值终端打印的 `(load ...)` 表达式。保持终端运行，直至本机测试服务收到请求并输出检查结果。
+
+脚本在同一台机器上直接运行 curl，取得退出码作为对照，再检查 `han.os:run-program`。普通模式（默认 `:ignore-error-status t`）下，这些失败场景的三个返回值依次是空的标准输出、含诊断信息的标准错误和 curl 的非零退出码。严格模式（`:ignore-error-status nil`）遇到非零退出码会发出 `simple-error`。[检查脚本](../../scripts/check-host-boundaries.py)
+
+每行 `RESULT` 都保留两次调用的完整诊断以及 Han 在严格模式下发出的条件。比较时只忽略诊断里的耗时毫秒数，因为两次调用的耗时可以不同。两台机器连接同样不可达的代理时，也可能得到不同的本机错误。
+
+| 场景 | 检查方式 |
+| --- | --- |
+| 连接和读取超时 | curl 分别尝试不可用的 Unix 套接字和没有监听者的本机回环 TCP 端口。另一个本机 HTTP 服务接受请求后不发送响应，用于验证已连接后的读取超时。 |
+| DNS | curl 通过 DoH 向测试用的本机 HTTPS 服务查询保留主机名 `han-probe.invalid.`。服务明确回复 `NXDOMAIN`（该域名不存在）。只有连接这个使用自签证书的解析器时才使用 `--doh-insecure`。DNS 查询全程使用回环地址。 |
+| 代理 | 显式让 curl 使用无法连接的本机回环代理，与直接运行 curl 并指定相同代理时的结果对照。 |
+| TLS 信任 | 单独发起请求，验证 curl 对源站证书的检查。本机 HTTPS 服务使用临时自签证书。先验证证书检查失败，再用 `--cacert` 显式信任这张证书，向同一源站发送应当成功的请求。 |
+
+脚本还会记录宿主 UTF-8 解码器如何处理非法续字节和文件末尾的截断序列。可根据返回的字符或条件类型，区分解码器行为和 JSON 语法错误。
 
 ## 验证符号参考
 

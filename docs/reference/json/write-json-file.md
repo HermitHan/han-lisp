@@ -36,9 +36,9 @@ A second write replaces the previous document at the same temporary path.
 (uiop:with-temporary-file (:pathname path)
   (han.json:write-json-file path (han.json:json-array 1 2 3))
   (han.json:write-json-file path :null :indent nil)
-  (with-open-file (in path :external-format :utf-8)
+  (han.host:with-open-utf8-file (in path)
     (read-line in)))
 ;; => "null"
 ```
 
-[`write-json`](write-json.md) · [`read-json-file`](read-json-file.md) · [Source · 源码](../../../json/core.lisp#L511) · [Index · 索引](../README.md)
+[`write-json`](write-json.md) · [`read-json-file`](read-json-file.md) · [Source · 源码](../../../json/core.lisp#L502) · [Index · 索引](../README.md)

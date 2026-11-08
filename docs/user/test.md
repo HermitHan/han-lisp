@@ -37,15 +37,7 @@ To test malformed input, name the specific condition type the caller handles. Ru
 ;; => (1 0)
 ```
 
-In Han 0.1.0, when the body of `check-error` finishes normally, the macro signals a `simple-error` inside its own handler. An expected type such as `error`, `simple-error` or `condition` can catch this fallback and produce a false pass. If you genuinely need to assert that *any* error was signaled, collect that result first and make the assertion outside the handler.
-
-```lisp
-(han.test:check-true
- (handler-case
-     (progn (han.json:parse-json "[1,]") nil)
-   (error () t)))
-;; => T
-```
+If any error is sufficient, use `(check-error (error) ...)`. A normal return still fails the assertion.
 
 ## Run tests from a script
 
@@ -60,7 +52,7 @@ In Han 0.1.0, when the body of `check-error` finishes normally, the macro signal
 | [`(run-all-tests)`](../reference/test/run-all-tests.md) | Run the current registry in registration order. Print each result and a summary. Return two integers, passed then failed. An empty suite returns two zeros. |
 | [`(check-true form)`](../reference/test/check-true.md), [`(check-false form)`](../reference/test/check-false.md) | Macros. Require a non-`nil` or a `nil` primary value, respectively. Return `t` on success and signal an error on failure. |
 | [`(check-equal expected form)`](../reference/test/check-equal.md) | Macro. Evaluate both expressions once, compare their primary values with `equal`, and return `t` or signal an error. Use `multiple-value-list` on the form when testing several return values. |
-| [`(check-error (condition-type) &body body)`](../reference/test/check-error.md) | Macro. Return `t` when the named condition is caught. A different error from the body propagates. Use a condition type narrow enough to exclude the fallback described above. |
+| [`(check-error (condition-type) &body body)`](../reference/test/check-error.md) | Macro. Return `t` when the named condition is caught. A different error from the body propagates. |
 | [`(help &optional stream)`](../reference/test/help.md), [`(version &optional stream)`](../reference/test/version.md) | Return a help string or the version string. Pass `nil` for silent retrieval, or a stream to also print there. Both default to standard output. |
 
 [Package exports](../../test/package.lisp) · [Runner and assertions](../../test/core.lisp) · [Example suite](../../json/test.lisp)

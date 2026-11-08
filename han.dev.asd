@@ -10,11 +10,13 @@
     :serial t
     :components
     ((:file "package")
-     (:file "core")))
+     (:file "core")
+     (:file "test")))
    (:module "host"
     :serial t
     :components
     ((:file "package")
+     (:file "characters")
      (:file "common")
      (:file "parameters")
      #+lispworks
@@ -58,4 +60,6 @@
      (:file "spec")
      (:file "bind")
      (:file "query")
-     (:file "test")))))
+     (:file "test")))
+   (:module "tests"
+    :components ((:file "cli")))))

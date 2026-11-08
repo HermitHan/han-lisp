@@ -51,4 +51,4 @@ A newly isolated suite with no tests has neither passes nor failures.
 ;; => values (0 0)
 ```
 
-[`run-test`](run-test.md) · [`*tests*`](var-tests.md) · [Source · 源码](../../../test/core.lisp#L71) · [Index · 索引](../README.md)
+[`run-test`](run-test.md) · [`*tests*`](var-tests.md) · [Source · 源码](../../../test/core.lisp#L69) · [Index · 索引](../README.md)

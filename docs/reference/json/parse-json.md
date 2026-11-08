@@ -10,9 +10,9 @@
 
 ## Description · 说明
 
-Parse one complete JSON value, allowing surrounding whitespace. Objects become `equal` hash tables with string keys, arrays become vectors and numbers become integers or, for decimal or exponent notation, double floats. The literals `true`, `false` and `null` map to `t`, `nil` and `:null`. Malformed input, trailing content and a non-string argument signal `json-error`. A syntactically valid number outside the floating-point range can also signal an arithmetic condition.
+Parse one complete JSON value, allowing surrounding whitespace. Objects become `equal` hash tables with string keys, arrays become vectors and numbers become integers or, for decimal or exponent notation, double floats. The literals `true`, `false` and `null` map to `t`, `nil` and `:null`. Malformed input, trailing content and a non-string argument signal `json-error`. Escaped surrogate pairs decode to single characters; an isolated surrogate or a character the host cannot map signals `json-error`. Fractional values may round. A syntactically valid number outside the floating-point range can signal an arithmetic condition.
 
-解析一个完整的 JSON 值，首尾可以有空白。对象变为以字符串为键的 `equal` 哈希表，数组变为向量，数值变为整数或双精度浮点数（含小数点或指数时）。`true`、`false`、`null` 分别变为 `t`、`nil`、`:null`。非法语法、尾随其他内容或参数不是字符串时，都会触发 `json-error`。语法正确、但超出浮点数表示范围的数值也可能触发算术条件。
+解析一个完整的 JSON 值，首尾可以有空白。对象变为以字符串为键的 `equal` 哈希表，数组变为向量，数值变为整数或双精度浮点数（含小数点或指数时）。`true`、`false`、`null` 分别变为 `t`、`nil`、`:null`。非法语法、尾随其他内容或参数不是字符串时，都会触发 `json-error`。成对的代理码转义解码为单个字符；单独的代理码或宿主无法映射的字符会触发 `json-error`。小数可能发生舍入；语法正确但超出浮点数表示范围的数值可能触发算术条件。
 
 ## Examples · 示例
 
@@ -52,4 +52,4 @@ Reject two top-level values in one document.
 ;; signals han.json:json-error
 ```
 
-[`parse-json-file`](parse-json-file.md) · [`encode-json`](encode-json.md) · [`json-error`](json-error.md) · [Source · 源码](../../../json/core.lisp#L371) · [Index · 索引](../README.md)
+[`parse-json-file`](parse-json-file.md) · [`encode-json`](encode-json.md) · [`json-error`](json-error.md) · [Source · 源码](../../../json/core.lisp#L357) · [Index · 索引](../README.md)

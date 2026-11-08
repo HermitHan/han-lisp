@@ -41,7 +41,13 @@ Give each object field as a cons whose `car` is a string and whose `cdr` is the 
 ;; => "{\"retry\":false,\"stages\":[\"read\",\"index\"],\"timeout\":null}"
 ```
 
-Object keys are written in `string<` order. The default `:indent 2` writes two spaces per nesting level and a final newline. Use `:indent nil` for a compact string with no final newline. The writer accepts integers and floats as numbers. Construct arrays from nonempty lists with `(coerce items 'vector)`. The encoder also accepts `:false` as input for JSON `false`.
+Object keys are written in the host Lisp’s `string<` order; this is not a promise of a canonical byte sequence across implementations. The default `:indent 2` writes two spaces per nesting level and a final newline. Use `:indent nil` for a compact string with no final newline. The writer accepts integers and floats as numbers. Construct arrays from nonempty lists with `(coerce items 'vector)`. The encoder also accepts `:false` as input for JSON `false`.
+
+## Character and number boundaries
+
+A Unicode escape such as `\u6C49` becomes one Lisp character. Two escapes such as `\uD83D\uDE00` also become one character (U+1F600). An isolated surrogate or a scalar the host cannot map signals [`json-error`](../reference/json/json-error.md). When writing a string, Han escapes characters outside printable ASCII, so literal text and its equivalent Unicode escapes produce the same output. File functions select UTF-8; a stream passed to `write-json` keeps the encoding it was opened with.
+
+Integer literals are exact. A decimal point or exponent selects the host’s `double-float`: some decimal values are rounded, and extreme exponents can signal an arithmetic condition. For example, use an integer count of cents if a price must remain exact. When writing, integers are always decimal; finite float spellings may differ between Lisp implementations. You do not need to bind Lisp printer variables.
 
 ## Public interface
 

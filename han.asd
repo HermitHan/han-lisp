@@ -14,6 +14,7 @@
     :serial t
     :components
     ((:file "package")
+     (:file "characters")
      (:file "common")
      (:file "parameters")
      #+lispworks

@@ -49,4 +49,4 @@ An unknown test name signals an error before the runner can invoke a test body.
 ;; signals simple-error
 ```
 
-[`deftest`](deftest.md) · [`run-all-tests`](run-all-tests.md) · [Source · 源码](../../../test/core.lisp#L60) · [Index · 索引](../README.md)
+[`deftest`](deftest.md) · [`run-all-tests`](run-all-tests.md) · [Source · 源码](../../../test/core.lisp#L58) · [Index · 索引](../README.md)

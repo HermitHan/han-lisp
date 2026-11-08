@@ -10,9 +10,9 @@
 
 ## Description · 说明
 
-Run the body and return `t` when the handler catches the given condition type. An unrelated error from the body propagates. If the body returns normally, the macro raises a `simple-error` inside that same handler. In version 0.1.0 a broad expected type such as `error` or `simple-error` can therefore give a false pass. Choose a specific type that excludes this fallback.
+Run the body and return `t` when the handler catches the given condition type. An unrelated error from the body propagates. If the body returns normally, the assertion signals a `simple-error`, even when the expected type is `error` itself.
 
-执行测试体，捕获指定类型的条件时返回 `t`。测试体发出的其他类型错误向外传递。若测试体正常结束，宏会在同一处理器的作用域内发出 `simple-error`。因此在 0.1.0 中，用 `error` 或 `simple-error` 等可以捕获兜底错误的类型作预期，可能误报通过。应选择能排除该兜底错误的具体类型。
+执行测试体，捕获指定类型的条件时返回 `t`，其他类型的错误向外传递。即使预期类型就是 `error`，只要测试体正常返回，断言仍会发出 `simple-error`。
 
 ## Examples · 示例
 
@@ -46,14 +46,14 @@ An unrelated error from the body passes through the assertion unchanged.
 ;; signals type-error
 ```
 
-In 0.1.0 an overly broad expected type catches the assertion’s own failure, so this example passes even though the body returned normally.
+A normal return fails even a broad assertion that expects any error.
 
-在 0.1.0 中，过宽的预期类型会捕获断言自己产生的错误。此例的测试体正常返回，断言仍误报通过。
+即使预期任意错误，正常返回也会使断言失败。
 
 ```lisp
 (han.test:check-error (error)
   (values :normal-return))
-;; => T
+;; signals simple-error
 ```
 
 [`check-true`](check-true.md) · [`run-test`](run-test.md) · [Source · 源码](../../../test/core.lisp#L50) · [Index · 索引](../README.md)

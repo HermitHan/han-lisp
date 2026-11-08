@@ -2,3 +2,4 @@
 *.fasl
 *.64xfasl
 *.ofasl
+__pycache__/

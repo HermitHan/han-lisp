@@ -25,8 +25,8 @@
 | [`parent-directory-pathname x`](../reference/path/parent-directory-pathname.md) | 去掉文件 pathname 的 name 和 type，得到所在目录。传入目录 pathname 时返回该目录本身，例如 `"/work/reports/"` 得到 `#P"/work/reports/"`。 |
 | [`join-path base &rest parts`](../reference/path/join-path.md) | 返回 pathname，从左到右合并各段，每一步都把前一步结果当作目录。中途遇到绝对路径时，前面的目录可能被替换。 |
 | [`absolute-pathname-p x`](../reference/path/absolute-pathname-p.md) | 检查目录分量是否以 `:absolute` 开头。 |
-| [`absolute-pathname x &optional base`](../reference/path/absolute-pathname.md) | 输入是绝对路径时返回相应 pathname。相对输入与作为目录的 `base` 合并，默认基准为 `(truename ".")`。需要绝对结果时应提供绝对基准。 |
-| [`relative-path target &optional base`](../reference/path/relative-path.md) | 先分别按当前目录解析两个参数，再计算从 `base` 到 `target` 的 pathname，需要时包含向上返回的分量。路径的 host 或 device 不同时返回绝对目标。如果希望把相对目标解释成某个基准下的文件，先用 `absolute-pathname` 和该基准合并。 |
+| [`absolute-pathname x &optional base`](../reference/path/absolute-pathname.md) | 输入是绝对路径时返回相应 pathname。相对输入与作为目录的 `base` 合并，需要默认基准时使用 [Lisp 工作目录](../reference/host/working-directory-pathname.md)。需要绝对结果时应提供绝对基准。 |
+| [`relative-path target &optional base`](../reference/path/relative-path.md) | 先分别按当前目录解析两个参数，再计算从 `base` 到 `target` 的 pathname，需要时包含向上返回的分量。相对路径保留其 host 和 device；两条路径的 host 或 device 不同时，或逻辑路径需要上行时，返回绝对目标。如果希望把相对目标解释成某个基准下的文件，先用 `absolute-pathname` 和该基准合并。 |
 
 ## 查询和操作磁盘文件
 

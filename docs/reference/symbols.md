@@ -89,6 +89,7 @@ Names are sorted without their package prefix. Identical names in different pack
 - [`han.source:char-source-span`](source/char-source-span.md)
 - [`han.source:char-source-span-p`](source/char-source-span-p.md)
 - [`han.source:char-source-string`](source/char-source-string.md)
+- [`han.host:char-unicode-scalar`](host/char-unicode-scalar.md)
 - [`han.test:check-equal`](test/check-equal.md)
 - [`han.test:check-error`](test/check-error.md)
 - [`han.test:check-false`](test/check-false.md)
@@ -98,6 +99,7 @@ Names are sorted without their package prefix. Identical names in different pack
 - [`han.path:copy-file`](path/copy-file.md)
 - [`han.os:current-directory`](os/current-directory.md)
 - [`han.host:current-process-id`](host/current-process-id.md)
+- [`han.host:current-user`](host/current-user.md)
 - [`han.os:current-user`](os/current-user.md)
 - [`han.host:cwd`](host/cwd.md)
 
@@ -123,6 +125,7 @@ Names are sorted without their package prefix. Identical names in different pack
 
 - [`han.host:file-exists-p`](host/file-exists-p.md)
 - [`han.path:file-exists-p`](path/file-exists-p.md)
+- [`han.host:find-executable`](host/find-executable.md)
 - [`han.os:find-executable`](os/find-executable.md)
 
 ## G
@@ -141,6 +144,7 @@ Names are sorted without their package prefix. Identical names in different pack
 - [`han.path:help`](path/help.md)
 - [`han.source:help`](source/help.md)
 - [`han.test:help`](test/help.md)
+- [`han.host:home-directory`](host/home-directory.md)
 - [`han.os:home-directory`](os/home-directory.md)
 - [`han.host:host-process`](host/host-process.md)
 - [`han.host:host-process-backend`](host/host-process-backend.md)
@@ -196,6 +200,7 @@ Names are sorted without their package prefix. Identical names in different pack
 - [`han.args:parse-args-spec`](args/parse-args-spec.md)
 - [`han.json:parse-json`](json/parse-json.md)
 - [`han.json:parse-json-file`](json/parse-json-file.md)
+- [`han.host:pathname-directory-list`](host/pathname-directory-list.md)
 - [`han.host:prepare-runtime-io`](host/prepare-runtime-io.md)
 - [`han.host:process-close`](host/process-close.md)
 - [`han.host:process-exit-code`](host/process-exit-code.md)
@@ -222,6 +227,7 @@ Names are sorted without their package prefix. Identical names in different pack
 ## S
 
 - [`han.json:set-json`](json/set-json.md)
+- [`han.host:shell-command-argv`](host/shell-command-argv.md)
 - [`han.source:source-advance-n`](source/source-advance-n.md)
 - [`han.source:source-consume-char-if`](source/source-consume-char-if.md)
 - [`han.source:source-consume-string-if`](source/source-consume-string-if.md)
@@ -252,6 +258,7 @@ Names are sorted without their package prefix. Identical names in different pack
 
 ## U
 
+- [`han.host:unicode-scalar-char`](host/unicode-scalar-char.md)
 - [`han.host:unsupported-host-function`](host/unsupported-host-function.md)
 
 ## V
@@ -267,5 +274,7 @@ Names are sorted without their package prefix. Identical names in different pack
 ## W
 
 - [`han.host:with-character-output-to-string`](host/with-character-output-to-string.md)
+- [`han.host:with-open-utf8-file`](host/with-open-utf8-file.md)
+- [`han.host:working-directory-pathname`](host/working-directory-pathname.md)
 - [`han.json:write-json`](json/write-json.md)
 - [`han.json:write-json-file`](json/write-json-file.md)

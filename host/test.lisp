@@ -46,13 +46,6 @@
                   :type nil)
    (han.host:temporary-directory)))
 
-(deftest test-han-test-help-and-version ()
-  (let ((help-string (han.test:help nil)))
-    (check-true (stringp help-string))
-    (check-true (search "han.test" help-string))
-    (check-true (search "run-all-tests" help-string)))
-  (check-equal "0.1.0" (han.test:version nil)))
-
 (deftest test-han-host-help-and-version ()
   (let ((help-string (han.host:help nil)))
     (check-true (stringp help-string))
@@ -74,6 +67,40 @@
 (deftest test-host-configure-runtime-io ()
   (check-true (han.host:prepare-runtime-io))
   (check-true (han.host:configure-runtime-io)))
+
+(deftest test-host-working-directory-resolution-and-failure ()
+  (let ((root (%han-host-test-directory)))
+    (unwind-protect
+         (progn
+           (ensure-directories-exist (merge-pathnames "anchor" root))
+           (let ((*default-pathname-defaults* root))
+             (check-equal (namestring (truename root))
+                          (namestring (han.host:working-directory-pathname)))
+             (check-equal (namestring (truename root)) (han.host:cwd)))
+           (let ((*default-pathname-defaults* (merge-pathnames "missing/" root)))
+             (check-error (error) (han.host:working-directory-pathname))
+             (check-false (han.host:cwd))))
+      (han.host:delete-directory-tree root))))
+
+(deftest test-host-shell-command-argv-preserves-command-and-shell ()
+  (let ((command "printf '%s' 'with spaces; and a dollar $'")
+        (explicit #P"/bin/sh"))
+    (check-equal (list explicit "-c" command)
+                 (han.host:shell-command-argv command explicit))
+    (check-equal (list (or (han.host:find-executable "bash")
+                           (han.host:find-executable "sh"))
+                       "-c" command)
+                 (han.host:shell-command-argv command))
+    (check-error (simple-error)
+      (han.host:shell-command-argv command (%han-host-temp-file "missing-shell" nil)))))
+
+(deftest test-host-unicode-scalar-boundaries ()
+  (dolist (bad '(nil 1/2 -1 #xD800 #xDBFF #xDC00 #xDFFF #x110000))
+    (check-false (han.host:unicode-scalar-char bad)))
+  (check-equal #x41 (han.host:char-unicode-scalar #\A))
+  (dolist (code '(#xD7FF #xE000 #x1F600))
+    (check-equal code (han.host:char-unicode-scalar (han.host:unicode-scalar-char code))))
+  (check-error (type-error) (han.host:char-unicode-scalar #x41)))
 
 (define-condition %host-test-unprintable-error (error) ()
   (:report (lambda (condition stream)
@@ -219,6 +246,22 @@
     (check-equal (han.host:process-exit-code process) 7)
     (han.host:process-close process)))
 
+#+(or sbcl lispworks)
+(deftest test-host-child-terminated-by-sigterm ()
+  (let* ((command '("/bin/sh" "-c" "printf out; printf err >&2; kill -TERM $$"))
+         (expected #+sbcl 15 #+lispworks 143))
+    (check-equal (list "out" "err" expected)
+                 (multiple-value-list (han.host:run-program-sync command)))
+    (check-error (simple-error)
+      (han.host:run-program-sync command :ignore-error-status nil))
+    (let ((child (han.host:run-program (first command) :arguments (rest command))))
+      (unwind-protect
+           (progn
+             (han.host:process-wait child)
+             (check-equal :exited (han.host:process-status child))
+             (check-equal expected (han.host:process-exit-code child)))
+        (han.host:process-close child)))))
+
 (deftest test-host-run-program-sync-default-input-is-eof ()
   (multiple-value-bind (out err code)
       (han.host:run-program-sync
@@ -257,6 +300,26 @@
               (check-equal err "")))))
     (check-equal captured "replay")))
 
+(deftest test-host-sync-caller-streams-and-nonzero-exit ()
+  (with-input-from-string (in "skip:payload" :start 5)
+    (let ((out (make-string-output-stream))
+          (err (make-string-output-stream)))
+      (unwind-protect
+           (progn
+             (check-equal '(nil nil 9)
+                          (multiple-value-list
+                           (han.host:run-program-sync
+                            '("/bin/sh" "-c" "cat; printf diagnostic >&2; exit 9")
+                            :input in :output out :error-output err)))
+             (check-true (every #'open-stream-p (list in out err)))
+             (check-equal :eof (read-char in nil :eof))
+             (check-equal "payload" (get-output-stream-string out))
+             (check-equal "diagnostic" (get-output-stream-string err)))
+        (close out)
+        (close err))))
+  (check-error (simple-error)
+    (han.host:run-program-sync '("/bin/sh" "-c" "exit 9") :ignore-error-status nil)))
+
 (deftest test-host-run-program-output ()
   (let ((process (han.host:run-program "/bin/sh"
                                        :arguments (list "-c" "printf hello"))))
@@ -294,12 +357,18 @@
      nil)))
 
 (deftest test-host-invalid-program-error ()
-  (check-equal
-   (signal-error-p
-    (lambda ()
-      (han.host:run-program "/definitely/not/exist/program"
-                            :arguments nil)))
-   t))
+  (let ((file (namestring (%han-host-temp-file "han-not-executable" nil))))
+    (check-error (error) (han.host:run-program file))
+    (check-error (error) (han.host:run-program-sync (list file) :ignore-error-status t))
+    (unwind-protect
+         (progn
+           (with-open-file (out file :direction :output :if-exists :error)
+             (write-line "regular file" out))
+           (han.host:run-program-sync (list "/bin/chmod" "600" file) :ignore-error-status nil)
+           (check-true (han.host:find-executable file))
+           (check-error (error)
+             (han.host:run-program-sync (list file) :ignore-error-status t)))
+      (when (probe-file file) (delete-file file)))))
 
 (deftest test-host-temp-file-generates-unique-non-existing-paths ()
   (let ((names nil))
@@ -359,6 +428,31 @@
                          file (lambda () :reacquired) :timeout 0)))
       (when (han.host:directory-exists-p root)
         (han.host:delete-directory-tree root)))))
+
+(deftest test-open-utf8-file-bytes-values-and-cleanup ()
+  (let ((file (%han-host-temp-file "han-utf8" "txt"))
+        (sample (map 'string #'han.host:unicode-scalar-char '(#x6C49 #x1F600)))
+        stream)
+    (unwind-protect
+         (progn
+           (check-equal '(42 :written)
+             (multiple-value-list
+              (han.host:with-open-utf8-file (out file :direction :output
+                                                      :if-exists :error)
+                (write-string sample out)
+                (values 42 :written))))
+           (with-open-file (in file :element-type '(unsigned-byte 8))
+             (check-equal '(#xE6 #xB1 #x89 #xF0 #x9F #x98 #x80)
+               (loop for byte = (read-byte in nil nil) while byte collect byte)))
+           (han.host:with-open-utf8-file (in file)
+             (check-equal sample (read-line in)))
+           (check-error (simple-error)
+             (han.host:with-open-utf8-file (in file)
+               (setf stream in)
+               (error "leave the body")))
+           (check-true stream)
+           (check-false (open-stream-p stream)))
+      (when (probe-file file) (delete-file file)))))
 
 (deftest test-host-append-utf8-line ()
   (let* ((root (%han-host-test-directory))

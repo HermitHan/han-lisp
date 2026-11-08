@@ -19,6 +19,15 @@
 	   :standard-input-terminal-p
 	   :standard-error-terminal-p
 	   :current-process-id
+	   :working-directory-pathname
+	   :pathname-directory-list
+	   :current-user
+	   :home-directory
+	   :find-executable
+	   :shell-command-argv
+	   :unicode-scalar-char
+	   :char-unicode-scalar
+	   :with-open-utf8-file
 	   :append-utf8-line
 	   :call-with-exclusive-file-lock
 	   :cwd
@@ -63,6 +72,9 @@ Common usage:
   (han.host:argv)
 	  (han.host:getenv \"HOME\")
 	  (han.host:cwd)
+	  (han.host:working-directory-pathname)
+	  (han.host:find-executable \"sh\")
+	  (han.host:with-open-utf8-file (in path) (read-line in))
 	  (han.host:quit 0)
 	  (han.host:prepare-runtime-io)
 	  (han.host:configure-runtime-io)

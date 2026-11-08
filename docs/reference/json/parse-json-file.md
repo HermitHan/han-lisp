@@ -10,9 +10,9 @@
 
 ## Description · 说明
 
-Open the pathname designator for character input with UTF-8 encoding, read its entire contents, then parse one JSON value. The input stream is closed on exit. Syntax errors signal `json-error`, while file access and decoding errors propagate. The example uses a temporary file managed by the UIOP included with ASDF.
+Open the pathname designator for character input with UTF-8 encoding, read its entire contents, then parse one JSON value. The input stream is closed on exit. Syntax errors signal `json-error`. File access errors propagate; handling of malformed UTF-8 bytes belongs to the host stream decoder. The example uses a temporary file managed by the UIOP included with ASDF.
 
-按路径指示符打开 UTF-8 字符输入流，将文件完整读入后解析一个 JSON 值。退出时会关闭输入流。语法错误触发 `json-error`，文件访问或解码错误向外传递。示例由 ASDF 自带的 UIOP 管理临时文件。
+按路径指示符打开 UTF-8 字符输入流，将文件完整读入后解析一个 JSON 值。退出时会关闭输入流。语法错误触发 `json-error`。文件访问错误向外传递；非法 UTF-8 字节由宿主流的解码器处理。示例由 ASDF 自带的 UIOP 管理临时文件。
 
 ## Examples · 示例
 
@@ -40,4 +40,4 @@ Malformed syntax in an existing file reaches the same parser as a string.
 ;; signals han.json:json-error
 ```
 
-[`parse-json`](parse-json.md) · [`read-json-file`](read-json-file.md) · [`write-json-file`](write-json-file.md) · [Source · 源码](../../../json/core.lisp#L397) · [Index · 索引](../README.md)
+[`parse-json`](parse-json.md) · [`read-json-file`](read-json-file.md) · [`write-json-file`](write-json-file.md) · [Source · 源码](../../../json/core.lisp#L381) · [Index · 索引](../README.md)
