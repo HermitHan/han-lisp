@@ -30,6 +30,8 @@ To keep a regression test like this one, add the `deftest` form alongside the bi
 
 ## Change the owning layer
 
+For every source change, including internal refactoring and bug fixes, check both READMEs, the documentation index, the English and Chinese user and developer guides, and the bilingual pages for affected public symbols. Follow calls through public wrappers. Update descriptions, links, indexes and runnable examples wherever the change affects what readers need to know.
+
 1. Write down the observable contract using actual inputs. For the conflict above, two values and a diagnostic code matter. A message intended for a person can change independently of that code.
 2. Edit the file responsible for the behavior. A new public operation needs a declaration in its module's `package.lisp`, a description in both language editions of the [user guide](../user/README.md), and a test for the new contract. Add a [symbol reference entry](../reference/README.md) with at least two executable examples of different behaviors and link it from the package and alphabetical indexes. Update the package’s REPL `help` text if usage changes.
 3. When adding a source file, check the serial component lists in [han.asd](../../han.asd) and [han.dev.asd](../../han.dev.asd). The former must load in a clean runtime image. The latter also loads the test files.

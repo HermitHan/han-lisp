@@ -42,6 +42,8 @@ A command list keeps the program name and every argument separate. To supply lit
 
 For a portable argv call, supply the executable's full path. To look up a program by name, use [find-executable](../reference/host/find-executable.md) and check for `nil` first. When a child such as curl reports a connection failure, its diagnostic text and exit code come from the program running on that machine. Use the exit code to detect failure and keep stderr for the diagnostic.
 
+When sending terminal input with `:input t`, LispWorks waits for EOF before launching the child. Captured stdout and stderr use the host’s default text encoding. See the [synchronous process reference](../reference/host/run-program-sync.md).
+
 A shell is useful for redirections. The quoted argument below contains both an apostrophe and a dollar sign. Each reaches `printf` literally. The caller can examine diagnostics even when the command exits with a nonzero code.
 
 ```lisp

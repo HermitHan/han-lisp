@@ -18,6 +18,14 @@ An ordinary exit supplies the program's exit code. When a Unix signal terminates
 
 正常退出时返回程序自己的退出码。子进程被 Unix 信号终止时，SBCL 返回信号编号，LispWorks 返回 128 加信号编号。将 `ignore-error-status` 设为 `nil`，这两种情况下的非零状态都会触发错误。直接传 argv 时，如果程序文件不存在或缺少执行权限，即使用默认的 `ignore-error-status t` 也会在启动时触发错误。
 
+With `:input t`, SBCL passes the current standard input stream to the backend. LispWorks reads it into a temporary file up to EOF before launching the child. Output capture and replay read the temporary files as text using the host’s default external format.
+
+传入 `:input t` 时，SBCL 把当前标准输入流交给后端。LispWorks 会先读到 EOF，将输入写入临时文件，再启动子进程。捕获和重放标准输出、标准错误时，按宿主默认外部编码将临时文件读为文本。
+
+For direct argv, pass the executable’s full path as the first string. Lookup of a bare name varies by backend. To search for a tool by name, call [`find-executable`](find-executable.md) first and check for `nil`.
+
+直接传 argv 时，第一个字符串应使用可执行文件的完整路径。各后端查找裸程序名的行为有差异。按名称查找工具时，先调用 [`find-executable`](find-executable.md) 并检查结果是否为 `nil`。
+
 ## Examples · 示例
 
 Capture standard output, standard error and the exit code from a single shell command.

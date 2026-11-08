@@ -10,9 +10,9 @@
 
 ## Description · 说明
 
-Read and parse a UTF-8 JSON document, with the same behavior and return value as `parse-json-file`. The result can be any JSON value, including an array or scalar. Malformed JSON signals `json-error`, and opening a missing file signals a file error. The example uses UIOP to remove the temporary file after the read.
+Read and parse a UTF-8 JSON document, with the same behavior and return value as `parse-json-file`. The result can be any JSON value, including an array or scalar. The host stream decoder handles invalid UTF-8 bytes. Once decoded, JSON syntax errors signal `json-error`. Opening a missing file signals a file error.
 
-读取并解析 UTF-8 JSON 文档，行为与返回值同 `parse-json-file`。顶层可以是任何 JSON 值，包括数组和标量。非法 JSON 触发 `json-error`，打开不存在的文件会发出文件错误。示例通过 UIOP 在读取后清理临时文件。
+读取并解析 UTF-8 JSON 文档，行为与返回值同 `parse-json-file`。顶层可以是任何 JSON 值，包括数组和标量。非法 UTF-8 字节由宿主流的解码器处理。成功解码后的 JSON 语法错误触发 `json-error`，打开不存在的文件会发出文件错误。
 
 ## Examples · 示例
 
