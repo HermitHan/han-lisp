@@ -1,22 +1,22 @@
 # `han.args:make-arg-binding`
 
-*Constructor · 构造器*
+[简体中文](make-arg-binding.zh-CN.md)
 
-## Syntax · 语法
+*Constructor*
+
+## Syntax
 
 ```text
 (han.args:make-arg-binding &key name spec value status) → han.args:arg-binding
 ```
 
-## Description · 说明
+## Description
 
 Construct and return a fresh `arg-binding` with the supplied keyword fields. Omitted fields default to `nil`. This constructor is useful when injecting built-in values. Choose an explicit status so that lookup can recognize the binding.
 
-根据给定的关键字字段创建并返回新的 `arg-binding` 对象。省略的字段默认为 `nil`。需要注入内置参数时可使用该构造器。显式指定状态，查询时才能识别该绑定。
+## Examples
 
-## Examples · 示例
-
-Record an explicit value and its provenance. 保存显式值及其输入状态。
+Record an explicit value and its provenance.
 
 ```lisp
 (let ((binding
@@ -26,7 +26,7 @@ Record an explicit value and its provenance. 保存显式值及其输入状态�
 ;; => "4"
 ```
 
-Use a manually constructed binding as a built-in default. 用手工构造的内置绑定给未声明的上下文键提供默认值。
+Use a manually constructed binding as a built-in default.
 
 ```lisp
 (let ((builtins (make-hash-table :test 'equalp)))
@@ -37,4 +37,4 @@ Use a manually constructed binding as a built-in default. 用手工构造的内�
 ;; => values ("batch" :default)
 ```
 
-[`han.args:arg-binding`](arg-binding.md) · [`han.args:arg-binding-value`](arg-binding-value.md) · [`han.args:get-arg`](get-arg.md) · [Source · 源码](../../../args/bind.lisp) · [Index · 索引](../README.md)
+[`han.args:arg-binding`](arg-binding.md) · [`han.args:arg-binding-value`](arg-binding-value.md) · [`han.args:get-arg`](get-arg.md) · [Source](../../../args/bind.lisp) · [Index](../README.md)

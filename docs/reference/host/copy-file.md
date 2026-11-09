@@ -1,24 +1,22 @@
 # `han.host:copy-file`
 
-*Function · 函数*
+[简体中文](copy-file.zh-CN.md)
 
-## Syntax · 语法
+*Function*
+
+## Syntax
 
 ```text
 (han.host:copy-file source target) → target
 ```
 
-## Description · 说明
+## Description
 
 Copies the bytes of the source file, creating parent directories as needed and replacing any existing target contents. Returns the original target argument. File errors propagate. Choose distinct paths for the source and destination. The example creates two temporary files.
 
-按字节复制源文件，按需创建目标父目录并替换已有目标内容。返回原始 target 参数，文件错误向调用方传播。源和目标应使用不同路径。示例只操作两个临时文件。
-
-## Examples · 示例
+## Examples
 
 Copy a file containing one line and read the line from the destination.
-
-复制一个含有一行文字的文件，再从目标文件中读回这一行。
 
 ```lisp
 (uiop:with-temporary-file (:pathname source)
@@ -30,8 +28,6 @@ Copy a file containing one line and read the line from the destination.
 ```
 
 Replace a longer destination with binary data, including a zero byte.
-
-用包含零字节的二进制数据替换较长的目标文件。
 
 ```lisp
 (uiop:with-temporary-file (:pathname source)
@@ -48,8 +44,6 @@ Replace a longer destination with binary data, including a zero byte.
 
 Copy into a new nested directory and reuse the returned target path.
 
-复制到新建的多级目录，并复用返回的目标路径。
-
 ```lisp
 (let ((root (uiop:ensure-directory-pathname (uiop:run-program '("mktemp" "-d") :output :line))))
   (unwind-protect
@@ -62,4 +56,4 @@ Copy into a new nested directory and reuse the returned target path.
 ;; => ("exported")
 ```
 
-[`han.host:file-exists-p`](file-exists-p.md) · [`han.path:copy-file`](../path/copy-file.md) · [common.lisp](../../../host/common.lisp) · [Index · 索引](../README.md)
+[`han.host:file-exists-p`](file-exists-p.md) · [`han.path:copy-file`](../path/copy-file.md) · [common.lisp](../../../host/common.lisp) · [Index](../README.md)

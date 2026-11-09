@@ -1,22 +1,22 @@
 # `han.source:char-source-span-p`
 
-*Predicate · 谓词*
+[简体中文](char-source-span-p.zh-CN.md)
 
-## Syntax · 语法
+*Predicate*
+
+## Syntax
 
 ```text
 (han.source:char-source-span-p object) → boolean
 ```
 
-## Description · 说明
+## Description
 
 Tests whether an object is a span. Even two coincident marks produce a valid, empty span. To check ownership, use `source-span-from-source-p`.
 
-判断对象是否为区间。起止标记位于同一位置时得到的空区间也是合法区间。来源归属可用 `source-span-from-source-p` 另查。
+## Examples
 
-## Examples · 示例
-
-**Distinguish an empty span from the mark used to create it · 区分空区间与创建该区间所用的标记**
+**Distinguish an empty span from the mark used to create it**
 
 ```lisp
 (let* ((src (han.source:make-char-source ""))
@@ -26,7 +26,7 @@ Tests whether an object is a span. Even two coincident marks produce a valid, em
 ;; => (T NIL)
 ```
 
-**Collect just the matched text ranges · 只取匹配区间对应的原文**
+**Collect just the matched text ranges**
 
 ```lisp
 (let* ((src (han.source:make-char-source "id=3"))
@@ -38,4 +38,4 @@ Tests whether an object is a span. Even two coincident marks produce a valid, em
 ;; => ("id")
 ```
 
-[`han.source:char-source-span`](char-source-span.md) · [`han.source:source-span-from-source-p`](source-span-from-source-p.md) · [Source · 源码](../../../source/char-source.lisp) · [Index · 索引](../README.md)
+[`han.source:char-source-span`](char-source-span.md) · [`han.source:source-span-from-source-p`](source-span-from-source-p.md) · [Source](../../../source/char-source.lisp) · [Index](../README.md)

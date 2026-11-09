@@ -1,23 +1,23 @@
 # `han.args:args-result-input`
 
-*Accessor · 访问器*
+[简体中文](args-result-input.zh-CN.md)
 
-## Syntax · 语法
+*Accessor*
+
+## Syntax
 
 ```text
 (han.args:args-result-input result) → args-input
 (setf (han.args:args-result-input result) new-value) → new-value
 ```
 
-## Description · 说明
+## Description
 
 Return the parsed invocation that was bound. Use it to recover the command, original argv, or token vector associated with a reported diagnostic.
 
-返回参与这次绑定的解析输入。需要复查某条诊断对应的命令、原始 argv 或 token 向量时，可从此字段取得。
+## Examples
 
-## Examples · 示例
-
-Recover the original argv of a completed binding. 从绑定结果取回原始 argv。
+Recover the original argv of a completed binding.
 
 ```lisp
 (let ((result
@@ -28,7 +28,7 @@ Recover the original argv of a completed binding. 从绑定结果取回原始 ar
 ;; => ("-j" "4")
 ```
 
-Use a diagnostic index to recover the offending argument. 按诊断索引回查输入对象，展示用户实际传入的未知选项。
+Use a diagnostic index to recover the offending argument.
 
 ```lisp
 (let ((result
@@ -42,4 +42,4 @@ Use a diagnostic index to recover the offending argument. 按诊断索引回查�
 ;; => "--mystery"
 ```
 
-[`han.args:args-result`](args-result.md) · [`han.args:bind-args`](bind-args.md) · [Source · 源码](../../../args/bind.lisp) · [Index · 索引](../README.md)
+[`han.args:args-result`](args-result.md) · [`han.args:bind-args`](bind-args.md) · [Source](../../../args/bind.lisp) · [Index](../README.md)

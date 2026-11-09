@@ -1,24 +1,22 @@
 # `han.host:unsupported-host-function`
 
-*Condition type · 条件类型*
+[简体中文](unsupported-host-function.zh-CN.md)
 
-## Syntax · 语法
+*Condition type*
+
+## Syntax
 
 ```text
 han.host:unsupported-host-function → condition type in fallback builds
 ```
 
-## Description · 说明
+## Description
 
-The fallback backend defines this `error` subtype for operations such as `argv` or `run-program` that require a supported Lisp implementation. SBCL and LispWorks export the symbol but do not define the condition class. The example checks whether a defined class is an error subtype without calling an unsupported operation.
+The fallback backend defines this `error` subtype for operations such as `argv` or `run-program` that require a supported Lisp implementation. The SBCL, LispWorks and ECL adapters export the symbol without defining a condition class. Han selects the ECL adapter on macOS and Linux when ECL is built with Unicode. Other ECL builds use the fallback. The example checks whether a defined class is an error subtype without calling an unsupported operation.
 
-回退后端定义此 `error` 子类型，用于 `argv`、`run-program` 等依赖 Lisp 实现的操作。SBCL 和 LispWorks 导出该符号，但不定义条件类。示例在存在该类时检查它是否属于 error，不触发未支持操作。
-
-## Examples · 示例
+## Examples
 
 Inspect the exported symbol and, when its condition class is defined, check that it names an error type.
-
-检查导出的符号，如果已定义对应的条件类，再确认它属于错误类型。
 
 ```lisp
 (let ((name 'han.host:unsupported-host-function))
@@ -30,8 +28,6 @@ Inspect the exported symbol and, when its condition class is defined, check that
 
 Give a portable CLI an empty argument list on a host lacking the argv primitive, and propagate other errors.
 
-让跨实现 CLI 在宿主缺少 argv 原语时使用空实参，其他错误仍传给调用方。
-
 ```lisp
 (flet ((arguments ()
          (handler-case (han.host:argv)
@@ -42,4 +38,4 @@ Give a portable CLI an empty argument list on a host lacking the argv primitive,
 ;; => T
 ```
 
-[`han.host:*supported-implementations*`](var-supported-implementations.md) · [`han.host:argv`](argv.md) · [unsupported.lisp](../../../host/unsupported.lisp) · [Index · 索引](../README.md)
+[`han.host:*supported-implementations*`](var-supported-implementations.md) · [`han.host:argv`](argv.md) · [unsupported.lisp](../../../host/unsupported.lisp) · [Index](../README.md)

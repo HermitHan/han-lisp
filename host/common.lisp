@@ -143,6 +143,7 @@ Signal an error if the pathname host cannot represent those levels."
             (error condition)))))
     file))
 
+#-(and ecl unicode (or darwin linux))
 (defun %prepare-native-file (path)
   ;; String inputs come from OS interfaces such as argv and environment
   ;; variables. Do not parse their metacharacters as CL pathname patterns.
@@ -162,7 +163,7 @@ All cooperating processes must keep and use the same lock file. Return the
 callback's values. On contention, wait at most TIMEOUT seconds before
 signaling an error. Zero makes a single nonblocking attempt."
   (check-type timeout (real 0))
-  #+(and (or sbcl lispworks) (or darwin macosx linux))
+  #+(and (or sbcl lispworks (and ecl unicode)) (or darwin macosx linux))
   (let* ((file (%prepare-native-file lock-path))
          ;; O_WRONLY | O_CREAT | O_NONBLOCK | O_CLOEXEC (Darwin and Linux
          ;; x86-64/arm64 ABIs). Never truncate or unlink this stable inode.
@@ -184,7 +185,7 @@ signaling an error. Zero makes a single nonblocking attempt."
                         (error "Timed out waiting for lock ~A." file))
                       (sleep (min 1/100 (/ remaining internal-time-units-per-second)))))
         (%close-lock-file fd))))
-  #-(and (or sbcl lispworks) (or darwin macosx linux))
+  #-(and (or sbcl lispworks (and ecl unicode)) (or darwin macosx linux))
   (error "File locking is unsupported on ~A/~A (lock ~A for ~S)."
          (lisp-implementation-type) (software-type) lock-path function))
 
@@ -423,20 +424,7 @@ When SHELL is NIL, search for bash first, then sh. An explicit SHELL names a fil
       (write-char #\' out))))
 
 (defun %host-temp-file (prefix type)
-  (labels ((call-symbol (package-name symbol-name)
-             (let ((package (find-package package-name)))
-               (when package
-                 (multiple-value-bind (symbol status)
-                     (find-symbol symbol-name package)
-                   (declare (ignore status))
-                   (when (and symbol (fboundp symbol))
-                     (ignore-errors (funcall symbol)))))))
-           (process-token ()
-             (or
-              #+sbcl (call-symbol "SB-UNIX" "UNIX-GETPID")
-              #+lispworks (call-symbol "SYSTEM" "GETPID")
-              0))
-           (urandom-token ()
+  (labels ((urandom-token ()
              (ignore-errors
                (with-open-file (in "/dev/urandom"
                                    :direction :input
@@ -453,7 +441,7 @@ When SHELL is NIL, search for bash first, then sh. An explicit SHELL names a fil
                       (make-pathname
                        :name (format nil "~A-~36R-~A-~36R-~36R-~36R"
                                      prefix
-                                     (or (process-token) 0)
+                                     (or (ignore-errors (current-process-id)) 0)
                                      (gensym "TMP")
                                      (get-universal-time)
                                      (get-internal-real-time)
@@ -502,11 +490,11 @@ When SHELL is NIL, search for bash first, then sh. An explicit SHELL names a fil
          (declare (ignorable out)))
        (values path (cons path temp-files))))
     ((eq input t)
-     #+lispworks
+     #+(or lispworks ecl)
      (let ((path (%host-temp-file "han-host-stdin" "tmp")))
        (%copy-stream-to-file *standard-input* path)
        (values path (cons path temp-files)))
-     #-lispworks
+     #-(or lispworks ecl)
      (values *standard-input* temp-files))
     ((streamp input)
      (let ((path (%host-temp-file "han-host-input" "tmp")))

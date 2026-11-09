@@ -2,7 +2,7 @@
 
 [User guide](README.md) · [简体中文](host.zh-CN.md) · [Package symbol index](../reference/README.md#host)
 
-Use `han.host` to control a child process, query the real terminal, or coordinate writers through an OS file lock. It supplies the SBCL and LispWorks adapters. For everyday command execution and path assembly, [han.os](os.md) and [han.path](path.md) offer higher-level operations. All unqualified names below refer to `han.host`.
+Use `han.host` to control a child process, query the real terminal, or coordinate writers through an OS file lock. It supplies adapters for SBCL, LispWorks and Unicode-enabled ECL. For everyday command execution and path assembly, [han.os](os.md) and [han.path](path.md) offer higher-level operations. All unqualified names below refer to `han.host`.
 
 ## Run a child process
 
@@ -31,11 +31,13 @@ For a live child, supply an existing executable path and an argument list. Read 
 | Operation | Contract |
 | --- | --- |
 | [`run-program-sync command &key input (output :string) (error-output :string) (ignore-error-status t)`](../reference/host/run-program-sync.md) | Waits for completion. A list supplies program and arguments directly. A string is a shell command. Each captured channel yields a string, followed by the integer exit status for a normal exit. A nonzero integer status signals an error when `ignore-error-status` is `nil`. |
-| [`run-program program &key arguments input directory environment`](../reference/host/run-program.md) | Starts a child and returns a [`host-process`](../reference/host/host-process.md). `program` must name an existing file. To find a program by name, use `han.os:find-executable`. Optional `directory` and `environment` are forwarded to the backend when explicitly supplied. |
+| [`run-program program &key arguments input directory environment`](../reference/host/run-program.md) | Starts a child and returns a [`host-process`](../reference/host/host-process.md). `program` must name an existing file. To find a program by name, use `han.os:find-executable`. Set `directory` to run in an existing directory while the parent keeps its own. Omitting `environment` inherits the parent’s environment. The linked reference describes each backend’s explicit environment format. |
 | [`process-status process`](../reference/host/process-status.md), [`process-exit-code process`](../reference/host/process-exit-code.md) | Query without blocking. Status can be `:running`, `:exited`, or `:unknown` depending on backend. The exit code is `nil` while unavailable. |
 | [`process-wait process`](../reference/host/process-wait.md), [`process-close process`](../reference/host/process-close.md) | Wait returns the original handle after completion. Close releases process resources and streams and returns `nil`. Closing a handle does not request child termination. |
 
 **Synchronous input and output.** With `input` omitted, the child sees EOF. A character stream supplies its remaining contents, and `t` selects `*standard-input*`. A filename can specify the input file. For each output channel, `:string` captures text. `t` or a character output stream replays the captured text after the command finishes and returns `nil` for that channel. Capture and replay use temporary files, so this mode needs a writable temporary directory.
+
+On LispWorks and ECL, `"./worker"` is resolved in the supplied child directory. Use an absolute executable path if the same program should run in several directories. Explicit values for `PWD` and `OLDPWD` are passed to the child as environment data. When you supply `:directory` on Linux with LispWorks 8.1.2, the directory must be readable and searchable, and `/proc/self/fd` must be accessible. [Working directory and launch errors](../reference/host/run-program.md)
 
 **Live pipes.** The asynchronous handle owns separate stdout and stderr pipes. A child that fills either pipe may block while the parent waits. If output can be large on both channels, drain them concurrently or use `run-program-sync`. An `unwind-protect` around the handle keeps cleanup on the error path as well.
 
@@ -50,7 +52,7 @@ For a live child, supply an existing executable path and an argument list. Read 
 
 | Operation | Contract |
 | --- | --- |
-| [`argv &optional keep-first`](../reference/host/argv.md) | Returns the host argument list with its first element removed by default. A true argument keeps the program element. |
+| [`argv &optional keep-first`](../reference/host/argv.md) | Returns the host argument list with its first element removed by default. A true argument keeps the program element. ECL includes its interpreter switches. For a script launched with `--`, the application arguments follow that separator. |
 | [`getenv name`](../reference/host/getenv.md), [`cwd`](../reference/host/cwd.md), [`current-process-id`](../reference/host/current-process-id.md) | Read an environment string or `nil`, the working directory namestring or `nil`, and the current Lisp process's OS PID, respectively. |
 | [`working-directory-pathname`](../reference/host/working-directory-pathname.md), [`pathname-directory-list`](../reference/host/pathname-directory-list.md) | Resolve the Lisp working directory, signaling on failure; inspect a pathname’s directory hierarchy without probing the filesystem. |
 | [`current-user`](../reference/host/current-user.md), [`home-directory`](../reference/host/home-directory.md) | Return the user name or an existing home directory namestring, respectively; unavailable values are `nil`. |
@@ -58,11 +60,11 @@ For a live child, supply an existing executable path and an argument list. Read 
 | [`with-open-utf8-file`](../reference/host/with-open-utf8-file.md) | Open a UTF-8 character file with the usual `with-open-file` lifetime and return values. |
 | [`unicode-scalar-char`](../reference/host/unicode-scalar-char.md), [`char-unicode-scalar`](../reference/host/char-unicode-scalar.md) | Convert between a Unicode scalar and a Lisp character. A missing mapping returns `nil`. |
 | [`standard-input-terminal-p`](../reference/host/standard-input-terminal-p.md), [`standard-error-terminal-p`](../reference/host/standard-error-terminal-p.md) | Check whether file descriptor 0 or 2 is a terminal. Rebinding Lisp streams does not change this query. |
-| [`prepare-runtime-io`](../reference/host/prepare-runtime-io.md) (macro), [`configure-runtime-io`](../reference/host/configure-runtime-io.md) | At a delivered CLI entry point, call prepare before configure. On LispWorks the former sets full-character and UTF-8 console policy. The latter also replaces `*standard-output*`, `*error-output*` and `*trace-output*` with streams for live descriptors (trace goes to stderr). Both return `t` on SBCL without changing its streams. |
+| [`prepare-runtime-io`](../reference/host/prepare-runtime-io.md) (macro), [`configure-runtime-io`](../reference/host/configure-runtime-io.md) | At a delivered CLI entry point, call prepare before configure. On LispWorks the former sets full-character and UTF-8 console policy. The latter also replaces `*standard-output*`, `*error-output*` and `*trace-output*` with streams for live descriptors (trace goes to stderr). On SBCL and ECL both return `t` and preserve the existing streams. |
 | [`with-character-output-to-string (stream) &body body`](../reference/host/with-character-output-to-string.md) | Macro. Evaluates the body with a character output stream and returns the generated full-character string, including non-ASCII characters. |
 | [`escape-sh-token value`](../reference/host/escape-sh-token.md) | Returns a token quoted for a POSIX shell. Embedded apostrophes survive as data, and `nil` means an empty token. |
 | [`quit &optional (code 0)`](../reference/host/quit.md) | Exits the running Lisp with the supplied status. |
-| [`*supported-implementations*`](../reference/host/var-supported-implementations.md), [`unsupported-host-function`](../reference/host/unsupported-host-function.md) | The variable lists `"SBCL"` and `"LispWorks"`. The fallback backend for other implementations defines this error condition and signals it for its unsupported primitives. |
+| [`*supported-implementations*`](../reference/host/var-supported-implementations.md), [`unsupported-host-function`](../reference/host/unsupported-host-function.md) | The variable lists `"SBCL"`, `"LispWorks"` and `"ECL"`. The fallback backend for other implementations defines this error condition and signals it for its unsupported primitives. |
 | [`help &optional stream`](../reference/host/help.md), [`version &optional stream`](../reference/host/version.md) | Return the help text or version string and print to the supplied stream (default `*standard-output*`). Use `nil` to obtain just the string. |
 
 ## Append a record under a lock
@@ -81,4 +83,4 @@ For a live child, supply an existing executable path and an argument list. Read 
 | [`delete-directory-tree directory &key (validate t) (if-does-not-exist :ignore)`](../reference/host/delete-directory-tree.md) | Recursively removes the directory with Unix `rm` and returns `t`. Validation rejects the root directory. An absent target returns `nil` with `:ignore` or signals an error with `:error`. |
 | [`temporary-directory`](../reference/host/temporary-directory.md) | Returns the directory pathname from `TMPDIR`, `TEMP`, `TMP`, or the default `/tmp/`. |
 
-See the [exports](../../host/package.lisp), [shared implementation](../../host/common.lisp), [SBCL adapter](../../host/sbcl.lisp), [LispWorks adapter](../../host/lispworks.lisp), and [tests](../../host/test.lisp).
+See the [exports](../../host/package.lisp), [shared implementation](../../host/common.lisp), [SBCL adapter](../../host/sbcl.lisp), [LispWorks adapter](../../host/lispworks.lisp), [ECL adapter](../../host/ecl.lisp), and [tests](../../host/test.lisp).

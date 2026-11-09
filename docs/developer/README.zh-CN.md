@@ -1,6 +1,6 @@
 # 开发 Han
 
-[English](README.md) · [项目总览](../../README.zh-CN.md) · [修改与测试](workflow.zh-CN.md) · [公开符号参考](../reference/README.md)
+[English](README.md) · [项目总览](../../README.zh-CN.md) · [修改与测试](workflow.zh-CN.md) · [公开符号参考](../reference/README.zh-CN.md)
 
 Han 把命令行程序反复面对的问题放在各自的包里。决定一段新代码的归属，可以先看谁拥有它操作的数据、谁能解释结果。例如“取得子进程的退出码”由宿主层实现，“把非零退出码显示成哪句提示”由运行这个程序的应用决定。
 
@@ -16,19 +16,25 @@ Han 把命令行程序反复面对的问题放在各自的包里。决定一段�
 
 | 操作 | 上层保证 | 宿主职责与保留的差异 |
 | --- | --- | --- |
-| JSON 与 UTF-8 文件 | [JSON 包](../../json/core.lisp)负责 ASCII 语法、转义、代理对和十进制数。[文本读取](../../os/io.lisp)也接受调用方已经打开的字符流。 | [字符映射](../../host/characters.lisp)只转换可表示的 Unicode 标量；非法转义和无法映射的字符在 JSON 层发出 `han.json:json-error`。[UTF-8 文件入口](../reference/host/with-open-utf8-file.md)指定外部编码；传入的流沿用自身编码。非法文件字节由流解码器处理。浮点数的精度以及合法的输出写法可以因实现而异。 |
-| 程序查找与 shell 选择 | [han.os](../../os/)决定调用方得到文本、行列表还是进程句柄。显式传入 argv 列表时，各参数按原值传递。 | [程序查找](../reference/host/find-executable.md)负责 Unix 的 PATH 分隔符、空条目和备用目录，按顺序返回不同的已有文件；执行权限由操作系统在启动时判定。[shell 参数构造](../reference/host/shell-command-argv.md)负责选取 shell 和传入 `-c`。本机 PATH、安装的软件和实际 shell 的行为都可能不同。 |
-| 工作目录与路径 | [han.path](../../path/core.lisp)按 pathname 组件拼接、比较路径；字符串形式的目录组件表示一级绝对目录。 | 相对路径需要默认基准时，以及内部辅助函数构造 `*WORKDIR*` 绑定时，都会[取得工作目录 pathname](../reference/host/working-directory-pathname.md)，失败会报错；[cwd](../reference/host/cwd.md)则返回名称字符串或 `nil`。若逻辑路径需要上行，[relative-path](../reference/path/relative-path.md) 返回绝对目标。原生路径拼写、通配支持以及目录实际内容取决于宿主。 |
-| 同步命令 | 使用默认捕获设置时，`han.os:run-program` 依次返回标准输出、标准错误和退出状态。默认模式返回非零状态，严格模式（`:ignore-error-status nil`）遇到非零状态会触发 `simple-error`。以 argv 直接指定程序时，启动失败在两种模式下都会报错。 | Han 保留工具正常退出时给出的退出码和写到标准错误的文本。同一操作在不同系统上可以产生不同的退出码或诊断。[同步进程契约](../reference/host/run-program-sync.md) |
-| 运行中进程与信号 | 读取最终退出状态前，先等待子进程结束。被信号终止会得到非零状态，同样适用严格模式的错误规则。 | 信号终止沿用原有约定，SBCL 返回信号编号，LispWorks 返回 128 加该编号（SIGTERM 对应 15 和 143）。查询运行中进程时，SBCL 将暂停状态报告为 `:unknown`，LispWorks 在取得退出码之前报告为 `:running`。[退出状态](../reference/host/process-exit-code.md) · [即时状态](../reference/host/process-status.md) |
+| JSON 与 UTF-8 文件 | [JSON 包](../../json/core.lisp)负责 ASCII 语法、转义、代理对和十进制数。[文本读取](../../os/io.lisp)也接受调用方已经打开的字符流。 | [字符映射](../../host/characters.lisp)只转换可表示的 Unicode 标量；非法转义和无法映射的字符在 JSON 层发出 `han.json:json-error`。[UTF-8 文件入口](../reference/host/with-open-utf8-file.zh-CN.md)指定外部编码；传入的流沿用自身编码。非法文件字节由流解码器处理。浮点数的精度以及合法的输出写法可以因实现而异。 |
+| 程序查找与 shell 选择 | [han.os](../../os/)决定调用方得到文本、行列表还是进程句柄。显式传入 argv 列表时，各参数按原值传递。 | [程序查找](../reference/host/find-executable.zh-CN.md)负责 Unix 的 PATH 分隔符、空条目和备用目录，按顺序返回不同的已有文件；执行权限由操作系统在启动时判定。[shell 参数构造](../reference/host/shell-command-argv.zh-CN.md)负责选取 shell 和传入 `-c`。本机 PATH、安装的软件和实际 shell 的行为都可能不同。 |
+| 工作目录与路径 | [han.path](../../path/core.lisp)按 pathname 组件拼接、比较路径；字符串形式的目录组件表示一级绝对目录。 | 相对路径需要默认基准时，以及内部辅助函数构造 `*WORKDIR*` 绑定时，都会[取得工作目录 pathname](../reference/host/working-directory-pathname.zh-CN.md)，失败会报错；[cwd](../reference/host/cwd.zh-CN.md)则返回名称字符串或 `nil`。若逻辑路径需要上行，[relative-path](../reference/path/relative-path.zh-CN.md) 返回绝对目标。原生路径拼写、通配支持以及目录实际内容取决于宿主。 |
+| 同步命令 | 使用默认捕获设置时，`han.os:run-program` 依次返回标准输出、标准错误和退出状态。默认模式返回非零状态，严格模式（`:ignore-error-status nil`）遇到非零状态会触发 `simple-error`。以 argv 直接指定程序时，启动失败在两种模式下都会报错。 | Han 保留工具正常退出时给出的退出码和写到标准错误的文本。同一操作在不同系统上可以产生不同的退出码或诊断。[同步进程契约](../reference/host/run-program-sync.zh-CN.md) |
+| 运行中进程与信号 | 读取最终退出状态前，先等待子进程结束。被信号终止会得到非零状态，同样适用严格模式的错误规则。 | 信号终止沿用原有约定，SBCL 返回信号编号，LispWorks 和 ECL 返回 128 加该编号（SIGTERM 对应 15 和 143）。查询运行中进程时，SBCL 和 ECL 将观察到的暂停状态报告为 `:unknown`，LispWorks 在取得退出码之前报告为 `:running`。[退出状态](../reference/host/process-exit-code.zh-CN.md) · [即时状态](../reference/host/process-status.zh-CN.md) |
 
-新增后端时，能实现同一操作，就应保留原有返回值、返回值个数和错误行为。对调用方可见的限制，要写入对应符号页，并用测试验证调用方依赖的保证。维护者的测试目标是在 macOS 和 Linux 上分别运行 SBCL 与 LispWorks，共四种系统与 Lisp 组合。其他 Lisp 实现遇到没有适配器的操作时走备用入口。shell 助手采用 Unix 约定，文件锁依赖 macOS 或 Linux 的 `flock`。[测试流程](workflow.zh-CN.md#从仓库运行全套测试) · [备用入口](../../host/unsupported.lisp) · [文件锁](../reference/host/call-with-exclusive-file-lock.md)
+新增后端时，能实现同一操作，就应保留原有返回值、返回值个数和错误行为。对调用方可见的限制，要写入对应符号页，并用测试验证调用方依赖的保证。维护者在 macOS 和 Linux 上分别验证 SBCL、LispWorks 和启用 Unicode 的 ECL 26.5.5。其他 Lisp 实现遇到没有适配器的操作时走备用入口。shell 助手采用 Unix 约定，文件锁依赖 macOS 或 Linux 的 `flock`。[测试流程](workflow.zh-CN.md#从仓库运行全套测试) · [备用入口](../../host/unsupported.lisp) · [文件锁](../reference/host/call-with-exclusive-file-lock.zh-CN.md)
+
+ECL 适配器使用 `posix_spawn`，启动失败会直接传给调用方，包括可执行脚本存在但其解释器缺失的情况。它以 UTF-8 传递操作系统参数和环境字符串，子进程 PID 保存在 ECL 的原生进程对象中，用于查询状态和等待。显式指定工作目录时，适配器会在系统 C 库中查找 `posix_spawn_file_actions_addchdir` 和它的 `_np` 变体。如果两者都不存在，调用会触发启动错误。[ECL 适配器](../../host/ecl.lisp) · [进程接口](../reference/host/run-program.zh-CN.md)
+
+LispWorks 用原生进程接口直接启动目标程序。显式指定工作目录时，Linux 后端打开目录，并将 ASCII 形式的 `/proc/self/fd` 路径传给原生接口。这要求调用方有读取和进入该目录的权限，并能访问 `/proc/self/fd`。macOS 后端只在发起调用的线程上设置目录，在调用返回或出错时恢复该线程原来的设置。[LispWorks 原生进程接口](https://www.lispworks.com/documentation/lw81/lw/lw-sys-115.htm) · [工作目录与启动错误](../reference/host/run-program.zh-CN.md)
+
+在 macOS 和 Linux 上，LispWorks 后端应在指定的子进程目录启动调用方选定的程序。测试 `"./worker"` 和 `:directory` 时，在父、子目录分别放入不同的同名程序，并验证实际启动了哪一个。还要向原生程序核对原始 `argv[0]`、环境变量和 PID。单看正常退出码无法区分两个程序。[LispWorks 适配器](../../host/lispworks.lisp) · [异步进程接口](../reference/host/run-program.zh-CN.md)
 
 ## 各包的设计与边界
 
 | 包 | 设计依据、源码位置及扩展边界 |
 | --- | --- |
-| [han.host](../../host/) | 对外使用同一种进程句柄和函数签名，内部保留后端的原生句柄。[common.lisp](../../host/common.lisp) 处理同步调用的输入输出准备、捕获文件和清理；[SBCL](../../host/sbcl.lisp) 与 [LispWorks](../../host/lispworks.lisp) 各自启动进程、取得状态并处理终端与文件描述符。新增需要实现专属 API 的操作应从这里开始，同时检查[其他实现的入口](../../host/unsupported.lisp)。 |
+| [han.host](../../host/) | 对外使用同一种进程句柄和函数签名，内部保留后端的原生句柄。[common.lisp](../../host/common.lisp) 处理同步调用的输入输出准备、捕获文件和清理；[SBCL](../../host/sbcl.lisp)、[LispWorks](../../host/lispworks.lisp) 和 [ECL](../../host/ecl.lisp) 各自启动进程、取得状态并处理终端与文件描述符。新增需要实现专属 API 的操作应从这里开始，同时检查[其他实现的入口](../../host/unsupported.lisp)。 |
 | [han.os](../../os/) | 面向“这次操作要拿到什么”。[run-shell.lisp](../../os/run-shell.lisp) 调用宿主层选择的 shell，把输出分行或返回字符串。[io.lisp](../../os/io.lisp) 处理读取，[env.lisp](../../os/env.lisp) 处理环境与命令定位。属于某个工具的环境变量名和退出策略留在该工具中。 |
 | [han.path](../../path/core.lisp) | 面向 pathname 的目录部分、名称、类型和相对关系。`directory-pathname` 可把输入解释成目录；验证目录确实存在要调用 `directory-exists-p`。拼接或规范化规则放在这里，实际探测、枚举和复制沿用 host 的实现。 |
 | [han.source](../../source/char-source.lisp) | 将字符移动和位置记账放在同一处。每个游标持有输入的副本与自己的标识。标记保存索引、行、列，区间保存同一来源的起止偏移。修改跨行读取或回退时要同时检查这三项。引号、注释或其他词法规则由使用游标的解析器解释。 |

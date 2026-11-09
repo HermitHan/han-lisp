@@ -1,22 +1,22 @@
 # `han.source:source-slice`
 
-*Function · 函数*
+[简体中文](source-slice.zh-CN.md)
 
-## Syntax · 语法
+*Function*
+
+## Syntax
 
 ```text
 (han.source:source-slice source start &optional end) → string
 ```
 
-## Description · 说明
+## Description
 
 Copies the half-open substring between two nonnegative indices or same-source marks. The default end is the current cursor index. Bounds must fit the stored string. This operation leaves the cursor in place.
 
-复制半开区间内的子串。起止位置可用非负整数或同源标记表示。结束位置默认取游标当前索引；边界须落在存储的字符串内。取子串不会移动游标。
+## Examples
 
-## Examples · 示例
-
-**Extract the key up to the cursor and peek at the equals sign · 取出截至游标处的键名并查看接下来的等号**
+**Extract the key up to the cursor and peek at the equals sign**
 
 ```lisp
 (let ((src (han.source:make-char-source "key=17")))
@@ -25,7 +25,7 @@ Copies the half-open substring between two nonnegative indices or same-source ma
 ;; => ("key" #\=)
 ```
 
-**Slice using a saved starting mark and an explicit end offset · 用保存的起始标记与显式结束偏移取子串**
+**Slice using a saved starting mark and an explicit end offset**
 
 ```lisp
 (let ((src (han.source:make-char-source "id:42;")))
@@ -35,7 +35,7 @@ Copies the half-open substring between two nonnegative indices or same-source ma
 ;; => values ("42" 3)
 ```
 
-**Reject a boundary from a different parse · 拒绝另一轮解析留下的边界**
+**Reject a boundary from a different parse**
 
 ```lisp
 (defparameter *cursor* (han.source:make-char-source "xy"))
@@ -45,4 +45,4 @@ Copies the half-open substring between two nonnegative indices or same-source ma
 ;; signals simple-error
 ```
 
-[`han.source:source-slice-by-span`](source-slice-by-span.md) · [`han.source:make-source-mark`](make-source-mark.md) · [`han.source:source-location`](source-location.md) · [Source · 源码](../../../source/char-source.lisp) · [Index · 索引](../README.md)
+[`han.source:source-slice-by-span`](source-slice-by-span.md) · [`han.source:make-source-mark`](make-source-mark.md) · [`han.source:source-location`](source-location.md) · [Source](../../../source/char-source.lisp) · [Index](../README.md)

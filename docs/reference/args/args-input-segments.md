@@ -1,23 +1,23 @@
 # `han.args:args-input-segments`
 
-*Accessor · 访问器*
+[简体中文](args-input-segments.zh-CN.md)
 
-## Syntax · 语法
+*Accessor*
+
+## Syntax
 
 ```text
 (han.args:args-input-segments input) → list of arg-segment
 (setf (han.args:args-input-segments input) new-value) → new-value
 ```
 
-## Description · 说明
+## Description
 
 Return the ordered segments. The parser starts with a default segment and opens another at each slot switch. A segment may contain zero tokens.
 
-返回按输入顺序排列的段列表。解析器先建立默认段，每次切换槽再打开一个段。段内可以没有 token。
+## Examples
 
-## Examples · 示例
-
-Locate the boundary between top-level arguments and a block. 查看顶层参数与槽参数间的分界。
+Locate the boundary between top-level arguments and a block.
 
 ```lisp
 (let ((input (han.args:parse-args-input '("demo" "notes.txt" "@filter:" "--mode=fast"))))
@@ -25,7 +25,7 @@ Locate the boundary between top-level arguments and a block. 查看顶层参数�
 ;; => (nil "filter")
 ```
 
-Resolve the indices of the top-level and named arguments. 查看各段对应的位置，以便回到原输入。
+Resolve the indices of the top-level and named arguments.
 
 ```lisp
 (let ((input
@@ -34,4 +34,4 @@ Resolve the indices of the top-level and named arguments. 查看各段对应的�
 ;; => ((0) (2 3))
 ```
 
-[`han.args:args-input`](args-input.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source · 源码](../../../args/lexer.lisp) · [Index · 索引](../README.md)
+[`han.args:args-input`](args-input.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source](../../../args/lexer.lisp) · [Index](../README.md)

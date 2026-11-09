@@ -1,22 +1,22 @@
 # `han.source:source-location`
 
-*Function · 函数*
+[简体中文](source-location.zh-CN.md)
 
-## Syntax · 语法
+*Function*
+
+## Syntax
 
 ```text
 (han.source:source-location source-or-mark) → index, line, column
 ```
 
-## Description · 说明
+## Description
 
 Returns three integers for a cursor or saved mark. Index counts characters consumed from zero. Lines and columns start at one. A newline advances the line and resets the column to one. A span is outside the accepted input types.
 
-接受游标或标记，分别返回索引、行、列三个整数。索引从零开始计算已消耗的字符；行列从一开始。读过换行符后行数加一，列数回到一。传入区间会报错。
+## Examples
 
-## Examples · 示例
-
-**Read through a newline and inspect the index, line and column · 读过换行符后查看索引、行和列**
+**Read through a newline and inspect the index, line and column**
 
 ```lisp
 (let ((src (han.source:make-char-source (format nil "ab~%cd"))))
@@ -25,7 +25,7 @@ Returns three integers for a cursor or saved mark. Index counts characters consu
 ;; => (3 2 1)
 ```
 
-**Locate an earlier mark after reading the rest of a line · 读完一行之后查询旧标记的位置**
+**Locate an earlier mark after reading the rest of a line**
 
 ```lisp
 (let ((src (han.source:make-char-source "key=1")))
@@ -36,7 +36,7 @@ Returns three integers for a cursor or saved mark. Index counts characters consu
 ;; => values (3 1 4)
 ```
 
-**A span has two boundaries and is rejected as a location · 区间有两个端点，不能当作单个位置**
+**A span has two boundaries and is rejected as a location**
 
 ```lisp
 (defparameter *span*
@@ -47,4 +47,4 @@ Returns three integers for a cursor or saved mark. Index counts characters consu
 ;; signals simple-error
 ```
 
-[`han.source:make-source-mark`](make-source-mark.md) · [`han.source:source-next-char`](source-next-char.md) · [`han.source:source-reset`](source-reset.md) · [Source · 源码](../../../source/char-source.lisp) · [Index · 索引](../README.md)
+[`han.source:make-source-mark`](make-source-mark.md) · [`han.source:source-next-char`](source-next-char.md) · [`han.source:source-reset`](source-reset.md) · [Source](../../../source/char-source.lisp) · [Index](../README.md)

@@ -1,22 +1,22 @@
 # `han.args:arg-binding-p`
 
-*Predicate · 谓词*
+[简体中文](arg-binding-p.zh-CN.md)
 
-## Syntax · 语法
+*Predicate*
+
+## Syntax
 
 ```text
 (han.args:arg-binding-p object) → generalized-boolean
 ```
 
-## Description · 说明
+## Description
 
 Recognize a `arg-binding` structure. Any Lisp object can be passed. The predicate inspects its type without changing it.
 
-判断传入的 Lisp 对象是否为 `arg-binding` 结构。只检查对象类型，调用后对象保持原样。
+## Examples
 
-## Examples · 示例
-
-Recognize one value record returned from a binding table. Compare it with an unrelated keyword. 确认从绑定表取得的是参数值记录。再与无关关键字作对照。
+Recognize one value record returned from a binding table. Compare it with an unrelated keyword.
 
 ```lisp
 (let ((binding
@@ -30,7 +30,7 @@ Recognize one value record returned from a binding table. Compare it with an unr
 ;; => (t nil)
 ```
 
-Distinguish a known absent option from an unregistered key. 从哈希表中区分已声明但未出现的选项和未声明的查询名。
+Distinguish a known absent option from an unregistered key.
 
 ```lisp
 (let ((result
@@ -45,4 +45,4 @@ Distinguish a known absent option from an unregistered key. 从哈希表中区�
 ;; => (:missing :unknown)
 ```
 
-[`han.args:arg-binding`](arg-binding.md) · [`han.args:get-arg`](get-arg.md) · [Source · 源码](../../../args/bind.lisp) · [Index · 索引](../README.md)
+[`han.args:arg-binding`](arg-binding.md) · [`han.args:get-arg`](get-arg.md) · [Source](../../../args/bind.lisp) · [Index](../README.md)

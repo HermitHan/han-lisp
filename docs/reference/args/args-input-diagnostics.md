@@ -1,23 +1,23 @@
 # `han.args:args-input-diagnostics`
 
-*Accessor · 访问器*
+[简体中文](args-input-diagnostics.zh-CN.md)
 
-## Syntax · 语法
+*Accessor*
+
+## Syntax
 
 ```text
 (han.args:args-input-diagnostics input) → list of arg-diagnostic
 (setf (han.args:args-input-diagnostics input) new-value) → new-value
 ```
 
-## Description · 说明
+## Description
 
 Return diagnostics from tokenization. A spelling such as a standalone `--` is retained as a value and also reported here. Binding carries these diagnostics into the result.
 
-返回词法阶段的诊断。例如独立的 `--` 会保留为普通值，同时在这里记录警告。绑定阶段会把这些诊断带入结果。
+## Examples
 
-## Examples · 示例
-
-Inspect the lexer warning on a bare double dash. 查看单独两个短横线带来的词法警告。
+Inspect the lexer warning on a bare double dash.
 
 ```lisp
 (let ((input (han.args:parse-args-input '("demo" "--"))))
@@ -25,7 +25,7 @@ Inspect the lexer warning on a bare double dash. 查看单独两个短横线带�
 ;; => (:warning)
 ```
 
-A syntactically valid option can still be undeclared at binding time. 格式正常但未声明的选项要到绑定阶段才会被报告。
+A syntactically valid option can still be undeclared at binding time.
 
 ```lisp
 (let ((input
@@ -37,4 +37,4 @@ A syntactically valid option can still be undeclared at binding time. 格式正�
 ;; => values (nil (:undefined-option))
 ```
 
-[`han.args:args-input`](args-input.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source · 源码](../../../args/lexer.lisp) · [Index · 索引](../README.md)
+[`han.args:args-input`](args-input.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source](../../../args/lexer.lisp) · [Index](../README.md)

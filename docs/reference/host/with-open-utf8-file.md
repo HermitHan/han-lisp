@@ -1,23 +1,25 @@
 # `han.host:with-open-utf8-file`
 
-*Macro · 宏*
+[简体中文](with-open-utf8-file.zh-CN.md)
 
-## Syntax · 语法
+*Macro*
+
+## Syntax
 
 ```text
 (han.host:with-open-utf8-file (stream filespec &key direction if-exists if-does-not-exist)
   form*) → values of the body
 ```
 
-## Description · 说明
+## Description
 
 Opens a UTF-8 character file and binds `stream` for the body. The default is input; creation, replacement, multiple return values and cleanup follow `with-open-file`. The external format and element type are fixed. If the Lisp cannot open a UTF-8 stream, the error propagates; Han does not retry using the machine’s default encoding. An existing caller-owned stream passed to `han.os:load-lines` is read directly instead.
 
-打开 UTF-8 文件，在宏体内将 `stream` 绑定到字符流。默认读取；文件的创建与替换、宏体的多个返回值、离开时关闭流的行为均遵循 `with-open-file`。编码和元素类型固定。宿主不能打开 UTF-8 流时，错误向外传递，不会悄悄改用本机默认编码。把自己打开的流传给 `han.os:load-lines` 时，它直接读该流，沿用原编码。
+Malformed input follows the host decoder. With bytes `22 F0 9F` (an opening quote and an incomplete character), ECL 26.5.5 reads the quote and then reaches EOF. The SBCL and LispWorks decoders signal a decoding error. With bytes `22 C3 28 22` all three decoders signal an error.
 
-## Examples · 示例
+## Examples
 
-Read the first line from this checkout’s UTF-8 README. 在本仓库中读取中文 README 的首行。
+Read the first line from this checkout’s UTF-8 README.
 
 ```lisp
 (han.host:with-open-utf8-file (in (asdf:system-relative-pathname "han" "README.zh-CN.md"))
@@ -25,7 +27,7 @@ Read the first line from this checkout’s UTF-8 README. 在本仓库中读取�
 ;; => "# Han Lisp"
 ```
 
-Write text, then reopen the temporary file and read it back. 写出文本，关闭后重新打开同一临时文件验证结果。
+Write text, then reopen the temporary file and read it back.
 
 ```lisp
 (uiop:with-temporary-file (:pathname file)
@@ -36,4 +38,4 @@ Write text, then reopen the temporary file and read it back. 写出文本，关�
 ;; => values ("汉😀" :EOF)
 ```
 
-[`han.os:load-lines`](../os/load-lines.md) · [`han.json:write-json-file`](../json/write-json-file.md) · [Source · 源码](../../../host/common.lisp) · [Index · 索引](../README.md)
+[`han.os:load-lines`](../os/load-lines.md) · [`han.json:write-json-file`](../json/write-json-file.md) · [Source](../../../host/common.lisp) · [Index](../README.md)

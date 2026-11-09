@@ -1,23 +1,23 @@
 # `han.args:arg-token-position`
 
-*Accessor · 访问器*
+[简体中文](arg-token-position.zh-CN.md)
 
-## Syntax · 语法
+*Accessor*
+
+## Syntax
 
 ```text
 (han.args:arg-token-position token) → nonnegative integer
 (setf (han.args:arg-token-position token) new-value) → new-value
 ```
 
-## Description · 说明
+## Description
 
 Return the zero-based index in the arguments following the command name. The same index addresses the token in `args-input-tokens`.
 
-返回 token 在命令名之后的参数列表中的索引，从零起算。用同一索引可以访问 `args-input-tokens` 中的 token。
+## Examples
 
-## Examples · 示例
-
-Find the first argument after the command. 读取命令名之后首个参数的位置。
+Find the first argument after the command.
 
 ```lisp
 (let ((token
@@ -28,7 +28,7 @@ Find the first argument after the command. 读取命令名之后首个参数的�
 ;; => 0
 ```
 
-Locate an argument after a slot switch. 槽切换符也占一个位置，可用索引定位切回顶层后的参数。
+Locate an argument after a slot switch.
 
 ```lisp
 (let ((input
@@ -37,4 +37,4 @@ Locate an argument after a slot switch. 槽切换符也占一个位置，可用�
 ;; => (0 1 2 3)
 ```
 
-[`han.args:arg-token`](arg-token.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source · 源码](../../../args/lexer.lisp) · [Index · 索引](../README.md)
+[`han.args:arg-token`](arg-token.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source](../../../args/lexer.lisp) · [Index](../README.md)

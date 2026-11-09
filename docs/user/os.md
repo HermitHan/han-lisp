@@ -42,7 +42,9 @@ A command list keeps the program name and every argument separate. To supply lit
 
 For a portable argv call, supply the executable's full path. To look up a program by name, use [find-executable](../reference/host/find-executable.md) and check for `nil` first. When a child such as curl reports a connection failure, its diagnostic text and exit code come from the program running on that machine. Use the exit code to detect failure and keep stderr for the diagnostic.
 
-When sending terminal input with `:input t`, LispWorks waits for EOF before launching the child. Captured stdout and stderr use the host’s default text encoding. See the [synchronous process reference](../reference/host/run-program-sync.md).
+On ECL, `:stream` is reserved for a live process. Passing it as the input or either output of a synchronous call signals `simple-error` before launch. Use [han.host:run-program](../reference/host/run-program.md) when you need a pipe.
+
+When sending terminal input with `:input t`, LispWorks and ECL wait for EOF before launching the child. Captured stdout and stderr use the host’s default text encoding. See the [synchronous process reference](../reference/host/run-program-sync.md).
 
 A shell is useful for redirections. The quoted argument below contains both an apostrophe and a dollar sign. Each reaches `printf` literally. The caller can examine diagnostics even when the command exits with a nonzero code.
 
@@ -50,9 +52,9 @@ A shell is useful for redirections. The quoted argument below contains both an a
 (multiple-value-list
  (han.os:run-shell-command
   (format nil "printf '%s\\n' ~A; printf 'note\\n' >&2; exit 3"
-          (han.os:escape-sh-token "l'été $HOME"))
+          (han.os:escape-sh-token "Kai's $HOME"))
   :shell "/bin/sh"))
-;; => (("l'été $HOME") ("note") 3)
+;; => (("Kai's $HOME") ("note") 3)
 ```
 
 With `:wait nil`, `run-shell-command` returns **four values** in order, the stdout stream, the stderr stream, `nil` in the exit-code position, and a `han.host:host-process`. In this mode `lines` has no effect. The caller consumes the pipes, calls `han.host:process-wait` to collect completion, reads `han.host:process-exit-code`, and releases resources with `han.host:process-close`. If the child may write heavily to both streams, arrange to drain both or use synchronous capture. See [process control](host.md).

@@ -1,24 +1,22 @@
 # `han.path:relative-path`
 
-*Function · 函数*
+[简体中文](relative-path.zh-CN.md)
 
-## Syntax · 语法
+*Function*
+
+## Syntax
 
 ```text
 (han.path:relative-path target &optional (base (han.host:working-directory-pathname))) → pathname
 ```
 
-## Description · 说明
+## Description
 
 Resolves each argument independently against the current directory. Removes their common directory prefix and adds parent steps as needed. The result keeps the target's host and device. It returns the absolute target when the hosts or devices differ, or when a logical pathname would need a parent step. Logical namestrings have no notation for that step. To interpret a relative target inside a specified base, resolve it against that base first.
 
-先分别以当前目录补全两个参数，再去掉共同目录前缀，并按需要插入上行目录分量。结果保留目标的 host 和 device。两者的 host 或 device 不同时返回绝对目标。若逻辑路径需要向上一级，也返回绝对目标，因为逻辑路径的 namestring 没有上行写法。若相对目标应位于给定基准内，先用 `absolute-pathname` 按那个基准补全。
-
-## Examples · 示例
+## Examples
 
 Express a result file’s path relative to its run directory.
-
-以运行目录为基准，求出结果文件的相对路径。
 
 ```lisp
 (han.path:->namestring (han.path:relative-path "/work/run/out/data.tsv" "/work/run/"))
@@ -27,16 +25,12 @@ Express a result file’s path relative to its run directory.
 
 Produce a reference from one sibling directory to another.
 
-生成从一个同级目录指向另一个目录中的文件的相对引用。
-
 ```lisp
 (han.path:->namestring (han.path:relative-path "/work/inputs/ref.fa" "/work/reports/"))
 ;; => "../inputs/ref.fa"
 ```
 
 Interpret a caller's relative target inside its project before storing the relative link in a manifest.
-
-先按调用方指定的项目解释相对目标，再存储相对于项目目录的引用。
 
 ```lisp
 (let* ((base "/work/archive/")
@@ -45,4 +39,4 @@ Interpret a caller's relative target inside its project before storing the relat
 ;; => "tables/counts.tsv"
 ```
 
-[`han.path:absolute-pathname`](absolute-pathname.md) · [`han.path:parent-directory-pathname`](parent-directory-pathname.md) · [Source · 源码](../../../path/core.lisp) · [Index · 索引](../README.md)
+[`han.path:absolute-pathname`](absolute-pathname.md) · [`han.path:parent-directory-pathname`](parent-directory-pathname.md) · [Source](../../../path/core.lisp) · [Index](../README.md)

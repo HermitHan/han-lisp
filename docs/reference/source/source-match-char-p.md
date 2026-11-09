@@ -1,22 +1,22 @@
 # `han.source:source-match-char-p`
 
-*Predicate · 谓词*
+[简体中文](source-match-char-p.zh-CN.md)
 
-## Syntax · 语法
+*Predicate*
+
+## Syntax
 
 ```text
 (han.source:source-match-char-p source ch) → boolean
 ```
 
-## Description · 说明
+## Description
 
 Checks whether the next character equals `ch` using `char=`. The cursor stays at its original index on either outcome. An exhausted source returns false.
 
-用 `char=` 判断下一个字符是否等于 `ch`。无论是否匹配都保持游标位置；输入用尽时返回假。
+## Examples
 
-## Examples · 示例
-
-**Compare letter case and inspect the cursor’s offset after both checks · 分别匹配大小写字母，并查看两次匹配后的游标索引**
+**Compare letter case and inspect the cursor’s offset after both checks**
 
 ```lisp
 (let ((src (han.source:make-char-source "A")))
@@ -25,7 +25,7 @@ Checks whether the next character equals `ch` using `char=`. The cursor stays at
 ;; => (NIL T 0)
 ```
 
-**EOF has no character to match · 输入用尽后无法匹配字符**
+**EOF has no character to match**
 
 ```lisp
 (let ((src (han.source:make-char-source ".")))
@@ -34,4 +34,4 @@ Checks whether the next character equals `ch` using `char=`. The cursor stays at
 ;; => values (T NIL)
 ```
 
-[`han.source:source-consume-char-if`](source-consume-char-if.md) · [`han.source:source-match-string-p`](source-match-string-p.md) · [Source · 源码](../../../source/char-source.lisp) · [Index · 索引](../README.md)
+[`han.source:source-consume-char-if`](source-consume-char-if.md) · [`han.source:source-match-string-p`](source-match-string-p.md) · [Source](../../../source/char-source.lisp) · [Index](../README.md)

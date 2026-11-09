@@ -1,22 +1,22 @@
 # `han.source:source-reset`
 
-*Function · 函数*
+[简体中文](source-reset.zh-CN.md)
 
-## Syntax · 语法
+*Function*
+
+## Syntax
 
 ```text
 (han.source:source-reset source mark) → source
 ```
 
-## Description · 说明
+## Description
 
 Restores all three coordinates from `mark` and returns the same, now repositioned cursor. A mark captured from another source signals an error, including when both sources have equal text.
 
-用标记恢复索引、行、列，返回已重新定位的原游标。即使文本相同，使用另一字符源的标记也会报错。
+## Examples
 
-## Examples · 示例
-
-**Rewind to the starting mark and read the first letter again · 退回起点标记并重新读取首字母**
+**Rewind to the starting mark and read the first letter again**
 
 ```lisp
 (let* ((src (han.source:make-char-source "abc"))
@@ -27,7 +27,7 @@ Restores all three coordinates from `mark` and returns the same, now repositione
 ;; => #\a
 ```
 
-**Reject a checkpoint from an identical but separate input · 拒绝另一份相同输入保存的检查点**
+**Reject a checkpoint from an identical but separate input**
 
 ```lisp
 (defparameter *cursor* (han.source:make-char-source "abc"))
@@ -37,7 +37,7 @@ Restores all three coordinates from `mark` and returns the same, now repositione
 ;; signals simple-error
 ```
 
-**Restore line and column after speculative multiline reading · 试读跨行内容之后恢复行列坐标**
+**Restore line and column after speculative multiline reading**
 
 ```lisp
 (let* ((src (han.source:make-char-source (format nil "one~%two")))
@@ -47,4 +47,4 @@ Restores all three coordinates from `mark` and returns the same, now repositione
 ;; => values (0 1 1)
 ```
 
-[`han.source:make-source-mark`](make-source-mark.md) · [`han.source:source-location`](source-location.md) · [`han.source:source-mark-from-source-p`](source-mark-from-source-p.md) · [Source · 源码](../../../source/char-source.lisp) · [Index · 索引](../README.md)
+[`han.source:make-source-mark`](make-source-mark.md) · [`han.source:source-location`](source-location.md) · [`han.source:source-mark-from-source-p`](source-mark-from-source-p.md) · [Source](../../../source/char-source.lisp) · [Index](../README.md)

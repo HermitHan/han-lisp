@@ -1,10 +1,10 @@
 # 在程序中使用 Han
 
-[English](README.md) · [项目总览](../../README.zh-CN.md) · [公开符号参考](../reference/README.md)
+[English](README.md) · [项目总览](../../README.zh-CN.md) · [公开符号参考](../reference/README.zh-CN.md)
 
 ## 把 Han 加载到自己的程序里
 
-在仓库根目录启动 REPL，执行 `(load "load-han.lisp")` 即可加载运行系统及七个包。如果想直接使用 ASDF，可在同一目录依次求值。
+在 macOS 或 Linux 上可使用 SBCL、LispWorks 或启用了 Unicode 的 ECL。使用 ECL 时，可以用 `ecl -norc` 启动 REPL。在仓库根目录下，执行 `(load "load-han.lisp")` 即可加载运行系统及七个包。如果想直接使用 ASDF，可在同一目录依次求值。
 
 ```lisp
 (require :asdf)
@@ -22,7 +22,7 @@
 
 ```lisp
 (multiple-value-bind (out err code)
-    (han.os:run-program '("printf" "%s" "{\"ready\":false}"))
+    (han.os:run-program '("/usr/bin/printf" "%s" "{\"ready\":false}"))
   (unless (eql code 0)
     (error "Command exited with ~S: ~A" code err))
   (multiple-value-list (han.json:get-json (han.json:parse-json out) "ready")))

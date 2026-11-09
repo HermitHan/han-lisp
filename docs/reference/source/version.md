@@ -1,29 +1,29 @@
 # `han.source:version`
 
-*Function · 函数*
+[简体中文](version.zh-CN.md)
 
-## Syntax · 语法
+*Function*
+
+## Syntax
 
 ```text
 (han.source:version &optional (stream *standard-output*)) → version-string
 ```
 
-## Description · 说明
+## Description
 
 Returns this package’s version as a string. When `stream` is non-nil it also writes a labeled version line there. Use the silent form when a program needs just the value.
 
-返回当前包的版本字符串。`stream` 非空时还会写出带包名的版本行。程序需要直接比较版本值时可以使用静默形式。
+## Examples
 
-## Examples · 示例
-
-**Retrieve the version string without printing a banner · 静默读取包的版本字符串**
+**Retrieve the version string without printing a banner**
 
 ```lisp
 (han.source:version nil)
-;; => "0.1.0"
+;; => "0.2.0"
 ```
 
-**Capture the formatted version line as well as the bare value · 同时取得版本值及写到流中的版本行**
+**Capture the formatted version line as well as the bare value**
 
 ```lisp
 (let ((out (make-string-output-stream)))
@@ -33,4 +33,4 @@ Returns this package’s version as a string. When `stream` is non-nil it also w
 ;; => T
 ```
 
-[`han.source:help`](help.md) · [Source · 源码](../../../source/package.lisp) · [Index · 索引](../README.md)
+[`han.source:help`](help.md) · [Source](../../../source/package.lisp) · [Index](../README.md)

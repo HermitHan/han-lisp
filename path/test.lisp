@@ -5,7 +5,7 @@
     (check-true (stringp help-string))
     (check-true (search "han.path" help-string))
     (check-true (search "join-path" help-string)))
-  (check-equal "0.1.0" (han.path:version nil)))
+  (check-equal "0.2.0" (han.path:version nil)))
 
 (deftest test-->pathname ()
   (check-true (pathnamep (han.path:->pathname ".")))

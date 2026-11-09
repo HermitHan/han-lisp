@@ -1,23 +1,23 @@
 # `han.args:arg-token`
 
-*Structure type · 结构类型*
+[简体中文](arg-token.zh-CN.md)
 
-## Syntax · 语法
+*Structure type*
+
+## Syntax
 
 ```text
 han.args:arg-token
 (typep object 'han.args:arg-token) → generalized-boolean
 ```
 
-## Description · 说明
+## Description
 
 A parsed argv element with its original spelling, normalized value, and position. Named slot switches are tokens too.
 
-解析后的单个 argv 元素，保存原文、规范化值和位置。用于切换命名槽的标记也会形成 token。
+## Examples
 
-## Examples · 示例
-
-Check the type of an option record returned by the lexer. 核对词法分析得到的选项记录类型。
+Check the type of an option record returned by the lexer.
 
 ```lisp
 (let ((token
@@ -28,7 +28,7 @@ Check the type of an option record returned by the lexer. 核对词法分析得�
 ;; => t
 ```
 
-Inspect a token and preserve plain text from a mixed forwarding queue. 处理混合转发队列中的 token 和普通字符串。
+Inspect a token and preserve plain text from a mixed forwarding queue.
 
 ```lisp
 (let ((queue (list (han.args:make-arg-token :text "--help") "raw")))
@@ -40,4 +40,4 @@ Inspect a token and preserve plain text from a mixed forwarding queue. 处理混
 ;; => ("--help" "raw")
 ```
 
-[`han.args:arg-token-p`](arg-token-p.md) · [`han.args:make-arg-token`](make-arg-token.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source · 源码](../../../args/lexer.lisp) · [Index · 索引](../README.md)
+[`han.args:arg-token-p`](arg-token-p.md) · [`han.args:make-arg-token`](make-arg-token.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source](../../../args/lexer.lisp) · [Index](../README.md)

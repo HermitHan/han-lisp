@@ -1,23 +1,23 @@
 # `han.args:arg-segment-slot`
 
-*Accessor · 访问器*
+[简体中文](arg-segment-slot.zh-CN.md)
 
-## Syntax · 语法
+*Accessor*
+
+## Syntax
 
 ```text
 (han.args:arg-segment-slot segment) → string or nil
 (setf (han.args:arg-segment-slot segment) new-value) → new-value
 ```
 
-## Description · 说明
+## Description
 
 Return the slot name without its surrounding `@` and `:`. A `nil` slot contains top-level arguments, including input after a switch back with `@:`.
 
-返回去掉首尾 `@` 和 `:` 的槽名。`nil` 表示顶层槽，其中也包含使用 `@:` 切回顶层后的参数。
+## Examples
 
-## Examples · 示例
-
-Read the name of the second segment. 读取第二段所属于的槽。
+Read the name of the second segment.
 
 ```lisp
 (let ((segment
@@ -27,7 +27,7 @@ Read the name of the second segment. 读取第二段所属于的槽。
 ;; => "filter"
 ```
 
-Return to the top level after a named slot. 读取命名槽后切回顶层，查看三个段的归属。
+Return to the top level after a named slot.
 
 ```lisp
 (let ((input
@@ -36,4 +36,4 @@ Return to the top level after a named slot. 读取命名槽后切回顶层，查
 ;; => (nil "files" nil)
 ```
 
-[`han.args:arg-segment`](arg-segment.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source · 源码](../../../args/lexer.lisp) · [Index · 索引](../README.md)
+[`han.args:arg-segment`](arg-segment.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source](../../../args/lexer.lisp) · [Index](../README.md)

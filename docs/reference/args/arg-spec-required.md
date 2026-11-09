@@ -1,23 +1,23 @@
 # `han.args:arg-spec-required`
 
-*Accessor · 访问器*
+[简体中文](arg-spec-required.zh-CN.md)
 
-## Syntax · 语法
+*Accessor*
+
+## Syntax
 
 ```text
 (han.args:arg-spec-required spec) → generalized boolean
 (setf (han.args:arg-spec-required spec) new-value) → new-value
 ```
 
-## Description · 说明
+## Description
 
 Return whether the declaration requires a value. During binding an unsatisfied required argument produces a diagnostic. Parsing `!` sets this flag for a single-value option, and flag declarations are always optional.
 
-返回规格是否要求提供值。绑定时，未能满足的必需参数会产生诊断。单值选项用 `!` 声明必需，开关规格始终为可选。
+## Examples
 
-## Examples · 示例
-
-Inspect a single-value option declared with an exclamation mark. 读取带感叹号声明的单值参数的必需性。
+Inspect a single-value option declared with an exclamation mark.
 
 ```lisp
 (let ((spec (han.args:parse-arg-spec "!(--/-j)jobs")))
@@ -25,7 +25,7 @@ Inspect a single-value option declared with an exclamation mark. 读取带感叹
 ;; => t
 ```
 
-A positional declaration is required, while a flag is optional. 位置声明需要有值，开关允许缺省，即便其规格带有必需前缀。
+A positional declaration is required, while a flag is optional.
 
 ```lisp
 (mapcar (lambda (decl)
@@ -34,4 +34,4 @@ A positional declaration is required, while a flag is optional. 位置声明需�
 ;; => (t nil)
 ```
 
-[`han.args:arg-spec`](arg-spec.md) · [`han.args:parse-arg-spec`](parse-arg-spec.md) · [Source · 源码](../../../args/spec.lisp) · [Index · 索引](../README.md)
+[`han.args:arg-spec`](arg-spec.md) · [`han.args:parse-arg-spec`](parse-arg-spec.md) · [Source](../../../args/spec.lisp) · [Index](../README.md)

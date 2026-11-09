@@ -1,22 +1,22 @@
 # `han.args:args-result-p`
 
-*Predicate · 谓词*
+[简体中文](args-result-p.zh-CN.md)
 
-## Syntax · 语法
+*Predicate*
+
+## Syntax
 
 ```text
 (han.args:args-result-p object) → generalized-boolean
 ```
 
-## Description · 说明
+## Description
 
 Recognize a `args-result` structure. Any Lisp object can be passed. The predicate inspects its type without changing it.
 
-判断传入的 Lisp 对象是否为 `args-result` 结构。只检查对象类型，调用后对象保持原样。
+## Examples
 
-## Examples · 示例
-
-Recognize the final stage of a successful invocation. Compare it with an unrelated keyword. 确认成功绑定后得到的最终结果类型。再与无关关键字作对照。
+Recognize the final stage of a successful invocation. Compare it with an unrelated keyword.
 
 ```lisp
 (let ((result
@@ -27,7 +27,7 @@ Recognize the final stage of a successful invocation. Compare it with an unrelat
 ;; => (t nil)
 ```
 
-Query only the completed step of an invocation. 接收不同阶段的记录时，只查询已绑定的结果。
+Query only the completed step of an invocation.
 
 ```lisp
 (let* ((input (han.args:parse-args-input '("demo" "-v")))
@@ -39,4 +39,4 @@ Query only the completed step of an invocation. 接收不同阶段的记录时�
 ;; => (:pending t)
 ```
 
-[`han.args:args-result`](args-result.md) · [`han.args:bind-args`](bind-args.md) · [Source · 源码](../../../args/bind.lisp) · [Index · 索引](../README.md)
+[`han.args:args-result`](args-result.md) · [`han.args:bind-args`](bind-args.md) · [Source](../../../args/bind.lisp) · [Index](../README.md)

@@ -1,22 +1,22 @@
 # `han.source:source-slice-by-span`
 
-*Function · 函数*
+[简体中文](source-slice-by-span.zh-CN.md)
 
-## Syntax · 语法
+*Function*
+
+## Syntax
 
 ```text
 (han.source:source-slice-by-span source span) → string
 ```
 
-## Description · 说明
+## Description
 
 Copies the substring at the span’s stored offsets. It can be recovered after the cursor has moved or been reset. A span from another origin signals an error.
 
-按区间中保存的偏移复制子串。游标继续移动或回退之后仍可以取回这段文本。区间与游标来源不一致时会报错。
+## Examples
 
-## Examples · 示例
-
-**Save a span around two digits and recover the digits after rewinding · 保存两位数字的区间，回退游标后再取出数字**
+**Save a span around two digits and recover the digits after rewinding**
 
 ```lisp
 (let* ((src (han.source:make-char-source "42!"))
@@ -28,7 +28,7 @@ Copies the substring at the span’s stored offsets. It can be recovered after t
 ;; => "42"
 ```
 
-**Reject a span from another cursor · 用错游标读取区间时报告错误**
+**Reject a span from another cursor**
 
 ```lisp
 (defparameter *foreign-span*
@@ -40,4 +40,4 @@ Copies the substring at the span’s stored offsets. It can be recovered after t
 ;; signals simple-error
 ```
 
-[`han.source:make-source-span`](make-source-span.md) · [`han.source:source-slice`](source-slice.md) · [`han.source:source-reset`](source-reset.md) · [Source · 源码](../../../source/char-source.lisp) · [Index · 索引](../README.md)
+[`han.source:make-source-span`](make-source-span.md) · [`han.source:source-slice`](source-slice.md) · [`han.source:source-reset`](source-reset.md) · [Source](../../../source/char-source.lisp) · [Index](../README.md)

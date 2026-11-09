@@ -1,23 +1,23 @@
 # `han.args:arg-diagnostic`
 
-*Structure type · 结构类型*
+[简体中文](arg-diagnostic.zh-CN.md)
 
-## Syntax · 语法
+*Structure type*
+
+## Syntax
 
 ```text
 han.args:arg-diagnostic
 (typep object 'han.args:arg-diagnostic) → generalized-boolean
 ```
 
-## Description · 说明
+## Description
 
 A warning or error about input. Applications can inspect its severity, code, message, and optional location, then decide whether to continue.
 
-一条输入警告或错误。应用程序可以读取严重程度、诊断码、说明和可选位置，决定是否继续。
+## Examples
 
-## Examples · 示例
-
-Check the record generated for a token spelling warning. 核对可疑 token 写法所产生的诊断记录类型。
+Check the record generated for a token spelling warning.
 
 ```lisp
 (let ((diagnostic
@@ -27,7 +27,7 @@ Check the record generated for a token spelling warning. 核对可疑 token 写�
 ;; => t
 ```
 
-Render a diagnostic alongside a caller-provided progress message. 同时展示程序自己的进度消息和分析器生成的诊断。
+Render a diagnostic alongside a caller-provided progress message.
 
 ```lisp
 (let ((events (list "reading"
@@ -40,4 +40,4 @@ Render a diagnostic alongside a caller-provided progress message. 同时展示�
 ;; => ("reading" "unknown option")
 ```
 
-[`han.args:arg-diagnostic-p`](arg-diagnostic-p.md) · [`han.args:make-arg-diagnostic`](make-arg-diagnostic.md) · [`han.args:args-result-diagnostics`](args-result-diagnostics.md) · [Source · 源码](../../../args/lexer.lisp) · [Index · 索引](../README.md)
+[`han.args:arg-diagnostic-p`](arg-diagnostic-p.md) · [`han.args:make-arg-diagnostic`](make-arg-diagnostic.md) · [`han.args:args-result-diagnostics`](args-result-diagnostics.md) · [Source](../../../args/lexer.lisp) · [Index](../README.md)

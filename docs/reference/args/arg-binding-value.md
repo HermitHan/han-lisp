@@ -1,23 +1,23 @@
 # `han.args:arg-binding-value`
 
-*Accessor · 访问器*
+[简体中文](arg-binding-value.zh-CN.md)
 
-## Syntax · 语法
+*Accessor*
+
+## Syntax
 
 ```text
 (han.args:arg-binding-value binding) → object
 (setf (han.args:arg-binding-value binding) new-value) → new-value
 ```
 
-## Description · 说明
+## Description
 
 Return the raw stored value. An option can hold a string, a present flag holds `t`, and a supplied block holds a token list. A reference in a default remains an expression here. `get-arg` evaluates it on demand.
 
-返回原始绑定值。选项可保存字符串，出现的开关保存 `t`，已提供的块保存 token 列表。默认值里的引用在此仍是表达式，`get-arg` 会按需解析。
+## Examples
 
-## Examples · 示例
-
-Read the user-supplied value without conversion. 读取用户传入的原始字符串。
+Read the user-supplied value without conversion.
 
 ```lisp
 (let ((binding
@@ -31,7 +31,7 @@ Read the user-supplied value without conversion. 读取用户传入的原始字�
 ;; => "4"
 ```
 
-Inspect a deferred default before and after resolving its reference. 比较默认值中尚未展开的引用和查询后的实际字符串。
+Inspect a deferred default before and after resolving its reference.
 
 ```lisp
 (let ((result
@@ -45,4 +45,4 @@ Inspect a deferred default before and after resolving its reference. 比较默�
 ;; => values ((:query "name") "ada")
 ```
 
-[`han.args:arg-binding`](arg-binding.md) · [`han.args:get-arg`](get-arg.md) · [Source · 源码](../../../args/bind.lisp) · [Index · 索引](../README.md)
+[`han.args:arg-binding`](arg-binding.md) · [`han.args:get-arg`](get-arg.md) · [Source](../../../args/bind.lisp) · [Index](../README.md)

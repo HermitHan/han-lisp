@@ -1,22 +1,22 @@
 # `han.source:source-same-origin-p`
 
-*Predicate · 谓词*
+[简体中文](source-same-origin-p.zh-CN.md)
 
-## Syntax · 语法
+*Predicate*
+
+## Syntax
 
 ```text
 (han.source:source-same-origin-p target &rest others) → boolean
 ```
 
-## Description · 说明
+## Description
 
 Checks the origins of any mixture of cursors, marks and spans. A single valid argument succeeds. The comparison uses the identity assigned at construction and accepts only these three types.
 
-比较任意组合的游标、标记、区间的来源。仅传一个有效对象返回真。它核对构造时分配的标识，参数类型限于这三种。
+## Examples
 
-## Examples · 示例
-
-**Check the shared origin of a cursor, its mark and an empty span · 检查游标、由它保存的标记和据此创建的空区间是否同源**
+**Check the shared origin of a cursor, its mark and an empty span**
 
 ```lisp
 (let* ((src (han.source:make-char-source "ab"))
@@ -26,7 +26,7 @@ Checks the origins of any mixture of cursors, marks and spans. A single valid ar
 ;; => T
 ```
 
-**Compare ranges from independently parsed copies of the same text · 比较分别解析同一文本所得的区间**
+**Compare ranges from independently parsed copies of the same text**
 
 ```lisp
 (flet ((empty-span (src)
@@ -36,4 +36,4 @@ Checks the origins of any mixture of cursors, marks and spans. A single valid ar
 ;; => NIL
 ```
 
-[`han.source:source-mark-from-source-p`](source-mark-from-source-p.md) · [`han.source:source-span-from-source-p`](source-span-from-source-p.md) · [Source · 源码](../../../source/char-source.lisp) · [Index · 索引](../README.md)
+[`han.source:source-mark-from-source-p`](source-mark-from-source-p.md) · [`han.source:source-span-from-source-p`](source-span-from-source-p.md) · [Source](../../../source/char-source.lisp) · [Index](../README.md)

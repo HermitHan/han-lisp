@@ -1,24 +1,22 @@
 # `han.os:keep-read-char`
 
-*Function · 函数*
+[简体中文](keep-read-char.zh-CN.md)
 
-## Syntax · 语法
+*Function*
+
+## Syntax
 
 ```text
 (han.os:keep-read-char &optional (stream *standard-input*) (limit nil)) → list of characters
 ```
 
-## Description · 说明
+## Description
 
 Reads characters in input order, including whitespace and newlines. A `nil` limit reads to EOF. A numeric limit permits another read while the number collected is less than that limit. A function limit receives the reverse-order accumulator before each read, initially `nil`. The remainder stays in the caller's stream.
 
-按顺序读取字符，包括空白与换行。`limit` 为 `nil` 时一直读到 EOF；数值限制表示已读数小于该值时继续。函数限制在每次读前接收逆序累积列表，初次为 `nil`。未消费字符留在原流中。
-
-## Examples · 示例
+## Examples
 
 Read two characters and leave the third for the next reader.
-
-读取前两个字符，把第三个留给下一次读取。
 
 ```lisp
 (with-input-from-string (input "abc")
@@ -28,8 +26,6 @@ Read two characters and leave the third for the next reader.
 
 Read a delimited header through its separator, leaving the payload for a different decoder.
 
-按字符消费带分隔符的头部，把后续正文留给另一解码器。
-
 ```lisp
 (with-input-from-string (in "id:AB")
   (list (coerce (han.os:keep-read-char in
@@ -38,4 +34,4 @@ Read a delimited header through its separator, leaving the payload for a differe
 ;; => ("id:" "AB")
 ```
 
-[`han.os:keep-read-line`](keep-read-line.md) · [`han.os:keep-read`](keep-read.md) · [io.lisp](../../../os/io.lisp) · [Index · 索引](../README.md)
+[`han.os:keep-read-line`](keep-read-line.md) · [`han.os:keep-read`](keep-read.md) · [io.lisp](../../../os/io.lisp) · [Index](../README.md)

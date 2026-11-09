@@ -1,23 +1,23 @@
 # `han.args:args-input-raw-argv`
 
-*Accessor · 访问器*
+[简体中文](args-input-raw-argv.zh-CN.md)
 
-## Syntax · 语法
+*Accessor*
+
+## Syntax
 
 ```text
 (han.args:args-input-raw-argv input) → list of strings
 (setf (han.args:args-input-raw-argv input) new-value) → new-value
 ```
 
-## Description · 说明
+## Description
 
 Return the argument strings following the command name, with their original spelling, order, and argument boundaries intact.
 
-返回命令名之后的参数字符串，保留原始写法、顺序以及元素之间的分界。
+## Examples
 
-## Examples · 示例
-
-Retrieve the arguments following a command. 取回命令名之后的输入列表。
+Retrieve the arguments following a command.
 
 ```lisp
 (let ((input (han.args:parse-args-input '("demo" "notes.txt" "@filter:" "--mode=fast"))))
@@ -25,7 +25,7 @@ Retrieve the arguments following a command. 取回命令名之后的输入列表
 ;; => ("notes.txt" "@filter:" "--mode=fast")
 ```
 
-Preserve argument boundaries from the calling process. 已经切分的参数可以含有空格，也可以是空串。
+Preserve argument boundaries from the calling process.
 
 ```lisp
 (han.args:args-input-raw-argv
@@ -33,4 +33,4 @@ Preserve argument boundaries from the calling process. 已经切分的参数可�
 ;; => ("a b" "" "--")
 ```
 
-[`han.args:args-input`](args-input.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source · 源码](../../../args/lexer.lisp) · [Index · 索引](../README.md)
+[`han.args:args-input`](args-input.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source](../../../args/lexer.lisp) · [Index](../README.md)

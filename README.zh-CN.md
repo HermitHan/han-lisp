@@ -1,18 +1,18 @@
 # Han Lisp
 
-[English](README.md) · [快速开始](#加载并试用) · [设计哲学](#设计哲学) · [包与分工](#包与分工)
+[English](README.md) · [文档](docs/README.zh-CN.md) · [快速开始](#加载并试用) · [设计哲学](#设计哲学) · [包与分工](#包与分工)
 
 Han 是一个用于编写命令行工具的 Common Lisp 基础库。从解析参数、定位输入文件，到启动子进程、读取它输出的 JSON，这些常用操作都可以交给 Han。七个包通过一个 ASDF 系统 `han` 一起加载。
 
 ## 文档
 
 - **[用户手册](docs/user/README.zh-CN.md)** 介绍怎样在自己的项目里加载 Han，以及怎样组合使用各个包，例如读取外部命令输出的 JSON。
-- **[公开符号参考](docs/reference/README.md)** 可以按包浏览，也可以用[字母索引](docs/reference/symbols.md)按名称查找。条目用中英文说明用法。查函数时，可以看到它接受的参数、返回值和能在 REPL 里运行的示例。
+- **[公开符号参考](docs/reference/README.zh-CN.md)** 可以按包浏览，也可以用[字母索引](docs/reference/symbols.zh-CN.md)按名称查找。每个条目都说明用法，附有能在 REPL 里运行的示例。函数条目还说明参数和返回值。通过语言链接可以打开同一条目的英文版。
 - **[开发者手册](docs/developer/README.zh-CN.md)** 说明七个包怎样协作，并用一次命令行参数冲突演示怎样从行为找到源码、确定该改哪个包。具体的修改和验证步骤见[开发流程](docs/developer/workflow.zh-CN.md)。
 
 ## 加载并试用
 
-装有 Git 和 SBCL 时，在终端运行以下命令，即可进入已加载 Han 的 Lisp REPL。
+克隆仓库后，启动已加载 Han 的 Lisp REPL。下面以 SBCL 为例。在 macOS 或 Linux 上使用启用了 Unicode 的 ECL 26.5.5 时，最后一行换成 `ecl -norc -load load-han.lisp`。使用 LispWorks 时，在仓库目录下的 Listener 中求值 `(load "load-han.lisp")`。
 
 ```sh
 git clone https://github.com/HermitHan/han-lisp.git
@@ -38,26 +38,28 @@ sbcl --load load-han.lisp
 
 ## 设计哲学
 
-除 `han.host` 外，六个运行时包在所有平台和 Lisp 实现上共用一套 ANSI Common Lisp 源码。实现专属调用、操作系统约定，以及 `#+`、`#-` 这类平台或实现条件分支，统一放在 `han.host`。ASDF 选择 SBCL 或 LispWorks 适配器。例如，`han.json` 负责解析四位十六进制数、合并代理对；把所得 Unicode 标量映射为 Lisp 字符、以 UTF-8 打开文件，则是宿主层的职责。
+除 `han.host` 外，六个运行时包在所有平台和 Lisp 实现上共用一套 ANSI Common Lisp 源码。实现专属调用、操作系统约定，以及 `#+`、`#-` 这类平台或实现条件分支，统一放在 `han.host`。ASDF 选择 SBCL、LispWorks 或 ECL 适配器。例如，`han.json` 负责解析四位十六进制数、合并代理对；把所得 Unicode 标量映射为 Lisp 字符、以 UTF-8 打开文件，则是宿主层的职责。
 
 同一接口保证的是调用含义。查找程序时，匹配顺序取决于本机的搜索路径；查询子进程时，瞬时状态取决于后端此刻能观察到什么。需要正常退出码时，应先等待进程结束。具体保证见[开发者手册的可移植性边界](docs/developer/README.zh-CN.md#可移植性边界)。
+
+每新增一种宿主实现，就与已有后端一起回归。调整已有后端时，先复现具体缺陷。交付前还会把候选 Han 源码放进 TAFFISH 副本的 `vendor/han`，验证实际调用效果。[开发流程](docs/developer/workflow.zh-CN.md#验证-taffish-消费方)
 
 ## 包与分工
 
 | 包手册 | 负责的事 | 示例条目 |
 | --- | --- | --- |
-| [`han.args`](docs/user/args.zh-CN.md) | 声明选项与位置参数，绑定输入并检查诊断信息。 | [`get-arg`](docs/reference/args/get-arg.md) |
-| [`han.path`](docs/user/path.zh-CN.md) | 构造路径、列举目录、复制文件。 | [`join-path`](docs/reference/path/join-path.md) |
-| [`han.os`](docs/user/os.zh-CN.md) | 读取文本、查询环境变量、获取外部命令的输出。 | [`run-program`](docs/reference/os/run-program.md) |
-| [`han.host`](docs/user/host.zh-CN.md) | 操作运行中的进程句柄、终端流和文件锁。 | [`process-wait`](docs/reference/host/process-wait.md) |
-| [`han.json`](docs/user/json.zh-CN.md) | 解析和写出 JSON，按键查询对象字段。 | [`get-json`](docs/reference/json/get-json.md) |
-| [`han.source`](docs/user/source.zh-CN.md) | 编写文本解析器时移动字符游标、保存位置、截取原文。 | [`source-reset`](docs/reference/source/source-reset.md) |
-| [`han.test`](docs/user/test.zh-CN.md) | 定义用例、编写断言、运行已登记的测试。 | [`deftest`](docs/reference/test/deftest.md) |
+| [`han.args`](docs/user/args.zh-CN.md) | 声明选项与位置参数，绑定输入并检查诊断信息。 | [`get-arg`](docs/reference/args/get-arg.zh-CN.md) |
+| [`han.path`](docs/user/path.zh-CN.md) | 构造路径、列举目录、复制文件。 | [`join-path`](docs/reference/path/join-path.zh-CN.md) |
+| [`han.os`](docs/user/os.zh-CN.md) | 读取文本、查询环境变量、获取外部命令的输出。 | [`run-program`](docs/reference/os/run-program.zh-CN.md) |
+| [`han.host`](docs/user/host.zh-CN.md) | 操作运行中的进程句柄、终端流和文件锁。 | [`process-wait`](docs/reference/host/process-wait.zh-CN.md) |
+| [`han.json`](docs/user/json.zh-CN.md) | 解析和写出 JSON，按键查询对象字段。 | [`get-json`](docs/reference/json/get-json.zh-CN.md) |
+| [`han.source`](docs/user/source.zh-CN.md) | 编写文本解析器时移动字符游标、保存位置、截取原文。 | [`source-reset`](docs/reference/source/source-reset.zh-CN.md) |
+| [`han.test`](docs/user/test.zh-CN.md) | 定义用例、编写断言、运行已登记的测试。 | [`deftest`](docs/reference/test/deftest.zh-CN.md) |
 
 ## 运行测试
 
 - **库测试。** 在仓库根目录启动新的 REPL，加载 `load-han.dev.lisp`，再调用 `(han.test:run-all-tests)`。[终端命令与运行条件](docs/developer/workflow.zh-CN.md#从仓库运行全套测试)
-- **参考示例。** 在仓库根目录运行 `sbcl --script scripts/check-reference.lisp`，即可核对导出符号并执行参考页中的示例。[示例的校验方式](docs/developer/workflow.zh-CN.md#验证符号参考)
+- **参考示例。** 在仓库根目录运行 `sbcl --script scripts/check-reference.lisp` 或 `ecl -norc -shell scripts/check-reference.lisp`，即可核对导出符号并执行参考页中的示例。[示例的校验方式](docs/developer/workflow.zh-CN.md#验证符号参考)
 
 ## 来源与许可
 

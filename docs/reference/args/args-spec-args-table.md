@@ -1,23 +1,23 @@
 # `han.args:args-spec-args-table`
 
-*Accessor · 访问器*
+[简体中文](args-spec-args-table.zh-CN.md)
 
-## Syntax · 语法
+*Accessor*
+
+## Syntax
 
 ```text
 (han.args:args-spec-args-table specs) → hash table
 (setf (han.args:args-spec-args-table specs) new-value) → new-value
 ```
 
-## Description · 说明
+## Description
 
 Return the table of declarations keyed by lookup name. `parse-args-spec` builds an `equalp` table, so a string key can be queried with different letter case. Values are `arg-spec` records.
 
-返回按查询名索引的参数规格表。`parse-args-spec` 构建的表使用 `equalp`，字符串键可以忽略大小写查询。表值是 `arg-spec` 记录。
+## Examples
 
-## Examples · 示例
-
-Find a declaration with differently cased input. 用不同大小写的名称查找同一声明。
+Find a declaration with differently cased input.
 
 ```lisp
 (let ((specs
@@ -27,7 +27,7 @@ Find a declaration with differently cased input. 用不同大小写的名称查�
 ;; => "--jobs"
 ```
 
-Read positional declarations by integer key. 在同一张规格表中按整数键查位置参数。
+Read positional declarations by integer key.
 
 ```lisp
 (let ((specs
@@ -37,4 +37,4 @@ Read positional declarations by integer key. 在同一张规格表中按整数�
 ;; => :position
 ```
 
-[`han.args:args-spec`](args-spec.md) · [`han.args:parse-args-spec`](parse-args-spec.md) · [Source · 源码](../../../args/spec.lisp) · [Index · 索引](../README.md)
+[`han.args:args-spec`](args-spec.md) · [`han.args:parse-args-spec`](parse-args-spec.md) · [Source](../../../args/spec.lisp) · [Index](../README.md)

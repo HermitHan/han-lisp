@@ -1,5 +1,7 @@
 .DS_Store
+*.fas
 *.fasl
 *.64xfasl
+*.64yfasl
 *.ofasl
 __pycache__/

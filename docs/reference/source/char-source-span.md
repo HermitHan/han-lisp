@@ -1,22 +1,22 @@
 # `han.source:char-source-span`
 
-*Structure type · 结构类型*
+[简体中文](char-source-span.zh-CN.md)
 
-## Syntax · 语法
+*Structure type*
+
+## Syntax
 
 ```text
 han.source:char-source-span
 ```
 
-## Description · 说明
+## Description
 
 A half-open range of character offsets from one origin. Construct it from two marks and give it back to the originating cursor to recover the exact matched text.
 
-半开区间类型，记录同一个字符源内的起止偏移。用两个位置标记构造区间，再交给原字符源即可取回当时匹配到的原文。
+## Examples
 
-## Examples · 示例
-
-**Consume one character and check the type of the span between the two marks · 读过一个字符，检查前后两个标记所划定的区间类型**
+**Consume one character and check the type of the span between the two marks**
 
 ```lisp
 (let* ((src (han.source:make-char-source "ab"))
@@ -26,7 +26,7 @@ A half-open range of character offsets from one origin. Construct it from two ma
 ;; => T
 ```
 
-**Carry the token range past a rewind · 游标回退后仍可传递并读取词元的原区间**
+**Carry the token range past a rewind**
 
 ```lisp
 (let* ((src (han.source:make-char-source "42:"))
@@ -39,4 +39,4 @@ A half-open range of character offsets from one origin. Construct it from two ma
 ;; => "42"
 ```
 
-[`han.source:make-source-span`](make-source-span.md) · [`han.source:source-slice-by-span`](source-slice-by-span.md) · [`han.source:char-source-span-p`](char-source-span-p.md) · [Source · 源码](../../../source/char-source.lisp) · [Index · 索引](../README.md)
+[`han.source:make-source-span`](make-source-span.md) · [`han.source:source-slice-by-span`](source-slice-by-span.md) · [`han.source:char-source-span-p`](char-source-span-p.md) · [Source](../../../source/char-source.lisp) · [Index](../README.md)

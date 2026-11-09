@@ -1,22 +1,22 @@
 # `han.args:arg-segment-p`
 
-*Predicate · 谓词*
+[简体中文](arg-segment-p.zh-CN.md)
 
-## Syntax · 语法
+*Predicate*
+
+## Syntax
 
 ```text
 (han.args:arg-segment-p object) → generalized-boolean
 ```
 
-## Description · 说明
+## Description
 
 Recognize a `arg-segment` structure. Any Lisp object can be passed. The predicate inspects its type without changing it.
 
-判断传入的 Lisp 对象是否为 `arg-segment` 结构。只检查对象类型，调用后对象保持原样。
+## Examples
 
-## Examples · 示例
-
-Recognize a named group returned by the lexer. Compare it with an unrelated keyword. 核对解析命名槽后所得分段记录的类型。再与无关关键字作对照。
+Recognize a named group returned by the lexer. Compare it with an unrelated keyword.
 
 ```lisp
 (let ((segment
@@ -26,7 +26,7 @@ Recognize a named group returned by the lexer. Compare it with an unrelated keyw
 ;; => (t nil)
 ```
 
-Read slot names from selected parse records. 从混合解析记录中筛出段并读取槽名。
+Read slot names from selected parse records.
 
 ```lisp
 (let* ((input (han.args:parse-args-input '("demo" "@a:" "q")))
@@ -35,4 +35,4 @@ Read slot names from selected parse records. 从混合解析记录中筛出段�
 ;; => (nil "a")
 ```
 
-[`han.args:arg-segment`](arg-segment.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source · 源码](../../../args/lexer.lisp) · [Index · 索引](../README.md)
+[`han.args:arg-segment`](arg-segment.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source](../../../args/lexer.lisp) · [Index](../README.md)

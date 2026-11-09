@@ -1,23 +1,23 @@
 # `han.args:arg-binding-name`
 
-*Accessor · 访问器*
+[简体中文](arg-binding-name.zh-CN.md)
 
-## Syntax · 语法
+*Accessor*
+
+## Syntax
 
 ```text
 (han.args:arg-binding-name binding) → string or integer
 (setf (han.args:arg-binding-name binding) new-value) → new-value
 ```
 
-## Description · 说明
+## Description
 
 Return the lookup key for this binding. It is a string for a named argument or an integer for a positional argument. The key is stored independently of the argv spelling used by the caller.
 
-返回此绑定的查询键。命名参数使用字符串，位置参数使用整数。调用者传入的是长选项还是短选项，都用同一个查询名。
+## Examples
 
-## Examples · 示例
-
-Read the canonical key after a short option was used. 输入使用短选项时仍可取回完整的查询名。
+Read the canonical key after a short option was used.
 
 ```lisp
 (let ((binding
@@ -31,7 +31,7 @@ Read the canonical key after a short option was used. 输入使用短选项时�
 ;; => "jobs"
 ```
 
-Recover the integer key from a positional binding. 位置绑定保留整数查询名，可以和其字符串值一同读取。
+Recover the integer key from a positional binding.
 
 ```lisp
 (let ((result
@@ -45,4 +45,4 @@ Recover the integer key from a positional binding. 位置绑定保留整数查�
 ;; => values (1 "readme.md")
 ```
 
-[`han.args:arg-binding`](arg-binding.md) · [`han.args:get-arg`](get-arg.md) · [Source · 源码](../../../args/bind.lisp) · [Index · 索引](../README.md)
+[`han.args:arg-binding`](arg-binding.md) · [`han.args:get-arg`](get-arg.md) · [Source](../../../args/bind.lisp) · [Index](../README.md)

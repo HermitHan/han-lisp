@@ -4,7 +4,7 @@
 
 ## Load the library in your program
 
-From a REPL in the checkout, `(load "load-han.lisp")` loads the runtime and all seven packages. To load it explicitly with ASDF from the same directory, evaluate these forms in order.
+Use SBCL, LispWorks or Unicode-enabled ECL on macOS or Linux. With ECL, start the REPL with `ecl -norc`. From a REPL in the checkout, `(load "load-han.lisp")` loads the runtime and all seven packages. To load it explicitly with ASDF from the same directory, evaluate these forms in order.
 
 ```lisp
 (require :asdf)
@@ -22,7 +22,7 @@ A tool may print diagnostics on stderr even when it succeeds. Capture the stream
 
 ```lisp
 (multiple-value-bind (out err code)
-    (han.os:run-program '("printf" "%s" "{\"ready\":false}"))
+    (han.os:run-program '("/usr/bin/printf" "%s" "{\"ready\":false}"))
   (unless (eql code 0)
     (error "Command exited with ~S: ~A" code err))
   (multiple-value-list (han.json:get-json (han.json:parse-json out) "ready")))

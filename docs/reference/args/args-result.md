@@ -1,23 +1,23 @@
 # `han.args:args-result`
 
-*Structure type · 结构类型*
+[简体中文](args-result.zh-CN.md)
 
-## Syntax · 语法
+*Structure type*
+
+## Syntax
 
 ```text
 han.args:args-result
 (typep object 'han.args:args-result) → generalized-boolean
 ```
 
-## Description · 说明
+## Description
 
 The outcome of binding one parsed invocation against one command specification. Query it for values and inspect its diagnostics before running the command.
 
-把一次调用的解析结果与命令规格绑定后得到的对象。执行命令前，可从中查询参数值并检查诊断。
+## Examples
 
-## Examples · 示例
-
-Recognize the final stage of a successful invocation. 确认成功绑定后得到的最终结果类型。
+Recognize the final stage of a successful invocation.
 
 ```lisp
 (let ((result
@@ -28,7 +28,7 @@ Recognize the final stage of a successful invocation. 确认成功绑定后得�
 ;; => t
 ```
 
-Select the bound result from a pipeline trace and query it. 从解析流程记录中找到绑定结果，再查询实际参数。
+Select the bound result from a pipeline trace and query it.
 
 ```lisp
 (let* ((input (han.args:parse-args-input '("scan" "--jobs=4")))
@@ -38,4 +38,4 @@ Select the bound result from a pipeline trace and query it. 从解析流程记�
 ;; => values ("4" :input)
 ```
 
-[`han.args:args-result-p`](args-result-p.md) · [`han.args:make-args-result`](make-args-result.md) · [`han.args:bind-args`](bind-args.md) · [Source · 源码](../../../args/bind.lisp) · [Index · 索引](../README.md)
+[`han.args:args-result-p`](args-result-p.md) · [`han.args:make-args-result`](make-args-result.md) · [`han.args:bind-args`](bind-args.md) · [Source](../../../args/bind.lisp) · [Index](../README.md)

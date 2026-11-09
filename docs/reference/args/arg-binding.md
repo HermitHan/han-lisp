@@ -1,23 +1,23 @@
 # `han.args:arg-binding`
 
-*Structure type · 结构类型*
+[简体中文](arg-binding.zh-CN.md)
 
-## Syntax · 语法
+*Structure type*
+
+## Syntax
 
 ```text
 han.args:arg-binding
 (typep object 'han.args:arg-binding) → generalized-boolean
 ```
 
-## Description · 说明
+## Description
 
 The value and status assigned to one lookup name. A default expression may remain in the value slot until a query resolves its references.
 
-一个查询名对应的值及绑定状态。默认表达式可以暂存在值字段中，直到查询时才解析其中的引用。
+## Examples
 
-## Examples · 示例
-
-Recognize one value record returned from a binding table. 确认从绑定表取得的是参数值记录。
+Recognize one value record returned from a binding table.
 
 ```lisp
 (let ((binding
@@ -31,7 +31,7 @@ Recognize one value record returned from a binding table. 确认从绑定表取�
 ;; => t
 ```
 
-Format the status of a successful lookup and a key with no binding. 分别格式化已注册绑定的状态和没有绑定的键。
+Format the status of a successful lookup and a key with no binding.
 
 ```lisp
 (let ((result
@@ -47,4 +47,4 @@ Format the status of a successful lookup and a key with no binding. 分别格式
 ;; => (:registered :unknown)
 ```
 
-[`han.args:arg-binding-p`](arg-binding-p.md) · [`han.args:make-arg-binding`](make-arg-binding.md) · [`han.args:get-arg`](get-arg.md) · [Source · 源码](../../../args/bind.lisp) · [Index · 索引](../README.md)
+[`han.args:arg-binding-p`](arg-binding-p.md) · [`han.args:make-arg-binding`](make-arg-binding.md) · [`han.args:get-arg`](get-arg.md) · [Source](../../../args/bind.lisp) · [Index](../README.md)

@@ -1,23 +1,23 @@
 # `han.args:arg-diagnostic-kind`
 
-*Accessor · 访问器*
+[简体中文](arg-diagnostic-kind.zh-CN.md)
 
-## Syntax · 语法
+*Accessor*
+
+## Syntax
 
 ```text
 (han.args:arg-diagnostic-kind diagnostic) → keyword
 (setf (han.args:arg-diagnostic-kind diagnostic) new-value) → new-value
 ```
 
-## Description · 说明
+## Description
 
 Return the severity, `:warning` or `:error`, of this diagnostic. Filter by kind when deciding whether the command can proceed.
 
-返回这条诊断的严重程度，即 `:warning` 或 `:error`。应用判断是否继续执行时可据此筛选。
+## Examples
 
-## Examples · 示例
-
-Recognize a warning about a suspicious token. 辨认关于可疑输入的警告。
+Recognize a warning about a suspicious token.
 
 ```lisp
 (let ((diagnostic
@@ -27,7 +27,7 @@ Recognize a warning about a suspicious token. 辨认关于可疑输入的警告�
 ;; => :warning
 ```
 
-Inspect the severity of an omitted required argument. 必需参数缺失会在绑定结果中产生错误级别的诊断。
+Inspect the severity of an omitted required argument.
 
 ```lisp
 (let ((result
@@ -40,4 +40,4 @@ Inspect the severity of an omitted required argument. 必需参数缺失会在�
 ;; => (:error)
 ```
 
-[`han.args:arg-diagnostic`](arg-diagnostic.md) · [`han.args:args-result-diagnostics`](args-result-diagnostics.md) · [Source · 源码](../../../args/lexer.lisp) · [Index · 索引](../README.md)
+[`han.args:arg-diagnostic`](arg-diagnostic.md) · [`han.args:args-result-diagnostics`](args-result-diagnostics.md) · [Source](../../../args/lexer.lisp) · [Index](../README.md)

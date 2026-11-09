@@ -5,7 +5,7 @@
     (check-true (stringp help-string))
     (check-true (search "han.test" help-string))
     (check-true (search "run-all-tests" help-string)))
-  (check-equal "0.1.0" (han.test:version nil)))
+  (check-equal "0.2.0" (han.test:version nil)))
 
 (deftest test-check-error-requires-a-condition-from-the-body ()
   (check-true (handler-case (progn (check-error (error) (values)) nil)

@@ -1,23 +1,23 @@
 # `han.args:arg-segment`
 
-*Structure type · 结构类型*
+[简体中文](arg-segment.zh-CN.md)
 
-## Syntax · 语法
+*Structure type*
+
+## Syntax
 
 ```text
 han.args:arg-segment
 (typep object 'han.args:arg-segment) → generalized-boolean
 ```
 
-## Description · 说明
+## Description
 
 A group of token positions in one slot. The default slot holds top-level options and positionals. Named slots can bind whole blocks.
 
-一个槽内的 token 位置集合。默认槽存放顶层选项和位置参数，命名槽可以整段绑定。
+## Examples
 
-## Examples · 示例
-
-Check the type of a named group returned by the lexer. 核对解析命名槽后所得分段记录的类型。
+Check the type of a named group returned by the lexer.
 
 ```lisp
 (let ((segment
@@ -27,7 +27,7 @@ Check the type of a named group returned by the lexer. 核对解析命名槽后�
 ;; => t
 ```
 
-Dispatch a top-level segment and a named block to different handlers. 按段所属的槽，把顶层参数和命名块分给不同处理流程。
+Dispatch a top-level segment and a named block to different handlers.
 
 ```lisp
 (let ((input (han.args:parse-args-input '("demo" "item" "@next:" "-q"))))
@@ -39,4 +39,4 @@ Dispatch a top-level segment and a named block to different handlers. 按段所�
 ;; => (:parse-here :delegate)
 ```
 
-[`han.args:arg-segment-p`](arg-segment-p.md) · [`han.args:make-arg-segment`](make-arg-segment.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source · 源码](../../../args/lexer.lisp) · [Index · 索引](../README.md)
+[`han.args:arg-segment-p`](arg-segment-p.md) · [`han.args:make-arg-segment`](make-arg-segment.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source](../../../args/lexer.lisp) · [Index](../README.md)

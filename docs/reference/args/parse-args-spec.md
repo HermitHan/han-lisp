@@ -1,22 +1,22 @@
 # `han.args:parse-args-spec`
 
-*Function · 函数*
+[简体中文](parse-args-spec.zh-CN.md)
 
-## Syntax · 语法
+*Function*
+
+## Syntax
 
 ```text
 (han.args:parse-args-spec spec-list &optional (command "my-args")) → args-spec
 ```
 
-## Description · 说明
+## Description
 
 Combine a list of `arg-spec` objects into one command specification. Compatible same-name declarations can supply complementary fields. Conflicting field values, duplicate entry spellings across names, or gaps in positional declarations signal an error. Positions must start at 0 or 1.
 
-将 `arg-spec` 列表合并为一个命令规格。同名且相容的声明可以互补字段。字段值冲突、不同查询名占用相同入口、位置编号不连续时会报错。位置编号要从 0 或 1 开始。
+## Examples
 
-## Examples · 示例
-
-Merge complementary declarations for one lookup key. 合并描述同一参数的两条互补规格。
+Merge complementary declarations for one lookup key.
 
 ```lisp
 (let* ((specs (han.args:parse-args-spec
@@ -29,7 +29,7 @@ Merge complementary declarations for one lookup key. 合并描述同一参数的
 ;; => ("report" "-j" "4")
 ```
 
-Reject an option spelling shared by two names. 两个不同的参数不能占用同一个短选项入口。
+Reject an option spelling shared by two names.
 
 ```lisp
 (defparameter *example-option-declarations*
@@ -39,7 +39,7 @@ Reject an option spelling shared by two names. 两个不同的参数不能占用
 ;; signals simple-error
 ```
 
-Reject a gap in positional numbering. 检查位置参数编号是否连续。
+Reject a gap in positional numbering.
 
 ```lisp
 (defparameter *example-position-declarations*
@@ -49,7 +49,7 @@ Reject a gap in positional numbering. 检查位置参数编号是否连续。
 ;; signals simple-error
 ```
 
-Allow a command with no declared fields. 命令可以使用空规格表，同时保留其名称。
+Allow a command with no declared fields.
 
 ```lisp
 (let ((spec (han.args:parse-args-spec nil "version")))
@@ -58,4 +58,4 @@ Allow a command with no declared fields. 命令可以使用空规格表，同时
 ;; => values ("version" 0)
 ```
 
-[`han.args:parse-arg-spec`](parse-arg-spec.md) · [`han.args:args-spec`](args-spec.md) · [Source · 源码](../../../args/spec.lisp) · [Index · 索引](../README.md)
+[`han.args:parse-arg-spec`](parse-arg-spec.md) · [`han.args:args-spec`](args-spec.md) · [Source](../../../args/spec.lisp) · [Index](../README.md)

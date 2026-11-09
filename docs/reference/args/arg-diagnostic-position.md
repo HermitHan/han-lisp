@@ -1,23 +1,23 @@
 # `han.args:arg-diagnostic-position`
 
-*Accessor · 访问器*
+[简体中文](arg-diagnostic-position.zh-CN.md)
 
-## Syntax · 语法
+*Accessor*
+
+## Syntax
 
 ```text
 (han.args:arg-diagnostic-position diagnostic) → nonnegative integer or nil
 (setf (han.args:arg-diagnostic-position diagnostic) new-value) → new-value
 ```
 
-## Description · 说明
+## Description
 
 Return the zero-based token index after the command name, if the diagnostic refers to an input token. A missing declaration value may have no input position.
 
-返回诊断所指 token 在命令名之后的零基索引。必需参数完全没有出现时，可以没有对应输入位置。
+## Examples
 
-## Examples · 示例
-
-Locate a lexer warning in the original input. 定位词法警告在原始输入中的位置。
+Locate a lexer warning in the original input.
 
 ```lisp
 (let ((diagnostic
@@ -27,7 +27,7 @@ Locate a lexer warning in the original input. 定位词法警告在原始输入�
 ;; => 0
 ```
 
-Handle an absent argument with no corresponding token. 必需参数完全没有出现时，诊断无法指向具体 token。
+Handle an absent argument with no corresponding token.
 
 ```lisp
 (let ((result
@@ -41,4 +41,4 @@ Handle an absent argument with no corresponding token. 必需参数完全没有�
 ;; => values (:missing-required nil)
 ```
 
-[`han.args:arg-diagnostic`](arg-diagnostic.md) · [`han.args:args-result-diagnostics`](args-result-diagnostics.md) · [Source · 源码](../../../args/lexer.lisp) · [Index · 索引](../README.md)
+[`han.args:arg-diagnostic`](arg-diagnostic.md) · [`han.args:args-result-diagnostics`](args-result-diagnostics.md) · [Source](../../../args/lexer.lisp) · [Index](../README.md)

@@ -1,23 +1,23 @@
 # `han.args:parse-args-input`
 
-*Function · 函数*
+[简体中文](parse-args-input.zh-CN.md)
 
-## Syntax · 语法
+*Function*
+
+## Syntax
 
 ```text
 (han.args:parse-args-input &optional (raw-input-args (han.host:argv t)) (add-cmd nil))
   → args-input
 ```
 
-## Description · 说明
+## Description
 
-Lex a list of argument strings, optionally prepending the strings in `add-cmd`. The first combined item is the command. Each subsequent item receives a zero-based token position and belongs to a top-level or named segment. Omitting `raw-input-args` reads the process arguments. Lexical warnings are stored on the returned input.
+Lex a list of argument strings, optionally prepending the strings in `add-cmd`. The first combined item is the command. Each subsequent item receives a zero-based token position and belongs to a top-level or named segment. Omitting `raw-input-args` uses [the host argv](../host/argv.md). In an ECL script this includes interpreter options. To parse only application arguments after ECL’s `--`, pass that tail and supply your command name in `add-cmd`. Lexical warnings are stored on the returned input.
 
-解析字符串参数列表，可以先把 `add-cmd` 中的字符串加到列表前面。合并后的第一项作为命令；后续元素按零基位置生成 token，并划入顶层段或命名段。省略 `raw-input-args` 时读取当前进程的参数。词法警告保存在返回的输入对象中。
+## Examples
 
-## Examples · 示例
-
-Tokenize options supplied separately from the executable name. 给不含命令名的参数列表补入命令并解析。
+Tokenize options supplied separately from the executable name.
 
 ```lisp
 (let ((input (han.args:parse-args-input
@@ -28,7 +28,7 @@ Tokenize options supplied separately from the executable name. 给不含命令�
 ;; => ("report" (nil "filter") "4")
 ```
 
-Retain a suspicious marker and its warning. 对可疑标记保留原 token，并报告位置。
+Retain a suspicious marker and its warning.
 
 ```lisp
 (let ((input
@@ -41,7 +41,7 @@ Retain a suspicious marker and its warning. 对可疑标记保留原 token，并
 ;; => values (:value "--" 0)
 ```
 
-Inspect a call containing only a command name. 只有命令名时仍会产生顶层段。
+Inspect a call containing only a command name.
 
 ```lisp
 (let ((input
@@ -52,4 +52,4 @@ Inspect a call containing only a command name. 只有命令名时仍会产生顶
 ;; => values ("demo" 0 (nil))
 ```
 
-[`han.args:args-input`](args-input.md) · [`han.args:parse-args-spec`](parse-args-spec.md) · [Source · 源码](../../../args/lexer.lisp) · [Index · 索引](../README.md)
+[`han.args:args-input`](args-input.md) · [`han.args:parse-args-spec`](parse-args-spec.md) · [Source](../../../args/lexer.lisp) · [Index](../README.md)

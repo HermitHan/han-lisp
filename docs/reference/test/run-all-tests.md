@@ -1,24 +1,22 @@
 # `han.test:run-all-tests`
 
-*Function · 函数*
+[简体中文](run-all-tests.zh-CN.md)
 
-## Syntax · 语法
+*Function*
+
+## Syntax
 
 ```text
 (han.test:run-all-tests) → passed-count, failed-count
 ```
 
-## Description · 说明
+## Description
 
 Run registered cases in registration order, print their results and a summary to standard output, then return two integer counts. Each case that reports failure still allows later cases to run. An empty suite returns two zeros. A script can use the counts to choose its exit status.
 
-按注册顺序运行全部用例，向标准输出打印每项结果和汇总，再返回通过数与失败数两个整数。一个用例报告失败后继续运行后面的用例。空套件返回两个零。脚本可用这两个计数决定退出码。
-
-## Examples · 示例
+## Examples
 
 Read both counts from a suite containing two passing cases.
-
-读取包含两个通过用例的套件所返回的计数。
 
 ```lisp
 (let ((han.test:*tests* nil))
@@ -29,8 +27,6 @@ Read both counts from a suite containing two passing cases.
 ```
 
 A failed case still allows a later case to run. The two return values count the outcomes separately.
-
-一个用例失败后，随后登记的用例依旧会执行。两个返回值分别统计结果。
 
 ```lisp
 (let ((han.test:*tests* nil)
@@ -43,12 +39,10 @@ A failed case still allows a later case to run. The two return values count the 
 
 A newly isolated suite with no tests has neither passes nor failures.
 
-新绑定的空套件既无通过项，也无失败项。
-
 ```lisp
 (let ((han.test:*tests* nil))
   (han.test:run-all-tests))
 ;; => values (0 0)
 ```
 
-[`run-test`](run-test.md) · [`*tests*`](var-tests.md) · [Source · 源码](../../../test/core.lisp#L69) · [Index · 索引](../README.md)
+[`run-test`](run-test.md) · [`*tests*`](var-tests.md) · [Source](../../../test/core.lisp#L69) · [Index](../README.md)

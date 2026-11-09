@@ -1,18 +1,18 @@
 # Han Lisp
 
-[简体中文](README.zh-CN.md) · [Quick start](#load-han) · [Design philosophy](#design-philosophy) · [Packages](#packages)
+[简体中文](README.zh-CN.md) · [Documentation](docs/README.md) · [Quick start](#load-han) · [Design philosophy](#design-philosophy) · [Packages](#packages)
 
 Han is a Common Lisp library for command-line tools. It handles work these tools share, from parsing arguments and locating input files to running a subprocess and reading its JSON output. All seven packages load together as the ASDF system `han`.
 
 ## Documentation
 
 - **[User guide](docs/user/README.md)** — Load Han into your own project and learn to use the packages together, for example to read JSON from a command’s output.
-- **[Symbol reference](docs/reference/README.md)** — Browse the public API by package, or use the [A–Z index](docs/reference/symbols.md) if you know the name. Entries document usage in English and Chinese, including function arguments, return values and examples you can run in the REPL.
+- **[Symbol reference](docs/reference/README.md)** — Browse the public API by package, or use the [A–Z index](docs/reference/symbols.md) if you know the name. Each entry explains the symbol’s use with examples you can run in the REPL. Function entries also describe arguments and return values. A language link opens the same entry in Chinese.
 - **[Developer guide](docs/developer/README.md)** — See how the packages fit together, trace an argument conflict through the source and decide where a change belongs. The [development workflow](docs/developer/workflow.md) covers writing and testing that change.
 
 ## Load Han
 
-With Git and SBCL installed, run these commands in a terminal to open a REPL with Han loaded.
+Clone the checkout and start a Lisp REPL with Han loaded. The command below uses SBCL. On macOS or Linux with Unicode-enabled ECL 26.5.5, use `ecl -norc -load load-han.lisp` for the last line. In a LispWorks Listener, evaluate `(load "load-han.lisp")` from the checkout.
 
 ```sh
 git clone https://github.com/HermitHan/han-lisp.git
@@ -38,9 +38,11 @@ To use Han from your own ASDF system, add `"han"` to its `:depends-on` list once
 
 ## Design philosophy
 
-The six runtime packages outside `han.host` use one ANSI Common Lisp codebase. Implementation calls, operating-system conventions and reader conditionals such as `#+` and `#-` belong in `han.host`. ASDF selects the SBCL or LispWorks adapter. For example, `han.json` parses four hex digits and combines surrogate pairs; the host maps the resulting Unicode scalar to a Lisp character and opens files in UTF-8.
+The six runtime packages outside `han.host` use one ANSI Common Lisp codebase. Implementation calls, operating-system conventions and reader conditionals such as `#+` and `#-` belong in `han.host`. ASDF selects the SBCL, LispWorks or ECL adapter. For example, `han.json` parses four hex digits and combines surrogate pairs; the host maps the resulting Unicode scalar to a Lisp character and opens files in UTF-8.
 
 A shared interface promises the same meaning, not identical observations from different machines. Executable lookup preserves each machine’s search order; a child’s live status reflects what its backend can observe. To obtain an ordinary exit code, wait for the child first. [Portability contracts and limits](docs/developer/README.md#portability-boundary)
+
+Each new host adapter is tested alongside the existing ones. A change to an existing backend starts with a reproducible defect. Before delivery, we also run TAFFISH against the candidate Han sources in its `vendor/han` directory. [Developer workflow](docs/developer/workflow.md#check-taffish-as-a-consumer)
 
 ## Packages
 
@@ -57,7 +59,7 @@ A shared interface promises the same meaning, not identical observations from di
 ## Run the tests
 
 - **Library tests.** From a fresh REPL in the checkout, load `load-han.dev.lisp` and call `(han.test:run-all-tests)`. [Shell command and prerequisites](docs/developer/workflow.md#run-the-suite-from-the-checkout)
-- **Reference examples.** Run `sbcl --script scripts/check-reference.lisp` in the checkout to check the exported symbols and execute the examples printed in the reference. [How examples are checked](docs/developer/workflow.md#verify-the-symbol-reference)
+- **Reference examples.** Run `sbcl --script scripts/check-reference.lisp` or `ecl -norc -shell scripts/check-reference.lisp` in the checkout to check the exported symbols and execute the examples printed in the reference. [How examples are checked](docs/developer/workflow.md#verify-the-symbol-reference)
 
 ## Origin and license
 

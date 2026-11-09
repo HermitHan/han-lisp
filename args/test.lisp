@@ -17,7 +17,7 @@
     (check-true (stringp help-string))
     (check-true (search "han.args" help-string))
     (check-true (search "parse-args-input" help-string)))
-  (check-equal "0.1.0" (han.args:version nil)))
+  (check-equal "0.2.0" (han.args:version nil)))
 
 (defun arg-binding-status-of (name result)
   (multiple-value-bind (value status)

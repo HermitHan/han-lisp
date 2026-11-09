@@ -1,24 +1,22 @@
 # `han.host:process-status`
 
-*Function · 函数*
+[简体中文](process-status.zh-CN.md)
 
-## Syntax · 语法
+*Function*
+
+## Syntax
 
 ```text
 (han.host:process-status process) → status keyword
 ```
 
-## Description · 说明
+## Description
 
-Queries a live handle without waiting. SBCL maps the native state to `:running`, `:exited` or `:unknown` (for example, a stopped process). LispWorks reports `:running` until an exit code is available, then `:exited`. Waiting first makes this example deterministic.
+Queries a live handle without waiting. SBCL and ECL map the native state to `:running`, `:exited` or `:unknown` (for example, a stopped process). LispWorks reports `:running` until an exit code is available, then `:exited`. Waiting first makes this example deterministic.
 
-非阻塞查询实际进程句柄。SBCL 将原生状态映射为 `:running`、`:exited` 或 `:unknown`（如暂停状态）。LispWorks 在取得退出码之前报告 `:running`，之后返回 `:exited`。示例先等待结束以取得确定结果。
-
-## Examples · 示例
+## Examples
 
 Query the status of a child after waiting for it to exit.
-
-等待子进程退出后再查询状态。
 
 ```lisp
 (let ((child (han.host:run-program "/bin/sh" :arguments '("-c" "exit 0"))))
@@ -31,8 +29,6 @@ Query the status of a child after waiting for it to exit.
 ```
 
 Inspect a running worker before releasing its file gate and waiting for exit.
-
-子进程等待私有文件信号时查询运行状态，再放行并取得结束状态。
 
 ```lisp
 (let ((root (uiop:ensure-directory-pathname (uiop:run-program '("mktemp" "-d") :output :line))))
@@ -51,4 +47,4 @@ Inspect a running worker before releasing its file gate and waiting for exit.
 ;; => (:RUNNING :EXITED)
 ```
 
-[`han.host:process-wait`](process-wait.md) · [`han.host:process-exit-code`](process-exit-code.md) · [sbcl.lisp](../../../host/sbcl.lisp) · [lispworks.lisp](../../../host/lispworks.lisp) · [Index · 索引](../README.md)
+[`han.host:process-wait`](process-wait.md) · [`han.host:process-exit-code`](process-exit-code.md) · [sbcl.lisp](../../../host/sbcl.lisp) · [lispworks.lisp](../../../host/lispworks.lisp) · [ecl.lisp](../../../host/ecl.lisp) · [Index](../README.md)

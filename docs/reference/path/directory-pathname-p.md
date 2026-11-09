@@ -1,24 +1,22 @@
 # `han.path:directory-pathname-p`
 
-*Predicate · 谓词*
+[简体中文](directory-pathname-p.zh-CN.md)
 
-## Syntax · 语法
+*Predicate*
+
+## Syntax
 
 ```text
 (han.path:directory-pathname-p x) → boolean
 ```
 
-## Description · 说明
+## Description
 
 Tests whether both the name and type are absent. Each can be `nil` or `:unspecific` in a native pathname. It inspects syntax and performs no filesystem probe. A Unix string ending in a slash is a typical directory designator.
 
-判断 pathname 的名称和类型分量是否都缺失。原生 pathname 可以用 `nil` 或 `:unspecific` 表示这两种分量缺失。这个判断只查看路径形式，无需访问文件系统。Unix 路径末尾的斜杠通常用来表示目录。
-
-## Examples · 示例
+## Examples
 
 Compare the same path spelling with and without a trailing slash.
-
-比较同一路径末尾带斜杠和不带斜杠时的判断结果。
 
 ```lisp
 (list (han.path:directory-pathname-p "/draft/reports/")
@@ -27,8 +25,6 @@ Compare the same path spelling with and without a trailing slash.
 ```
 
 Classify a proposed directory before it exists. Syntactic shape and successful probing are independent.
-
-在目录尚未创建时判断名称是否为目录形式，并与真实存在性区分。
 
 ```lisp
 (let ((root (uiop:ensure-directory-pathname (uiop:run-program '("mktemp" "-d") :output :line))))
@@ -39,4 +35,4 @@ Classify a proposed directory before it exists. Syntactic shape and successful p
 ;; => (T NIL)
 ```
 
-[`han.path:directory-exists-p`](directory-exists-p.md) · [`han.path:directory-pathname`](directory-pathname.md) · [Source · 源码](../../../path/core.lisp) · [Index · 索引](../README.md)
+[`han.path:directory-exists-p`](directory-exists-p.md) · [`han.path:directory-pathname`](directory-pathname.md) · [Source](../../../path/core.lisp) · [Index](../README.md)

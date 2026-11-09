@@ -1,24 +1,24 @@
 # `han.json:parse-json-file`
 
-*Function · 函数*
+[简体中文](parse-json-file.zh-CN.md)
 
-## Syntax · 语法
+*Function*
+
+## Syntax
 
 ```text
 (han.json:parse-json-file path) → value
 ```
 
-## Description · 说明
+## Description
 
 Open the pathname designator for character input with UTF-8 encoding, read its entire contents, then parse one JSON value. The input stream is closed on exit. Syntax errors signal `json-error`. File access errors propagate; handling of malformed UTF-8 bytes belongs to the host stream decoder. The example uses a temporary file managed by the UIOP included with ASDF.
 
-按路径指示符打开 UTF-8 字符输入流，将文件完整读入后解析一个 JSON 值。退出时会关闭输入流。语法错误触发 `json-error`。文件访问错误向外传递；非法 UTF-8 字节由宿主流的解码器处理。示例由 ASDF 自带的 UIOP 管理临时文件。
+For a file containing `22 F0 9F`, ECL 26.5.5 reaches EOF during UTF-8 decoding. The parser then signals `han.json:json-error` for the unclosed string. SBCL and LispWorks signal their stream-decoding errors while reading those bytes. [UTF-8 input](../host/with-open-utf8-file.md)
 
-## Examples · 示例
+## Examples
 
 Read an array from a temporary file and index its last element.
-
-从临时文件读取数组，再按下标访问末元素。
 
 ```lisp
 (uiop:with-temporary-file (:stream out :pathname path :external-format :utf-8)
@@ -30,8 +30,6 @@ Read an array from a temporary file and index its last element.
 
 Malformed syntax in an existing file reaches the same parser as a string.
 
-文件可以正常打开时，非法语法仍由 JSON 解析器报告。
-
 ```lisp
 (uiop:with-temporary-file (:stream out :pathname path :external-format :utf-8)
   (write-string "[1,]" out)
@@ -40,4 +38,4 @@ Malformed syntax in an existing file reaches the same parser as a string.
 ;; signals han.json:json-error
 ```
 
-[`parse-json`](parse-json.md) · [`read-json-file`](read-json-file.md) · [`write-json-file`](write-json-file.md) · [Source · 源码](../../../json/core.lisp#L381) · [Index · 索引](../README.md)
+[`parse-json`](parse-json.md) · [`read-json-file`](read-json-file.md) · [`write-json-file`](write-json-file.md) · [Source](../../../json/core.lisp#L381) · [Index](../README.md)

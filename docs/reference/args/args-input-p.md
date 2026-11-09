@@ -1,22 +1,22 @@
 # `han.args:args-input-p`
 
-*Predicate · 谓词*
+[简体中文](args-input-p.zh-CN.md)
 
-## Syntax · 语法
+*Predicate*
+
+## Syntax
 
 ```text
 (han.args:args-input-p object) → generalized-boolean
 ```
 
-## Description · 说明
+## Description
 
 Recognize a `args-input` structure. Any Lisp object can be passed. The predicate inspects its type without changing it.
 
-判断传入的 Lisp 对象是否为 `args-input` 结构。只检查对象类型，调用后对象保持原样。
+## Examples
 
-## Examples · 示例
-
-Recognize the object representing a complete invocation. Compare it with an unrelated keyword. 确认词法分析结果是完整的输入记录。再与无关关键字作对照。
+Recognize the object representing a complete invocation. Compare it with an unrelated keyword.
 
 ```lisp
 (let ((input (han.args:parse-args-input '("demo" "notes.txt" "@filter:" "--mode=fast"))))
@@ -24,7 +24,7 @@ Recognize the object representing a complete invocation. Compare it with an unre
 ;; => (t nil)
 ```
 
-Reuse already parsed arguments at a library boundary. 库的入口可以复用已经解析过的参数。
+Reuse already parsed arguments at a library boundary.
 
 ```lisp
 (flet ((ensure-input (value)
@@ -35,4 +35,4 @@ Reuse already parsed arguments at a library boundary. 库的入口可以复用�
 ;; => values (t "pack")
 ```
 
-[`han.args:args-input`](args-input.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source · 源码](../../../args/lexer.lisp) · [Index · 索引](../README.md)
+[`han.args:args-input`](args-input.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source](../../../args/lexer.lisp) · [Index](../README.md)

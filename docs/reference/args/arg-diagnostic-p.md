@@ -1,22 +1,22 @@
 # `han.args:arg-diagnostic-p`
 
-*Predicate · 谓词*
+[简体中文](arg-diagnostic-p.zh-CN.md)
 
-## Syntax · 语法
+*Predicate*
+
+## Syntax
 
 ```text
 (han.args:arg-diagnostic-p object) → generalized-boolean
 ```
 
-## Description · 说明
+## Description
 
 Recognize a `arg-diagnostic` structure. Any Lisp object can be passed. The predicate inspects its type without changing it.
 
-判断传入的 Lisp 对象是否为 `arg-diagnostic` 结构。只检查对象类型，调用后对象保持原样。
+## Examples
 
-## Examples · 示例
-
-Recognize the record generated for a token spelling warning. Compare it with an unrelated keyword. 核对可疑 token 写法所产生的诊断记录类型。再与无关关键字作对照。
+Recognize the record generated for a token spelling warning. Compare it with an unrelated keyword.
 
 ```lisp
 (let ((diagnostic
@@ -26,7 +26,7 @@ Recognize the record generated for a token spelling warning. Compare it with an 
 ;; => (t nil)
 ```
 
-Separate reported warnings from application events. 在事件列表中只收集解析诊断的严重程度。
+Separate reported warnings from application events.
 
 ```lisp
 (let ((items (list :started (han.args:make-arg-diagnostic :kind :warning)
@@ -36,4 +36,4 @@ Separate reported warnings from application events. 在事件列表中只收集�
 ;; => (:warning :error)
 ```
 
-[`han.args:arg-diagnostic`](arg-diagnostic.md) · [`han.args:args-result-diagnostics`](args-result-diagnostics.md) · [Source · 源码](../../../args/lexer.lisp) · [Index · 索引](../README.md)
+[`han.args:arg-diagnostic`](arg-diagnostic.md) · [`han.args:args-result-diagnostics`](args-result-diagnostics.md) · [Source](../../../args/lexer.lisp) · [Index](../README.md)

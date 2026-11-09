@@ -1,24 +1,22 @@
 # `han.host:version`
 
-*Function · 函数*
+[简体中文](version.zh-CN.md)
 
-## Syntax · 语法
+*Function*
+
+## Syntax
 
 ```text
 (han.host:version &optional (stream *standard-output*)) → version-string
 ```
 
-## Description · 说明
+## Description
 
 Returns the package version string. By default it also prints a labeled version line and a newline. A `nil` stream suppresses printing.
 
-返回包的版本字符串。默认同时输出一行带包名的版本信息和换行。传 `nil` 关闭打印。
-
-## Examples · 示例
+## Examples
 
 Request the version silently and check that the result is a string.
-
-静默读取版本号，确认返回值是字符串。
 
 ```lisp
 (stringp (han.host:version nil))
@@ -27,8 +25,6 @@ Request the version silently and check that the result is a string.
 
 Capture the printable banner for a command's version report.
 
-捕获带包名的版本行，组装命令的版本报告。
-
 ```lisp
 (let ((output (with-output-to-string (stream)
                 (han.host:version stream))))
@@ -36,4 +32,4 @@ Capture the printable banner for a command's version report.
 ;; => T
 ```
 
-[`han.host:help`](help.md) · [package.lisp](../../../host/package.lisp) · [Index · 索引](../README.md)
+[`han.host:help`](help.md) · [package.lisp](../../../host/package.lisp) · [Index](../README.md)

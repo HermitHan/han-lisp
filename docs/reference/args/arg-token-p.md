@@ -1,22 +1,22 @@
 # `han.args:arg-token-p`
 
-*Predicate · 谓词*
+[简体中文](arg-token-p.zh-CN.md)
 
-## Syntax · 语法
+*Predicate*
+
+## Syntax
 
 ```text
 (han.args:arg-token-p object) → generalized-boolean
 ```
 
-## Description · 说明
+## Description
 
 Recognize a `arg-token` structure. Any Lisp object can be passed. The predicate inspects its type without changing it.
 
-判断传入的 Lisp 对象是否为 `arg-token` 结构。只检查对象类型，调用后对象保持原样。
+## Examples
 
-## Examples · 示例
-
-Recognize an option record returned by the lexer. Compare it with an unrelated keyword. 核对词法分析得到的选项记录类型。再与无关关键字作对照。
+Recognize an option record returned by the lexer. Compare it with an unrelated keyword.
 
 ```lisp
 (let ((token
@@ -27,7 +27,7 @@ Recognize an option record returned by the lexer. Compare it with an unrelated k
 ;; => (t nil)
 ```
 
-Extract only tokens from a mixed log. 从混合日志中抽取 token 的原文。
+Extract only tokens from a mixed log.
 
 ```lisp
 (let ((log (list :start (han.args:make-arg-token :text "-v") :end)))
@@ -35,4 +35,4 @@ Extract only tokens from a mixed log. 从混合日志中抽取 token 的原文�
 ;; => ("-v")
 ```
 
-[`han.args:arg-token`](arg-token.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source · 源码](../../../args/lexer.lisp) · [Index · 索引](../README.md)
+[`han.args:arg-token`](arg-token.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source](../../../args/lexer.lisp) · [Index](../README.md)

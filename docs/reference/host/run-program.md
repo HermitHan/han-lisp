@@ -1,24 +1,28 @@
 # `han.host:run-program`
 
-*Function · 函数*
+[简体中文](run-program.zh-CN.md)
 
-## Syntax · 语法
+*Function*
+
+## Syntax
 
 ```text
 (han.host:run-program program &key (arguments '()) input directory environment) → host-process
 ```
 
-## Description · 说明
+## Description
 
-Starts an external program asynchronously. Supply an existing executable file path and its argument strings. `directory` and `environment` are passed to the active backend only when supplied explicitly. The result owns separate stdout and stderr pipes. The caller drains them, waits for termination, and closes the handle. A missing program signals an error.
+Starts an external program asynchronously. Supply an existing executable file path and its argument strings. Supply `directory` to start the child in an existing working directory. The parent keeps its current directory. Spaces and shell metacharacters in arguments remain literal. The result owns separate stdout and stderr pipes. The caller drains them, waits for termination, and closes the handle. A missing program signals an error.
 
-异步启动外部程序。传入已有可执行文件路径和参数字符串列表。仅当调用方显式指定时，才向后端传递 `directory` 和 `environment`。返回的句柄持有标准输出和标准错误管道，调用方负责读取、等待并关闭。程序文件不存在时报错。
+Omitting `environment` inherits the parent environment. On SBCL and ECL an explicit list such as `'("MODE=fast")` replaces it, and `:environment nil` starts with an empty environment. On LispWorks, an alist such as `'(("MODE" . "fast"))` augments the inherited environment. An explicit `nil` therefore inherits it unchanged. [LispWorks process reference](https://www.lispworks.com/documentation/lw81/lw/lw-sys-115.htm)
 
-## Examples · 示例
+On LispWorks and ECL, `(run-program "./worker" :directory dir ...)` selects the executable in `dir`. The child receives `"./worker"` as its program name. The operating system’s working directory and the environment variables `PWD` and `OLDPWD` are independent. The child can run in `dir` and still receive values explicitly provided for those variables. SBCL checks that a relative program exists in the parent directory before launch. Use an absolute executable path when the same invocation must work on all three implementations. On Linux, LispWorks 8.1.2 needs a readable, searchable child directory and access to `/proc/self/fd`. A directory with mode `0111` produced a permission error on Linux and allowed the child to start on macOS. If execution fails, check both the launch and the child’s [exit status](process-exit-code.md). ECL signals a launch error for an executable script with a missing interpreter. LispWorks may return a process handle for that case and report failure when the caller waits.
+
+On ECL, supplying `:directory` requires the system C library to support changing the child’s directory during `posix_spawn`. If that operation is unavailable, the call signals a launch error.
+
+## Examples
 
 Start a shell, wait for it to finish, then read its output and exit code.
-
-启动一个 shell，等待它结束，再读取输出和退出码。
 
 ```lisp
 (let ((child (han.host:run-program "/bin/sh" :arguments '("-c" "printf ok"))))
@@ -33,24 +37,38 @@ Start a shell, wait for it to finish, then read its output and exit code.
 
 Run a tool in a caller-specified working directory while keeping the parent's directory unchanged.
 
-在调用方选定的目录运行工具，同时保留父进程的工作目录。
-
 ```lisp
 (let ((root (uiop:ensure-directory-pathname (uiop:run-program '("mktemp" "-d") :output :line))))
   (unwind-protect
        (let ((child (han.host:run-program "/bin/pwd" :directory root)))
          (unwind-protect
               (progn (han.host:process-wait child)
-                     (equal (truename root)
-                            (truename (read-line (han.host:host-process-output-stream child)))))
+                     (let ((reported (read-line (han.host:host-process-output-stream child))))
+                       (string= (namestring (truename root))
+                                (namestring (truename (uiop:ensure-directory-pathname reported))))))
            (han.host:process-close child)))
     (uiop:delete-directory-tree root :validate t :if-does-not-exist :ignore)))
 ;; => T
 ```
 
-Passing a missing executable path fails at launch, before a process handle is returned.
+Start in the filesystem root and read the caller’s explicit `PWD` value from the child.
 
-程序路径缺失时，启动阶段即触发错误，不会返回可用句柄。
+```lisp
+(let* ((environment #+lispworks '(("PWD" . "caller-value"))
+                    #-lispworks '("PWD=caller-value"))
+       (child (han.host:run-program "/usr/bin/printenv"
+                                    :arguments '("PWD")
+                                    :directory #P"/"
+                                    :environment environment)))
+  (unwind-protect
+       (let ((line (read-line (han.host:host-process-output-stream child) nil)))
+         (han.host:process-wait child)
+         (list line (han.host:process-exit-code child)))
+    (han.host:process-close child)))
+;; => ("caller-value" 0)
+```
+
+Passing a missing executable path fails at launch, before a process handle is returned.
 
 ```lisp
 (uiop:with-temporary-file (:pathname file)
@@ -58,4 +76,4 @@ Passing a missing executable path fails at launch, before a process handle is re
 ;; signals simple-error
 ```
 
-[`han.host:run-program-sync`](run-program-sync.md) · [`han.host:process-wait`](process-wait.md) · [`han.host:process-close`](process-close.md) · [sbcl.lisp](../../../host/sbcl.lisp) · [lispworks.lisp](../../../host/lispworks.lisp) · [Index · 索引](../README.md)
+[`han.host:run-program-sync`](run-program-sync.md) · [`han.host:process-wait`](process-wait.md) · [`han.host:process-close`](process-close.md) · [sbcl.lisp](../../../host/sbcl.lisp) · [lispworks.lisp](../../../host/lispworks.lisp) · [ecl.lisp](../../../host/ecl.lisp) · [Index](../README.md)

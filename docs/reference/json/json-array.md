@@ -1,24 +1,22 @@
 # `han.json:json-array`
 
-*Function · 函数*
+[简体中文](json-array.zh-CN.md)
 
-## Syntax · 语法
+*Function*
+
+## Syntax
 
 ```text
 (han.json:json-array &rest values) → vector
 ```
 
-## Description · 说明
+## Description
 
 Collect the arguments, in order, into a vector. With no arguments the result represents `[]`. Lisp `nil` supplied as an element encodes as JSON `false`. The constructor accepts Lisp objects as elements, and JSON encoding later checks whether it can write them.
 
-按传入顺序把各值组成向量。没有参数时结果表示 `[]`。元素若是 Lisp 的 `nil`，编码到 JSON 时写作 `false`。构造器允许传入 Lisp 对象，编码器在输出时检查它们能否写入 JSON。
-
-## Examples · 示例
+## Examples
 
 Mix a string, false and null in one row.
-
-在同一行保存字符串、假值和空值。
 
 ```lisp
 (let ((row (han.json:json-array "read" nil :null)))
@@ -28,12 +26,10 @@ Mix a string, false and null in one row.
 
 An empty collection and a false flag have different encodings.
 
-空集合与值为假的开关会编码为不同文本。
-
 ```lisp
 (mapcar (lambda (value) (han.json:encode-json value :indent nil))
         (list (han.json:json-array) nil))
 ;; => ("[]" "false")
 ```
 
-[`json-array-p`](json-array-p.md) · [`encode-json`](encode-json.md) · [Source · 源码](../../../json/core.lisp#L24) · [Index · 索引](../README.md)
+[`json-array-p`](json-array-p.md) · [`encode-json`](encode-json.md) · [Source](../../../json/core.lisp#L24) · [Index](../README.md)

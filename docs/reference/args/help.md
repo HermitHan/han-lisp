@@ -1,22 +1,22 @@
 # `han.args:help`
 
-*Function · 函数*
+[简体中文](help.zh-CN.md)
 
-## Syntax · 语法
+*Function*
+
+## Syntax
 
 ```text
 (han.args:help &optional (stream *standard-output*)) → string
 ```
 
-## Description · 说明
+## Description
 
 Return the package's built-in help text covering specifications, input parsing, binding, and lookup. When `stream` is non-nil, write the same text there. Pass `nil` to use the returned string without printing.
 
-返回包内帮助文字，涵盖规格、输入解析、绑定和查询。`stream` 非空时也向该流写出这段文字；希望直接使用返回的字符串时可传 `nil`。
+## Examples
 
-## Examples · 示例
-
-Search the built-in help without printing it. 直接搜索帮助文本，同时保持当前输出流安静。
+Search the built-in help without printing it.
 
 ```lisp
 (let ((text (han.args:help nil)))
@@ -24,7 +24,7 @@ Search the built-in help without printing it. 直接搜索帮助文本，同时�
 ;; => t
 ```
 
-Capture the printed help and compare it with the returned text. 捕获写给指定流的帮助，并和返回的字符串核对。
+Capture the printed help and compare it with the returned text.
 
 ```lisp
 (let* ((stream (make-string-output-stream))
@@ -33,4 +33,4 @@ Capture the printed help and compare it with the returned text. 捕获写给指�
 ;; => t
 ```
 
-[`han.args:version`](version.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source · 源码](../../../args/package.lisp) · [Index · 索引](../README.md)
+[`han.args:version`](version.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source](../../../args/package.lisp) · [Index](../README.md)

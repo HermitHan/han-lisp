@@ -1,23 +1,23 @@
 # `han.args:arg-spec-long-entry`
 
-*Accessor · 访问器*
+[简体中文](arg-spec-long-entry.zh-CN.md)
 
-## Syntax · 语法
+*Accessor*
+
+## Syntax
 
 ```text
 (han.args:arg-spec-long-entry spec) → string or nil
 (setf (han.args:arg-spec-long-entry spec) new-value) → new-value
 ```
 
-## Description · 说明
+## Description
 
 Return the long option spelling, including its leading `--`. A shorthand `--` in the declaration expands to the full argument name. A declaration with no long spelling leaves this field `nil`.
 
-返回含前导 `--` 的长选项写法。规格中的简写 `--` 会展开为该参数的全名；没有声明长选项时为 `nil`。
+## Examples
 
-## Examples · 示例
-
-Inspect an automatically expanded long spelling. 查看按参数名自动展开的长选项。
+Inspect an automatically expanded long spelling.
 
 ```lisp
 (let ((spec (han.args:parse-arg-spec "!(--/-j)jobs")))
@@ -25,11 +25,11 @@ Inspect an automatically expanded long spelling. 查看按参数名自动展开�
 ;; => "--jobs"
 ```
 
-Detect whether a short-only declaration has a long spelling. 只声明短选项时，可以判断长入口是否存在。
+Detect whether a short-only declaration has a long spelling.
 
 ```lisp
 (han.args:arg-spec-long-entry (han.args:parse-arg-spec "(-j)jobs"))
 ;; => nil
 ```
 
-[`han.args:arg-spec`](arg-spec.md) · [`han.args:parse-arg-spec`](parse-arg-spec.md) · [Source · 源码](../../../args/spec.lisp) · [Index · 索引](../README.md)
+[`han.args:arg-spec`](arg-spec.md) · [`han.args:parse-arg-spec`](parse-arg-spec.md) · [Source](../../../args/spec.lisp) · [Index](../README.md)

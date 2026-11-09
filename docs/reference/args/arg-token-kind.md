@@ -1,23 +1,23 @@
 # `han.args:arg-token-kind`
 
-*Accessor · 访问器*
+[简体中文](arg-token-kind.zh-CN.md)
 
-## Syntax · 语法
+*Accessor*
+
+## Syntax
 
 ```text
 (han.args:arg-token-kind token) → keyword
 (setf (han.args:arg-token-kind token) new-value) → new-value
 ```
 
-## Description · 说明
+## Description
 
 Return the lexical class of the element. Parsed tokens use `:long-option`, `:short-option`, `:slot-switch`, or `:value`. Classification happens before matching against the command's declarations.
 
-返回该元素的词法类别。解析得到的 token 使用 `:long-option`、`:short-option`、`:slot-switch` 或 `:value`。分类在匹配命令规格之前进行。
+## Examples
 
-## Examples · 示例
-
-Identify an attached long option. 判断带内联值的长选项属于哪一类。
+Identify an attached long option.
 
 ```lisp
 (let ((token
@@ -28,7 +28,7 @@ Identify an attached long option. 判断带内联值的长选项属于哪一类�
 ;; => :long-option
 ```
 
-Classify tokens before binding any options. 在没有命令规格时也能区分选项、槽标记和普通值。
+Classify tokens before binding any options.
 
 ```lisp
 (let ((input
@@ -37,4 +37,4 @@ Classify tokens before binding any options. 在没有命令规格时也能区分
 ;; => (:short-option :long-option :slot-switch :value)
 ```
 
-[`han.args:arg-token`](arg-token.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source · 源码](../../../args/lexer.lisp) · [Index · 索引](../README.md)
+[`han.args:arg-token`](arg-token.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source](../../../args/lexer.lisp) · [Index](../README.md)

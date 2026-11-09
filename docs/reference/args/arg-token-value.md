@@ -1,23 +1,23 @@
 # `han.args:arg-token-value`
 
-*Accessor · 访问器*
+[简体中文](arg-token-value.zh-CN.md)
 
-## Syntax · 语法
+*Accessor*
+
+## Syntax
 
 ```text
 (han.args:arg-token-value token) → string or nil
 (setf (han.args:arg-token-value token) new-value) → new-value
 ```
 
-## Description · 说明
+## Description
 
 Return the normalized token value. An option yields the name without dashes or attached value, a named slot yields its name, and an ordinary value yields its text. The switch `@:` has value `nil`.
 
-返回 token 的规范化值。选项返回去掉前导短横线和附加值的名称，命名槽返回槽名，普通值返回原文。切回顶层的 `@:` 对应 `nil`。
+## Examples
 
-## Examples · 示例
-
-Read the lookup name from an attached option. 从带内联值的选项取得名称。
+Read the lookup name from an attached option.
 
 ```lisp
 (let ((token
@@ -28,7 +28,7 @@ Read the lookup name from an attached option. 从带内联值的选项取得名�
 ;; => "jobs"
 ```
 
-Read the markers for entering a slot and returning to the top level. 查看进入命名槽和返回顶层时标记所携带的值。
+Read the markers for entering a slot and returning to the top level.
 
 ```lisp
 (let ((input
@@ -37,4 +37,4 @@ Read the markers for entering a slot and returning to the top level. 查看进�
 ;; => ("files" "a.txt" nil)
 ```
 
-[`han.args:arg-token`](arg-token.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source · 源码](../../../args/lexer.lisp) · [Index · 索引](../README.md)
+[`han.args:arg-token`](arg-token.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source](../../../args/lexer.lisp) · [Index](../README.md)

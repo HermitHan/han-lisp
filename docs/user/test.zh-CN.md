@@ -1,6 +1,6 @@
 # han.test · 注册和运行测试
 
-[用户手册](README.zh-CN.md) · [English](test.md) · [本包符号参考](../reference/README.md#test)
+[用户手册](README.zh-CN.md) · [English](test.md) · [本包符号参考](../reference/README.zh-CN.md#test)
 
 `han.test` 用符号为测试命名，把测试登记到当前 Lisp 进程中，供调用方执行。运行系统 `han` 已包含测试框架，应用可以用它写自己的测试。开发系统 `han.dev` 还会加载 Han 各模块的测试用例。
 
@@ -45,14 +45,14 @@
 
 | 导出名 | 行为 |
 | --- | --- |
-| [`*tests*`](../reference/test/var-tests.md) | 保存当前注册表的特殊变量。通过 `let` 将其绑定为 `nil`，可隔离一组测试。 |
-| [`(reset-tests)`](../reference/test/reset-tests.md) | 清空当前注册表并返回 `t`。 |
-| [`(deftest name () &body body)`](../reference/test/deftest.md) | 宏。以给定符号为名注册测试，返回该符号。 |
-| [`(run-test name)`](../reference/test/run-test.md) | 按符号运行一个已注册的测试并打印结果。通过时返回 `t`，测试体报错时返回 `nil`。查询未注册的名称会向调用方发出错误。 |
-| [`(run-all-tests)`](../reference/test/run-all-tests.md) | 按注册顺序运行当前注册表中的测试，打印每项结果及汇总，依次返回通过数、失败数两个整数。空套件返回两个零。 |
-| [`(check-true form)`](../reference/test/check-true.md)、[`(check-false form)`](../reference/test/check-false.md) | 宏。分别要求表达式的主值为非 `nil` 或 `nil`。成功返回 `t`，失败发出错误。 |
-| [`(check-equal expected form)`](../reference/test/check-equal.md) | 宏。两个表达式各求值一次，用 `equal` 比较主值，成功返回 `t`，失败发出错误。要检查多个返回值时，可先用 `multiple-value-list` 收集。 |
-| [`(check-error (condition-type) &body body)`](../reference/test/check-error.md) | 宏。捕获到给定类型的条件时返回 `t`，测试体发出的其他类型错误继续向外传递。 |
-| [`(help &optional stream)`](../reference/test/help.md)、[`(version &optional stream)`](../reference/test/version.md) | 返回帮助或版本字符串，默认也打印到标准输出。传入 `nil` 时只返回字符串，传入流则另向该流打印。 |
+| [`*tests*`](../reference/test/var-tests.zh-CN.md) | 保存当前注册表的特殊变量。通过 `let` 将其绑定为 `nil`，可隔离一组测试。 |
+| [`(reset-tests)`](../reference/test/reset-tests.zh-CN.md) | 清空当前注册表并返回 `t`。 |
+| [`(deftest name () &body body)`](../reference/test/deftest.zh-CN.md) | 宏。以给定符号为名注册测试，返回该符号。 |
+| [`(run-test name)`](../reference/test/run-test.zh-CN.md) | 按符号运行一个已注册的测试并打印结果。通过时返回 `t`，测试体报错时返回 `nil`。查询未注册的名称会向调用方发出错误。 |
+| [`(run-all-tests)`](../reference/test/run-all-tests.zh-CN.md) | 按注册顺序运行当前注册表中的测试，打印每项结果及汇总，依次返回通过数、失败数两个整数。空套件返回两个零。 |
+| [`(check-true form)`](../reference/test/check-true.zh-CN.md)、[`(check-false form)`](../reference/test/check-false.zh-CN.md) | 宏。分别要求表达式的主值为非 `nil` 或 `nil`。成功返回 `t`，失败发出错误。 |
+| [`(check-equal expected form)`](../reference/test/check-equal.zh-CN.md) | 宏。两个表达式各求值一次，用 `equal` 比较主值，成功返回 `t`，失败发出错误。要检查多个返回值时，可先用 `multiple-value-list` 收集。 |
+| [`(check-error (condition-type) &body body)`](../reference/test/check-error.zh-CN.md) | 宏。捕获到给定类型的条件时返回 `t`，测试体发出的其他类型错误继续向外传递。 |
+| [`(help &optional stream)`](../reference/test/help.zh-CN.md)、[`(version &optional stream)`](../reference/test/version.zh-CN.md) | 返回帮助或版本字符串，默认也打印到标准输出。传入 `nil` 时只返回字符串，传入流则另向该流打印。 |
 
 [导出声明](../../test/package.lisp) · [运行器与断言实现](../../test/core.lisp) · [测试套件示例](../../json/test.lisp)

@@ -130,6 +130,8 @@ def run_in_listener(driver, cases_file, results_file, start_timeout):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--ecl", metavar="EXECUTABLE",
+                      help="run the probe using this ECL executable")
     mode.add_argument("--lispworks", metavar="EXECUTABLE",
                       help="use a batch-capable LispWorks in place of SBCL")
     mode.add_argument("--listener", action="store_true",
@@ -143,8 +145,12 @@ def main():
     curl = shutil.which("curl")
     if not curl:
         parser.error("curl must be on PATH")
-    command = ([args.lispworks, "-build", driver] if args.lispworks else
-               ["sbcl", "--noinform", "--no-sysinit", "--no-userinit", "--script", driver])
+    if args.ecl:
+        command = [args.ecl, "-norc", "-shell", driver]
+    elif args.lispworks:
+        command = [args.lispworks, "-build", driver]
+    else:
+        command = ["sbcl", "--noinform", "--no-sysinit", "--no-userinit", "--script", driver]
     env = {k: v for k, v in os.environ.items() if not k.lower().endswith("_proxy")}
     env["LC_ALL"] = "C"
     version = subprocess.check_output([curl, "--disable", "--version"], env=env, text=True)

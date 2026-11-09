@@ -1,23 +1,23 @@
 # `han.args:arg-spec-visibility`
 
-*Accessor · 访问器*
+[简体中文](arg-spec-visibility.zh-CN.md)
 
-## Syntax · 语法
+*Accessor*
+
+## Syntax
 
 ```text
 (han.args:arg-spec-visibility spec) → keyword
 (setf (han.args:arg-spec-visibility spec) new-value) → new-value
 ```
 
-## Description · 说明
+## Description
 
 Return `:public` or `:hidden`. A `%` prefix marks a declaration as hidden. Help generators can read this metadata when choosing which arguments to display.
 
-返回 `:public` 或 `:hidden`。规格前缀 `%` 表示隐藏。编写帮助生成器时，可以用此字段选择需要展示的参数。
+## Examples
 
-## Examples · 示例
-
-Read the visibility of a hidden setting. 读取隐藏设置的可见性。
+Read the visibility of a hidden setting.
 
 ```lisp
 (let ((spec (han.args:parse-arg-spec "%mode=brief")))
@@ -25,7 +25,7 @@ Read the visibility of a hidden setting. 读取隐藏设置的可见性。
 ;; => :hidden
 ```
 
-Choose declarations for public help. 用可见性筛出应出现在公开帮助里的声明。
+Choose declarations for public help.
 
 ```lisp
 (mapcar #'han.args:arg-spec-name
@@ -35,4 +35,4 @@ Choose declarations for public help. 用可见性筛出应出现在公开帮助�
 ;; => ("name")
 ```
 
-[`han.args:arg-spec`](arg-spec.md) · [`han.args:parse-arg-spec`](parse-arg-spec.md) · [Source · 源码](../../../args/spec.lisp) · [Index · 索引](../README.md)
+[`han.args:arg-spec`](arg-spec.md) · [`han.args:parse-arg-spec`](parse-arg-spec.md) · [Source](../../../args/spec.lisp) · [Index](../README.md)

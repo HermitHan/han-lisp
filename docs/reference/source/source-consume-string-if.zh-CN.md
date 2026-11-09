@@ -1,0 +1,36 @@
+# `han.source:source-consume-string-if`
+
+[English](source-consume-string-if.md)
+
+*函数*
+
+## 语法
+
+```text
+(han.source:source-consume-string-if source str) → string-or-nil
+```
+
+## 说明
+
+匹配到 `str` 前缀时消耗它并返回传入的字符串；不匹配则返回 `nil` 并停在原位。空串能匹配但不会推进游标，在循环解析中要注意这一点。
+
+## 示例
+
+**尝试两种前缀并消耗匹配的 `::`**
+
+```lisp
+(let ((src (han.source:make-char-source "::tag")))
+  (list (han.source:source-consume-string-if src "->") (han.source:source-consume-string-if src "::")
+        (han.source:source-peek-char src)))
+;; => (NIL "::" #\t)
+```
+
+**空分隔符匹配成功但不推进位置**
+
+```lisp
+(let ((src (han.source:make-char-source "ab")))
+  (values (han.source:source-consume-string-if src "") (han.source:source-location src)))
+;; => values ("" 0)
+```
+
+[`han.source:source-match-string-p`](source-match-string-p.zh-CN.md) · [`han.source:source-consume-char-if`](source-consume-char-if.zh-CN.md) · [源码](../../../source/char-source.lisp) · [索引](../README.zh-CN.md)

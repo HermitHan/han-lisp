@@ -1,10 +1,8 @@
-# Symbol index · 字母索引
+# Symbol index
 
-[By package · 按包查找](README.md)
+[简体中文](symbols.zh-CN.md) · [By package](README.md)
 
 Names are sorted without their package prefix. Identical names in different packages have separate entries. `*` and `->` names appear under **Symbols**.
-
-按去掉包名前缀后的符号名排列；同名符号用包名区分。以 `*` 或 `->` 开头的符号归入 **Symbols**。
 
 [Symbols](#symbols) · [A](#a) · [B](#b) · [C](#c) · [D](#d) · [E](#e) · [F](#f) · [G](#g) · [H](#h) · [J](#j) · [K](#k) · [L](#l) · [M](#m) · [P](#p) · [Q](#q) · [R](#r) · [S](#s) · [T](#t) · [U](#u) · [V](#v) · [W](#w)
 

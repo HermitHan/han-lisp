@@ -9,7 +9,7 @@
     (check-true (stringp help-string))
     (check-true (search "han.source" help-string))
     (check-true (search "source-read-while" help-string)))
-  (check-equal "0.1.0" (han.source:version nil)))
+  (check-equal "0.2.0" (han.source:version nil)))
 
 (unless (fboundp 'signal-error-p)
   (defun signal-error-p (thunk)

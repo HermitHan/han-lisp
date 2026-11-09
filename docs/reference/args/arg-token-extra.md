@@ -1,23 +1,23 @@
 # `han.args:arg-token-extra`
 
-*Accessor · 访问器*
+[简体中文](arg-token-extra.zh-CN.md)
 
-## Syntax · 语法
+*Accessor*
+
+## Syntax
 
 ```text
 (han.args:arg-token-extra token) → string or nil
 (setf (han.args:arg-token-extra token) new-value) → new-value
 ```
 
-## Description · 说明
+## Description
 
 For an option with `=`, return the part after the first equals sign with surrounding space characters trimmed. `--jobs=` yields the empty string. An option without `=` has `nil` here even when the next token supplies its value.
 
-对带 `=` 的选项，返回首个等号后面的部分，并去掉两端的普通空格。`--jobs=` 返回空字符串；选项本身没有等号时返回 `nil`，即使后一项提供了值。
+## Examples
 
-## Examples · 示例
-
-Extract a value attached by an equals sign. 取出选项等号后附带的值。
+Extract a value attached by an equals sign.
 
 ```lisp
 (let ((token
@@ -28,7 +28,7 @@ Extract a value attached by an equals sign. 取出选项等号后附带的值。
 ;; => "4"
 ```
 
-Distinguish a missing attached value from an explicitly empty one. 区分没有内联赋值和显式提供空字符串。
+Distinguish a missing attached value from an explicitly empty one.
 
 ```lisp
 (let ((input
@@ -37,4 +37,4 @@ Distinguish a missing attached value from an explicitly empty one. 区分没有�
 ;; => (nil "" "a=b")
 ```
 
-[`han.args:arg-token`](arg-token.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source · 源码](../../../args/lexer.lisp) · [Index · 索引](../README.md)
+[`han.args:arg-token`](arg-token.md) · [`han.args:parse-args-input`](parse-args-input.md) · [Source](../../../args/lexer.lisp) · [Index](../README.md)

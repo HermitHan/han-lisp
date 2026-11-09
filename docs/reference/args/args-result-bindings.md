@@ -1,23 +1,23 @@
 # `han.args:args-result-bindings`
 
-*Accessor · 访问器*
+[简体中文](args-result-bindings.zh-CN.md)
 
-## Syntax · 语法
+*Accessor*
+
+## Syntax
 
 ```text
 (han.args:args-result-bindings result) → hash table
 (setf (han.args:args-result-bindings result) new-value) → new-value
 ```
 
-## Description · 说明
+## Description
 
 Return the `equalp` table of ordinary bindings, keyed by argument name or position. Inspect each `arg-binding` for the raw value, originating declaration, and binder status.
 
-返回存放普通绑定的 `equalp` 哈希表，键为参数名称或位置编号。取得 `arg-binding` 后可检查原始值、对应声明及绑定状态。
+## Examples
 
-## Examples · 示例
-
-Read a raw binding by its canonical name. 按标准查询名取得普通绑定。
+Read a raw binding by its canonical name.
 
 ```lisp
 (let ((result
@@ -28,7 +28,7 @@ Read a raw binding by its canonical name. 按标准查询名取得普通绑定�
 ;; => "4"
 ```
 
-Find the binding record of an absent flag. 开关缺省时，绑定表仍保留该声明的记录。
+Find the binding record of an absent flag.
 
 ```lisp
 (let ((result
@@ -42,4 +42,4 @@ Find the binding record of an absent flag. 开关缺省时，绑定表仍保留�
 ;; => values (t :missing)
 ```
 
-[`han.args:args-result`](args-result.md) · [`han.args:bind-args`](bind-args.md) · [Source · 源码](../../../args/bind.lisp) · [Index · 索引](../README.md)
+[`han.args:args-result`](args-result.md) · [`han.args:bind-args`](bind-args.md) · [Source](../../../args/bind.lisp) · [Index](../README.md)

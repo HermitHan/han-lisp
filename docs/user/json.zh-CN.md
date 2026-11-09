@@ -1,6 +1,6 @@
 # han.json · 读写 JSON
 
-[用户手册](README.zh-CN.md) · [English](json.md) · [本包符号参考](../reference/README.md#json)
+[用户手册](README.zh-CN.md) · [English](json.md) · [本包符号参考](../reference/README.zh-CN.md#json)
 
 `han.json` 可以读取配置文档，用普通 Lisp 数据结构查询、修改内容，再写回 JSON。解析出的对象是采用 `equal` 比较的哈希表，字符串键区分大小写。数组是向量，因此可以将对象查询与 Common Lisp 的序列操作组合使用。
 
@@ -45,7 +45,9 @@
 
 ## 字符与数值的边界
 
-`\u6C49` 这样的转义解析为一个 Lisp 字符；`\uD83D\uDE00` 这样的代理对也解析为一个字符（U+1F600）。单独的代理码或宿主无法映射的标量会触发 [`json-error`](../reference/json/json-error.md)。写字符串时，可打印 ASCII 范围之外的字符会被转义，因此直接输入字符和输入等价的 Unicode 转义，重新编码后结果相同。文件接口指定 UTF-8；传给 `write-json` 的字符流沿用打开时的编码。
+`\u6C49` 这样的转义解析为一个 Lisp 字符；`\uD83D\uDE00` 这样的代理对也解析为一个字符（U+1F600）。单独的代理码或宿主无法映射的标量会触发 [`json-error`](../reference/json/json-error.zh-CN.md)。写字符串时，可打印 ASCII 范围之外的字符会被转义，因此直接输入字符和输入等价的 Unicode 转义，重新编码后结果相同。文件接口指定 UTF-8；传给 `write-json` 的字符流沿用打开时的编码。
+
+读取含非法 UTF-8 的文件时，错误类型取决于读取停在哪一步。ECL 26.5.5 在不完整的多字节字符处可能遇到 EOF，接下来由解析器报告 JSON 字符串未闭合。[文件解码实例](../reference/json/parse-json-file.zh-CN.md)
 
 整数字面量可以精确表示。带小数点或指数的数会转为宿主的 `double-float`，可能发生舍入；指数过大或过小还可能触发算术条件。例如，价格必须精确时，可以用整数记录分。写出时，整数始终使用十进制，有限浮点数的具体写法可以因 Lisp 实现而异。调用方无需绑定 Lisp 的打印变量。
 
@@ -55,21 +57,21 @@
 
 | 读取与构造 | 行为 |
 | --- | --- |
-| [`(parse-json string)`](../reference/json/parse-json.md) | 解析一个完整 JSON 值，允许末尾空白。语法错误、尾逗号或尾随的第二个值会触发 [`json-error`](../reference/json/json-error.md)。 |
-| [`(parse-json-file path)`](../reference/json/parse-json-file.md)、[`(read-json-file path)`](../reference/json/read-json-file.md) | 按 UTF-8 将文件完整读入并解析，二者都返回解码值。文件系统错误按原有条件类型传出。 |
-| [`(make-json-object &optional pairs)`](../reference/json/make-json-object.md) | 接受由字符串键 cons 对组成的列表，例如 `'(("count" . 2))`，返回新对象。 |
-| [`(json-object &rest pairs)`](../reference/json/json-object.md)、[`(json-array &rest values)`](../reference/json/json-array.md) | 将逐个传入的键值对构造成新对象，或将逐个传入的值组成向量。 |
-| [`(json-object-p value)`](../reference/json/json-object-p.md)、[`(json-array-p value)`](../reference/json/json-array-p.md)、[`(json-null-p value)`](../reference/json/json-null-p.md) | 分别判断哈希表、非字符串向量和 `:null`。前两者只检查容器类型，元素内容需另外验证。 |
-| [`(json-keys object)`](../reference/json/json-keys.md) | 返回按 `string<` 排序的字符串键列表。 |
-| [`(get-json object key &optional default)`](../reference/json/get-json.md) | 按字符串键查询，返回字段值和存在标志。 |
-| [`(set-json object key value)`](../reference/json/set-json.md) | 原地更新哈希表，返回刚存入的值。 |
+| [`(parse-json string)`](../reference/json/parse-json.zh-CN.md) | 解析一个完整 JSON 值，允许末尾空白。语法错误、尾逗号或尾随的第二个值会触发 [`json-error`](../reference/json/json-error.zh-CN.md)。 |
+| [`(parse-json-file path)`](../reference/json/parse-json-file.zh-CN.md)、[`(read-json-file path)`](../reference/json/read-json-file.zh-CN.md) | 按 UTF-8 将文件完整读入并解析，二者都返回解码值。文件系统错误按原有条件类型传出。 |
+| [`(make-json-object &optional pairs)`](../reference/json/make-json-object.zh-CN.md) | 接受由字符串键 cons 对组成的列表，例如 `'(("count" . 2))`，返回新对象。 |
+| [`(json-object &rest pairs)`](../reference/json/json-object.zh-CN.md)、[`(json-array &rest values)`](../reference/json/json-array.zh-CN.md) | 将逐个传入的键值对构造成新对象，或将逐个传入的值组成向量。 |
+| [`(json-object-p value)`](../reference/json/json-object-p.zh-CN.md)、[`(json-array-p value)`](../reference/json/json-array-p.zh-CN.md)、[`(json-null-p value)`](../reference/json/json-null-p.zh-CN.md) | 分别判断哈希表、非字符串向量和 `:null`。前两者只检查容器类型，元素内容需另外验证。 |
+| [`(json-keys object)`](../reference/json/json-keys.zh-CN.md) | 返回按 `string<` 排序的字符串键列表。 |
+| [`(get-json object key &optional default)`](../reference/json/get-json.zh-CN.md) | 按字符串键查询，返回字段值和存在标志。 |
+| [`(set-json object key value)`](../reference/json/set-json.zh-CN.md) | 原地更新哈希表，返回刚存入的值。 |
 
 | 输出与诊断 | 行为 |
 | --- | --- |
-| [`(encode-json value &key (indent 2))`](../reference/json/encode-json.md) | 返回 JSON 文本字符串。 |
-| [`(write-json value stream &key (indent 2))`](../reference/json/write-json.md) | 写入字符输出流，返回传入的值。 |
-| [`(write-json-file path value &key (indent 2))`](../reference/json/write-json-file.md) | 创建缺少的父目录，并以 UTF-8 写文件。目标存在时会覆盖。返回传入的路径。 |
+| [`(encode-json value &key (indent 2))`](../reference/json/encode-json.zh-CN.md) | 返回 JSON 文本字符串。 |
+| [`(write-json value stream &key (indent 2))`](../reference/json/write-json.zh-CN.md) | 写入字符输出流，返回传入的值。 |
+| [`(write-json-file path value &key (indent 2))`](../reference/json/write-json-file.zh-CN.md) | 创建缺少的父目录，并以 UTF-8 写文件。目标存在时会覆盖。返回传入的路径。 |
 | `json-error` | JSON 语法错误或值无法表示时使用的条件类型。可通过 `handler-case` 捕获并向调用方报告。 |
-| [`(help &optional stream)`](../reference/json/help.md)、[`(version &optional stream)`](../reference/json/version.md) | 返回帮助文本或包版本字符串，默认也打印到标准输出。传入 `nil` 可以只取返回值。 |
+| [`(help &optional stream)`](../reference/json/help.zh-CN.md)、[`(version &optional stream)`](../reference/json/version.zh-CN.md) | 返回帮助文本或包版本字符串，默认也打印到标准输出。传入 `nil` 可以只取返回值。 |
 
 [导出声明](../../json/package.lisp) · [实现](../../json/core.lisp) · [回归测试](../../json/test.lisp)

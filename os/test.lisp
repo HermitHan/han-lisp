@@ -5,7 +5,7 @@
     (check-true (stringp help-string))
     (check-true (search "han.os" help-string))
     (check-true (search "run-shell-command" help-string)))
-  (check-equal "0.1.0" (han.os:version nil)))
+  (check-equal "0.2.0" (han.os:version nil)))
 
 ;; io.lisp
 ;; keep-read & keep-read-line & keep-read-char

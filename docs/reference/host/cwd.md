@@ -1,24 +1,22 @@
 # `han.host:cwd`
 
-*Function · 函数*
+[简体中文](cwd.zh-CN.md)
 
-## Syntax · 语法
+*Function*
+
+## Syntax
 
 ```text
 (han.host:cwd) → namestring or nil
 ```
 
-## Description · 说明
+## Description
 
 Returns the namestring of the resolved working directory, or `nil` if resolution fails. This returns a value suitable for display or for conversion to a pathname.
 
-返回工作目录解析后的名称字符串，无法解析时为 `nil`。结果可直接显示，也可以转换为 pathname。
-
-## Examples · 示例
+## Examples
 
 If a working directory is available, use its name to look up the directory.
-
-如果能取得工作目录，就用返回的名称查找该目录。
 
 ```lisp
 (let ((dir (han.host:cwd)))
@@ -28,16 +26,14 @@ If a working directory is available, use its name to look up the directory.
 
 Resolve a file supplied relative to a temporary working directory.
 
-在临时工作目录下将用户传入的相对文件名解析为绝对路径。
-
 ```lisp
 (let ((root (uiop:ensure-directory-pathname (uiop:run-program '("mktemp" "-d") :output :line))))
   (unwind-protect
        (uiop:with-current-directory (root)
-         (equal (han.path:absolute-pathname "draft.txt" (han.host:cwd))
-                (merge-pathnames "draft.txt" (truename root))))
+         (string= (namestring (han.path:absolute-pathname "draft.txt" (han.host:cwd)))
+                  (namestring (merge-pathnames "draft.txt" (truename root)))))
     (uiop:delete-directory-tree root :validate t :if-does-not-exist :ignore)))
 ;; => T
 ```
 
-[`han.host:working-directory-pathname`](working-directory-pathname.md) · [`han.os:current-directory`](../os/current-directory.md) · [common.lisp](../../../host/common.lisp) · [Index · 索引](../README.md)
+[`han.host:working-directory-pathname`](working-directory-pathname.md) · [`han.os:current-directory`](../os/current-directory.md) · [common.lisp](../../../host/common.lisp) · [Index](../README.md)

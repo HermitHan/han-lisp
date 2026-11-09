@@ -1,22 +1,22 @@
 # `han.source:source-span-from-source-p`
 
-*Predicate · 谓词*
+[简体中文](source-span-from-source-p.zh-CN.md)
 
-## Syntax · 语法
+*Predicate*
+
+## Syntax
 
 ```text
 (han.source:source-span-from-source-p span source &optional (report-error nil)) → boolean
 ```
 
-## Description · 说明
+## Description
 
 Returns true if `span` was formed from this source’s marks. A false result becomes an error when the optional argument is true. Reading more text in the original source does not invalidate a span.
 
-判断区间是否由此字符源的标记构造。来源不同时默认返回假，将可选参数设为真则报错。原游标继续读取不会使区间失效。
+## Examples
 
-## Examples · 示例
-
-**Check which of two cursors with identical text owns the span · 在两个文本相同的游标中辨认区间的来源**
+**Check which of two cursors with identical text owns the span**
 
 ```lisp
 (let* ((src (han.source:make-char-source "x"))
@@ -27,7 +27,7 @@ Returns true if `span` was formed from this source’s marks. A false result bec
 ;; => (T NIL)
 ```
 
-**Request an error for a mismatched span · 要求在区间来源不匹配时报告错误**
+**Request an error for a mismatched span**
 
 ```lisp
 (defparameter *span*
@@ -39,4 +39,4 @@ Returns true if `span` was formed from this source’s marks. A false result bec
 ;; signals simple-error
 ```
 
-[`han.source:make-source-span`](make-source-span.md) · [`han.source:source-same-origin-p`](source-same-origin-p.md) · [`han.source:source-slice-by-span`](source-slice-by-span.md) · [Source · 源码](../../../source/char-source.lisp) · [Index · 索引](../README.md)
+[`han.source:make-source-span`](make-source-span.md) · [`han.source:source-same-origin-p`](source-same-origin-p.md) · [`han.source:source-slice-by-span`](source-slice-by-span.md) · [Source](../../../source/char-source.lisp) · [Index](../README.md)
