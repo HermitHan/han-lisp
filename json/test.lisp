@@ -5,7 +5,7 @@
     (check-true (stringp help-string))
     (check-true (search "han.json" help-string))
     (check-true (search "get-json" help-string)))
-  (check-equal "0.2.0" (han.json:version nil)))
+  (check-equal "0.3.0" (han.json:version nil)))
 
 (deftest test-han-json-parse-object-basic ()
   (let ((json (han.json:parse-json

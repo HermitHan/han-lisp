@@ -35,7 +35,7 @@
 1. 先用实际输入写出调用方能观察到什么。上例涉及两个返回值和一个诊断代码。面向人的提示文字可以单独调整。
 2. 修改承担该行为的实现文件。新增公开接口时，在本模块的 `package.lisp` 导出符号，在中英文[用户手册](../user/README.zh-CN.md)写清调用方法，并给新行为加测试。在[公开符号参考](../reference/README.zh-CN.md)分别撰写中英文条目，从各自的包索引和字母索引链接过去。两版使用相同的签名，均给出至少两个展示不同用法的可执行示例，并保持示例代码一致。用法变化时也更新包的 REPL `help`。
 3. 新增源文件时，检查 [han.asd](../../han.asd) 和 [han.dev.asd](../../han.dev.asd) 的串行组件顺序。前者要能在干净的进程中加载，后者还要加载测试文件。
-4. 修改宿主操作时，同时检查 SBCL、LispWorks、ECL 的实现文件以及其他实现的后备入口。改进程捕获，可验证标准输出、标准错误、非零退出和资源清理；改游标移动，则可检查跨换行取字符之后能否精确回退。所选用例应当能区分本次改动可能引入的错误行为。
+4. 修改宿主操作时，同时检查 SBCL、LispWorks、ECL 和 CCL 的实现文件以及其他实现的后备入口。改进程捕获，可验证标准输出、标准错误、非零退出和资源清理；改游标移动，则可检查跨换行取字符之后能否精确回退。所选用例应当能区分本次改动可能引入的错误行为。
 
 新增宿主时，将专属实现放进新后端，并在两个 ASDF 系统中登记。已有后端随新工作树一起回归。若发现已有后端有错，先用上一版复现，明确调用者应看到什么，再把回归用例与修复放在一起。检查进程启动时要核对实际执行了哪个文件，以及工作目录、参数、环境和退出状态。
 
@@ -58,28 +58,47 @@ ecl -norc -nodebug -load load-han.dev.lisp \
            (uiop:quit (if (and (plusp passed) (zerop failed)) 0 1)))'
 ```
 
+使用 CCL 1.14 时，将 `CCL_BIN` 设为完整发行目录中的内核绝对路径。Apple Silicon macOS 使用 `darm64cl`，x86-64 Linux 使用 `lx86cl64`。
+
+```sh
+"$CCL_BIN" --no-init --batch --quiet --load load-han.dev.lisp \
+  --eval '(multiple-value-bind (passed failed) (han.test:run-all-tests)
+            (ccl:quit (if (and (plusp passed) (zerop failed)) 0 1)))'
+```
+
 使用 LispWorks 时，在能加载 ASDF 的 REPL 中从仓库加载 `load-han.dev.lisp`，再求值 `(han.test:run-all-tests)`。返回的两个整数依次是通过数和失败数。如果系统能加载却找不到模块测试，可以对照[运行加载器](../../load-han.lisp)和[开发加载器](../../load-han.dev.lisp)。
 
-改动可移植性边界时，在 **macOS 和 Linux 上分别用 SBCL、LispWorks 和 ECL** 验证同一份源码和回归用例。先在干净的运行镜像加载 `load-han.lisp`，再用另一个进程加载 `load-han.dev.lisp`。逐项记录操作系统版本、Lisp 版本和结果，未运行的组合标为待验。
+改动可移植性边界时，在 **macOS 和 Linux 上分别用 SBCL、LispWorks、ECL 和 CCL** 验证同一份源码和回归用例。先在干净的运行镜像加载 `load-han.lisp`，再用另一个进程加载 `load-han.dev.lisp`。逐项记录操作系统版本、Lisp 版本和结果，未运行的组合标为待验。并行运行 ECL 时，为每个进程单独设置 `XDG_CACHE_HOME` 和绝对路径的 `TMPDIR`，使原生编译各自写入独立目录。
 
 测试同步进程时，在同一台机器上直接运行同一工具，对照其正常退出时的退出码和标准错误文本。核对标准输出、标准错误、退出状态三个返回值的顺序，再以 `:ignore-error-status nil` 重跑非零退出用例，确认触发 `simple-error`。信号终止应单独测试，按对应后端沿用的信号约定断言。对于编码，比较接口承诺写出的字节。对于 pathname，比较接口承诺的组件。[可移植性边界](README.zh-CN.md#可移植性边界)
 
-在每个受测实现中从仓库加载 `scripts/check-lock-interop.lisp`。ECL 父进程启动 SBCL；SBCL 或 LispWorks 父进程启动 ECL。需要时可用 `HAN_LOCK_PEER` 指定对端可执行文件的完整路径。检查使用同一锁文件，让另一进程争锁并验证超时，再用 SIGKILL 终止持锁进程，验证重新获锁以及回调的两个返回值。
+在每个受测实现中从仓库加载 `scripts/check-lock-interop.lisp`。ECL 父进程启动 SBCL；SBCL 或 LispWorks 父进程启动 ECL。CCL 父进程默认启动 SBCL。要验证与 CCL 的双向争用，用 `HAN_LOCK_PEER_IMPL` 从 `sbcl`、`ecl`、`ccl` 中选一个子进程实现，再用 `HAN_LOCK_PEER` 指定对应可执行文件的完整路径。检查使用同一锁文件，让两个进程互换持锁方和争用方，分别验证超时，再用 SIGKILL 终止持锁进程，验证重新获锁以及回调的两个返回值。
+
+修改原子替换逻辑时，分别测试目标缺失和目标为已有文件。替换前打开旧文件并保持读取，替换后验证新文件的名称和权限，以及暂存文件名已经消失。再用另一个文件系统分别构造目标已存在和缺失的失败场景，核对源与目标均保留调用前的状态。[文件替换契约](../reference/host/atomic-replace-file.zh-CN.md) · [宿主单测](../../host/test.lisp)
+
+## 验证可执行程序入口
+
+运行 `python3 scripts/check-cli-boundaries.py ccl --lisp "$CCL_BIN"`，构建 Han 测试程序并从独立进程执行。其余后端将 `ccl` 换成 `sbcl`、`ecl` 或 `lispworks` 并传入对应的可执行文件。LispWorks 的独立程序测试需要带 Delivery 的版本。脚本等待程序启动后发送 SIGINT，分别制造标准输出管道的读端关闭和标准错误不可写的情况，核对退出码与两个输出通道，同时覆盖应用已明确请求非零退出码和已处理可选进度写入失败的情形。[CLI 进程测试](../../scripts/check-cli-boundaries.py)
+
+排查长 Unicode 参数时，从父进程传参，依次比对原始 UTF-8 字节、Lisp 解码所得实参和序列化后的输出。在子进程内部构造字符串会绕过操作系统参数解码。[命令行参数契约](../reference/host/argv.zh-CN.md)
 
 ## 验证 TAFFISH 消费方
 
-每次交付时，从已记录的 TAFFISH 修订建立干净副本，把本次交付的 Han 源码、两个 ASDF 系统、加载器和测试完整替换到副本的 `vendor/han`。确认 `(asdf:system-source-file "han")` 指向该副本后，运行 TAFFISH 开发套件，构建 `taf`、`taffish` 和 `taffish-mcp`，再用新二进制运行 CLI、Unicode、历史记录和错误处理的回归。选择有代表性的相同输入，与同机使用原 vendor 的 TAFFISH 比较输出、诊断和退出码。记录双方的提交或源码摘要、运行环境和结果。正式更新 TAFFISH 的 vendor 时在其仓库独立提交。
+从已记录的 TAFFISH 修订建立隔离副本，应用所需的前置补丁，用候选 Han 的源码、两份 ASDF 清单、加载器及测试替换副本中的 `vendor/han`。确认 `(asdf:system-source-file "han")` 指向该副本后运行 TAFFISH 开发套件。在支持交付可执行程序的环境中，构建 `taf`、`taffish` 和 `taffish-mcp`，运行二进制外测，选取有代表性的 CLI 和 MCP 输入，与同机使用原 vendor 的 TAFFISH 对照输出、诊断及退出码。记录双方的源码修订或摘要、运行环境、失败、跳过及复跑结果。macOS LispWorks Personal 在 Listener 运行源码套件，Linux LispWorks Professional 还验证交付的二进制。
+
+修复需要调用新增的 Han 操作时，分别验证原 vendor、仅升级 vendor 并保留原调用，以及升级 vendor 并接入新接口三种状态。例如在 Hub repair 中，TAFFISH 先由事务逻辑确认允许替换，再调用 [`atomic-replace-file`](../reference/host/atomic-replace-file.zh-CN.md)。复测同一 `journal.json` 连续更新、替换无后缀启动器、保护既有备份和目录，以及注入故障后的恢复。TAFFISH 在自己的仓库维护接入改动。
 
 ## 测量 SBCL 运行时代码覆盖率
 
-使用新编译缓存运行 `XDG_CACHE_HOME="$(mktemp -d)" sbcl --script scripts/check-coverage.lisp /tmp/han-coverage/`。打开输出目录中的 `cover-index.html`，即可按文件查看模块测试和命令行集成测试执行了哪些表达式、走过哪些分支。[覆盖率脚本](../../scripts/check-coverage.lisp)按 `han.asd` 选取运行时文件，从系统加载完毕后开始计数。报告统计当前 SBCL 进程，ECL、LispWorks 套件和符号手册的示例进程另行运行。
+使用新编译缓存运行 `XDG_CACHE_HOME="$(mktemp -d)" sbcl --script scripts/check-coverage.lisp /tmp/han-coverage/`。打开输出目录中的 `cover-index.html`，即可按文件查看模块测试和命令行集成测试执行了哪些表达式、走过哪些分支。[覆盖率脚本](../../scripts/check-coverage.lisp)按 `han.asd` 选取运行时文件，从系统加载完毕后开始计数。报告统计当前 SBCL 进程，CCL、ECL、LispWorks 套件和符号手册的示例进程另行运行。
 
 ## 对照网络失败和非法 UTF-8 的行为
 
-这项可选检查可在 macOS 或 Linux 上运行，需要 Python 3、支持 Unix 套接字、HTTPS 和 DNS-over-HTTPS（DoH）的 curl，以及 `openssl` 命令行工具。默认使用 SBCL。通过 `--ecl` 或 `--lispworks` 传入可执行文件即可选择批处理实现，图形界面的 LispWorks Listener 则使用 `--listener`。
+这项可选检查可在 macOS 或 Linux 上运行，需要 Python 3、支持 Unix 套接字、HTTPS 和 DNS-over-HTTPS（DoH）的 curl，以及 `openssl` 命令行工具。默认使用 SBCL。通过 `--ccl`、`--ecl` 或 `--lispworks` 传入可执行文件即可选择批处理实现，图形界面的 LispWorks Listener 则使用 `--listener`。
 
 ```sh
 python3 scripts/check-host-boundaries.py
+python3 scripts/check-host-boundaries.py --ccl "$CCL_BIN"
 python3 scripts/check-host-boundaries.py --ecl "$(command -v ecl)"
 python3 scripts/check-host-boundaries.py --lispworks /path/to/lispworks
 python3 scripts/check-host-boundaries.py --listener
@@ -100,11 +119,13 @@ python3 scripts/check-host-boundaries.py --listener
 
 脚本还会记录宿主 UTF-8 解码器如何处理非法续字节和文件末尾的截断序列。可根据返回的字符或条件类型，区分解码器行为和 JSON 语法错误。
 
+在 CCL 1.14 上，探针还会断言非法续字节样本返回一个 U+FFFD，文件末尾截断的样本因字符串未闭合而触发 JSON 错误。
+
 ## 验证符号参考
 
-在仓库根目录分别运行 `sbcl --script scripts/check-reference.lisp` 和 `ecl -norc -shell scripts/check-reference.lisp`。[校验脚本](../../scripts/check-reference.lisp)根据实际导出符号核对两种语言的条目，以及每个语言版本的包索引和字母索引。脚本逐对比较符号名、签名、示例代码及预期结果。每次运行校验脚本时，每个相同的示例只执行一次，由选定的 Lisp 实现另启进程加载当前仓库并运行。
+在仓库根目录分别运行 `sbcl --script scripts/check-reference.lisp`、`ecl -norc -shell scripts/check-reference.lisp` 和 `"$CCL_BIN" --no-init --batch --quiet --load scripts/check-reference.lisp`。[校验脚本](../../scripts/check-reference.lisp)根据实际导出符号核对两种语言的条目，以及每个语言版本的包索引和字母索引。脚本逐对比较符号名、签名、示例代码及预期结果。每次运行校验脚本时，每个相同的示例只执行一次，由选定的 Lisp 实现另启进程加载当前仓库并运行。
 
-个别示例需要在示例内部另起 Lisp 子进程，在 ECL 上使用当前 ECL 可执行文件，在其他宿主上使用 `sbcl` 命令。命令需要可写的临时目录与 ASDF 缓存，部分示例还会调用 Unix 工具。示例执行失败时输出文件、示例序号和代码块起始行，退出码非零。
+校验脚本支持 SBCL、ECL 和 CCL 的批处理模式。在 LispWorks 上，从新的 Listener 或开发镜像加载当前仓库，逐一执行受影响的示例，将返回值或触发的条件与末行注释核对。个别示例还会另起 Lisp 子进程，在 ECL 和 CCL 上使用当前内核，在其他宿主上使用 `sbcl` 命令。需要可写的临时目录与 ASDF 缓存，部分示例还会调用 Unix 工具。批处理示例执行失败时输出文件、示例序号和代码块起始行，退出码非零。
 
 每个条目的示例节至少包含两个标为 `lisp` 的代码块。选能看出行为差异的例子：例如给出一个存在但为假的字段，再查一个缺失字段；复杂接口可以接着展示错误或资源清理。示例使用自己的临时文件；在 REPL 单独复制任一块就能运行。
 

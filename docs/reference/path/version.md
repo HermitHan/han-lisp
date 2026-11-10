@@ -20,7 +20,7 @@ Read the path package’s version string silently.
 
 ```lisp
 (han.path:version nil)
-;; => "0.2.0"
+;; => "0.3.0"
 ```
 
 Embed the formatted package version in a tool's diagnostic output.

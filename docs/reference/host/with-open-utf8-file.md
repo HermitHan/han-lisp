@@ -15,7 +15,7 @@
 
 Opens a UTF-8 character file and binds `stream` for the body. The default is input; creation, replacement, multiple return values and cleanup follow `with-open-file`. The external format and element type are fixed. If the Lisp cannot open a UTF-8 stream, the error propagates; Han does not retry using the machine’s default encoding. An existing caller-owned stream passed to `han.os:load-lines` is read directly instead.
 
-Malformed input follows the host decoder. With bytes `22 F0 9F` (an opening quote and an incomplete character), ECL 26.5.5 reads the quote and then reaches EOF. The SBCL and LispWorks decoders signal a decoding error. With bytes `22 C3 28 22` all three decoders signal an error.
+Malformed input follows the host decoder. With bytes `22 F0 9F` (an opening quote and an incomplete character), ECL 26.5.5 and CCL 1.14 read the quote and then reach EOF. SBCL and LispWorks signal a decoding error. With bytes `22 C3 28 22`, CCL reads a quote, one U+FFFD replacement character and a closing quote. SBCL, LispWorks and ECL signal decoding errors for that input.
 
 ## Examples
 

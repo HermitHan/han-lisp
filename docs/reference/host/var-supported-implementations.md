@@ -12,7 +12,7 @@ han.host:*supported-implementations* → list of implementation names
 
 ## Description
 
-The initial value lists the names of the SBCL, LispWorks and ECL adapters. Use it for display or a capability hint. ASDF reader conditionals select the backend when the library loads, so rebinding this list does not install another adapter.
+The initial value lists the four adapters provided by Han on every installation. Use it to display the supported implementations. ASDF selects the active adapter when loading the system. To identify the backend of a running child, read its [`host-process-backend`](host-process-backend.md).
 
 ## Examples
 
@@ -27,7 +27,7 @@ Display the supported backend names in a diagnostic message.
 
 ```lisp
 (format nil "~{~A~^ / ~}" han.host:*supported-implementations*)
-;; => "SBCL / LispWorks / ECL"
+;; => "SBCL / LispWorks / ECL / CCL"
 ```
 
 [`han.host:unsupported-host-function`](unsupported-host-function.md) · [`han.host:version`](version.md) · [parameters.lisp](../../../host/parameters.lisp) · [Index](../README.md)

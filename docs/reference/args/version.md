@@ -20,7 +20,7 @@ Read the bare version string for use in another message.
 
 ```lisp
 (han.args:version nil)
-;; => "0.2.0"
+;; => "0.3.0"
 ```
 
 Inspect the formatted version line sent to a designated stream.
@@ -29,7 +29,7 @@ Inspect the formatted version line sent to a designated stream.
 (let* ((stream (make-string-output-stream))
        (version (han.args:version stream)))
   (values version (string-right-trim '(#\Newline) (get-output-stream-string stream))))
-;; => values ("0.2.0" "han.args v0.2.0")
+;; => values ("0.3.0" "han.args v0.3.0")
 ```
 
 [`han.args:help`](help.md) · [Source](../../../args/package.lisp) · [Index](../README.md)

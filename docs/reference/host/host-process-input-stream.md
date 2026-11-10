@@ -12,7 +12,7 @@
 
 ## Description
 
-Reads the settable input slot. SBCL records the native process's input stream when available. On ECL, `:input :stream` supplies a writable pipe to the child. For other input designators this slot is `nil`. LispWorks stores the supplied `input` argument, so a handle may contain an input designator or `nil`. Check the value before treating it as a stream.
+Reads the settable input slot. SBCL records the native process's input stream when available. On ECL and CCL, `:input :stream` supplies a writable pipe to the child. For other input designators this slot is `nil`. LispWorks stores the supplied `input` argument, so a handle may contain an input designator or `nil`. Check the value before treating it as a stream.
 
 ## Examples
 

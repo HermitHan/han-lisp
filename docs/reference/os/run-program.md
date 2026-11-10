@@ -14,9 +14,9 @@
 
 Runs a program synchronously through `han.host:run-program-sync`. A list of strings supplies argv and a command string uses shell syntax. By default stdin sees EOF and both outputs are captured as strings. Pass a character input stream to send literal text. Nonzero integer exit codes are returned by default or signal an error if `ignore-error-status` is `nil`. Redirected output streams receive their text after completion.
 
-With `:input t`, LispWorks and ECL wait for EOF on standard input before starting the child. All three adapters read captured output as text using the host’s default external format. See the [host function](../host/run-program-sync.md) for stream behavior.
+With `:input t`, LispWorks, ECL and CCL wait for EOF on standard input before starting the child. CCL decodes captured output as UTF-8. The other adapters use the host’s default external format. See the [host function](../host/run-program-sync.md) for stream behavior.
 
-On ECL, passing `:stream` for any synchronous I/O channel signals `simple-error` before launch. For a live pipe, use [han.host:run-program](../host/run-program.md).
+On ECL and CCL, passing `:stream` for any synchronous I/O channel signals `simple-error` before launch. For a live pipe, use [han.host:run-program](../host/run-program.md).
 
 ## Examples
 

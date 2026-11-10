@@ -4,7 +4,16 @@
 
 ## 把 Han 加载到自己的程序里
 
-在 macOS 或 Linux 上可使用 SBCL、LispWorks 或启用了 Unicode 的 ECL。使用 ECL 时，可以用 `ecl -norc` 启动 REPL。在仓库根目录下，执行 `(load "load-han.lisp")` 即可加载运行系统及七个包。如果想直接使用 ASDF，可在同一目录依次求值。
+下面的命令会加载 Han 的七个包。使用终端时，请先进入 Han 仓库中 `han.asd` 所在的目录。
+
+| Lisp 实现 | 加载方法 |
+| --- | --- |
+| SBCL | `sbcl --load load-han.lisp` |
+| LispWorks | 在 Listener 中求值 `(load "/path/to/han-lisp/load-han.lisp")`，将示例路径换为实际路径。 |
+| 启用 Unicode 的 ECL 26.5.5 | `ecl -norc -load load-han.lisp` |
+| 64 位 Clozure CL 1.14 | 把 `CCL_BIN` 设为 CCL 发行目录中内核的绝对路径，Apple Silicon macOS 使用 `darm64cl`，x86-64 Linux 使用 `lx86cl64`。运行 `"$CCL_BIN" --no-init --load load-han.lisp`。 |
+
+也可以直接用 ASDF 加载。在仓库目录下的 REPL 中依次求值。
 
 ```lisp
 (require :asdf)
@@ -38,9 +47,9 @@
 | 解析开关、位置参数或命名参数块，并报告输入错误 | [han.args](args.zh-CN.md) |
 | 读取文本行、查环境变量或获取命令输出 | [han.os](os.zh-CN.md) |
 | 构造路径、列举目录或复制文件 | [han.path](path.zh-CN.md) |
-| 管理运行中的进程、判断终端状态或用文件锁协调写入 | [han.host](host.zh-CN.md) |
+| 管理子进程、查询终端状态、为文件加锁或原子替换文件 | [han.host](host.zh-CN.md) |
 | 读取配置或写出 JSON，保留假值与空值的区别 | [han.json](json.zh-CN.md) |
 | 向前查看字符、回到保存的位置或取出刚识别的一段原文 | [han.source](source.zh-CN.md) |
 | 定义测试用例，用 Lisp 检查预期结果 | [han.test](test.zh-CN.md) |
 
-各包手册列出该包的公开接口。要运行 Han 自带的测试或修改实现，请转到[开发流程](../developer/workflow.zh-CN.md)。
+各包手册都链接到具体的符号条目。已经知道名称时，可以直接查[字母索引](../reference/symbols.zh-CN.md)。要运行 Han 自带的测试或修改实现，请转到[开发流程](../developer/workflow.zh-CN.md)。

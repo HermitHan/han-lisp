@@ -12,7 +12,7 @@
 
 ## 说明
 
-读取进程句柄的后端槽。实际启动的句柄会被标记为 `:sbcl`、`:lispworks` 或 `:ecl`。访问器支持 `setf`，修改标签不会转换底层系统资源。
+读取进程句柄的后端槽。实际启动的句柄会被标记为 `:sbcl`、`:lispworks`、`:ecl` 或 `:ccl`。访问器支持 `setf`，修改标签不会转换底层系统资源。
 
 ## 示例
 
@@ -30,7 +30,7 @@
   (unwind-protect
        (progn
          (han.host:process-wait child)
-         (not (null (member (han.host:host-process-backend child) '(:sbcl :lispworks :ecl)))))
+         (not (null (member (han.host:host-process-backend child) '(:sbcl :lispworks :ecl :ccl)))))
     (han.host:process-close child)))
 ;; => T
 ```

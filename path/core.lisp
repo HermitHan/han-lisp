@@ -9,9 +9,19 @@
         p
         (make-pathname :directory (han.host:pathname-directory-list p) :defaults p))))
 
+(define-condition no-namestring (file-error) ()
+  (:report "The host cannot express this pathname as a namestring."))
+
 (defun ->namestring (x)
-  "Convert X to namestring. Accepts pathname or string."
-  (namestring (->pathname x)))
+  "Return the host spelling of X, or signal a FILE-ERROR with its pathname."
+  (let ((path (->pathname x)))
+    (or (ignore-errors (namestring path))
+        ;; An explicit :UNSPECIFIC type also denotes an extensionless filename.
+        (and (eq (pathname-type path) :unspecific)
+             (stringp (pathname-name path))
+             (not (typep path 'logical-pathname))
+             (ignore-errors (namestring (make-pathname :type nil :defaults path))))
+        (error 'no-namestring :pathname path))))
 
 (defun directory-pathname-p (x)
   "Return T if X looks like a directory pathname."

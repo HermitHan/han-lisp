@@ -40,11 +40,11 @@ A command list keeps the program name and every argument separate. To supply lit
 | [`escape-sh-token value`](../reference/os/escape-sh-token.md) | Returns one POSIX-shell-quoted token, including surrounding quotes. `nil` becomes a quoted empty string. Use this only when inserting one argument into shell text. |
 | [`run-shell-command command &key (wait t) (lines t) shell`](../reference/os/run-shell-command.md) | Runs shell text with `-c`. A supplied `shell` is an executable file path. The default searches for `bash` and then `sh`. With `wait` true, returns stdout lines, stderr lines, and the exit code. Use `:lines nil` for strings that preserve final newlines. |
 
-For a portable argv call, supply the executable's full path. To look up a program by name, use [find-executable](../reference/host/find-executable.md) and check for `nil` first. When a child such as curl reports a connection failure, its diagnostic text and exit code come from the program running on that machine. Use the exit code to detect failure and keep stderr for the diagnostic.
+For a portable argv call, supply the executable's full path. If you only have a program name, resolve it with `han.os:find-executable` and check for `nil` before launching it. A program that reports a connection failure, such as curl, supplies its own exit code and stderr. If a Unix signal terminates the child, SBCL returns the signal number, while LispWorks, ECL and CCL return 128 plus that number. [Executable lookup](../reference/os/find-executable.md) · [Process results](../reference/host/run-program-sync.md)
 
-On ECL, `:stream` is reserved for a live process. Passing it as the input or either output of a synchronous call signals `simple-error` before launch. Use [han.host:run-program](../reference/host/run-program.md) when you need a pipe.
+On ECL and CCL, `:stream` is reserved for a live process. Passing it as the input or either output of a synchronous call signals `simple-error` before launch. Use [han.host:run-program](../reference/host/run-program.md) when you need a pipe.
 
-When sending terminal input with `:input t`, LispWorks and ECL wait for EOF before launching the child. Captured stdout and stderr use the host’s default text encoding. See the [synchronous process reference](../reference/host/run-program-sync.md).
+When sending terminal input with `:input t`, LispWorks, ECL and CCL wait for EOF before launching the child. CCL reads captured stdout and stderr as UTF-8. SBCL, LispWorks and ECL use the host’s default text encoding. See the [synchronous process reference](../reference/host/run-program-sync.md).
 
 A shell is useful for redirections. The quoted argument below contains both an apostrophe and a dollar sign. Each reaches `printf` literally. The caller can examine diagnostics even when the command exits with a nonzero code.
 
@@ -63,7 +63,7 @@ With `:wait nil`, `run-shell-command` returns **four values** in order, the stdo
 
 | Operation | Result |
 | --- | --- |
-| [`getenv-default name default`](../reference/os/getenv-default.md), [`require-env name`](../reference/os/require-env.md) | Read the named variable as a string. The first returns the supplied fallback when unset, the second signals an error. A variable set to the empty string counts as present. |
+| [`getenv-default name default`](../reference/os/getenv-default.md), [`require-env name`](../reference/os/require-env.md) | Read the named variable as a string. The first returns the supplied fallback when unset, the second signals an error. A variable set to the empty string counts as present. ECL preserves long UTF-8 values. |
 | [`current-user &optional (default "World")`](../reference/os/current-user.md) | Reads `USER`, then `LOGNAME`, then uses the supplied default. |
 | [`current-directory`](../reference/os/current-directory.md), [`home-directory`](../reference/os/home-directory.md) | Return a directory namestring or `nil`. The home query tries an existing `HOME` and then the Lisp user home directory. |
 | [`find-executable program`](../reference/os/find-executable.md) | For a pathname-like string, tries it directly. For a bare name, searches `PATH` and then built-in Unix directories. The primary value is the first matching file or `nil`. Further matches can be returned as additional values. The lookup tests file existence only. |

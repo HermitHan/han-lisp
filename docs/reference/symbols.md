@@ -71,6 +71,7 @@ Names are sorted without their package prefix. Identical names in different pack
 - [`han.args:args-spec-command`](args/args-spec-command.md)
 - [`han.args:args-spec-p`](args/args-spec-p.md)
 - [`han.host:argv`](host/argv.md)
+- [`han.host:atomic-replace-file`](host/atomic-replace-file.md)
 
 ## B
 

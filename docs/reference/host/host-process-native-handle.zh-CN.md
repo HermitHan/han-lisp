@@ -12,7 +12,7 @@
 
 ## 说明
 
-读取句柄保存的原生资源。ECL 与 SBCL 各自存储对应实现的进程对象，LispWorks 存储可查询退出状态的输出流。该访问器支持赋值，槽内容因实现而异。跨实现的等待与状态查询应使用对应的公开函数。
+读取句柄保存的原生资源。ECL、CCL 与 SBCL 各自存储对应实现的进程对象，LispWorks 存储可查询退出状态的输出流。该访问器支持赋值，槽内容因实现而异。跨实现的等待与状态查询应使用对应的公开函数。
 
 ## 示例
 
@@ -33,7 +33,7 @@
          (han.host:process-wait child)
          (let ((native (han.host:host-process-native-handle child)))
            (ecase (han.host:host-process-backend child)
-             ((:sbcl :ecl) (not (null native)))
+             ((:sbcl :ecl :ccl) (not (null native)))
              (:lispworks (streamp native)))))
     (han.host:process-close child)))
 ;; => T

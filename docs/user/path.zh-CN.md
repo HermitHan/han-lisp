@@ -19,7 +19,7 @@
 
 | 操作 | 返回值与语义 |
 | --- | --- |
-| [`->pathname x`](../reference/path/to-pathname.zh-CN.md)、[`->namestring x`](../reference/path/to-namestring.zh-CN.md) | 接受字符串或 pathname。前者返回目录分量经过规范化的 pathname，后者返回其名称字符串。字符串表示遵循当前 Lisp 实现的路径语法。 |
+| [`->pathname x`](../reference/path/to-pathname.zh-CN.md)、[`->namestring x`](../reference/path/to-namestring.zh-CN.md) | 接受字符串或 pathname。前者返回目录分量经过规范化的 pathname，后者返回其名称字符串。已命名的物理文件可以用 `:unspecific` 表示无扩展名。没有字符串表示时触发 `file-error`，可用 `file-error-pathname` 取得路径。 |
 | [`directory-pathname-p x`](../reference/path/directory-pathname-p.zh-CN.md) | 判断路径的形式。目录 pathname 的 name 和 type 分量均为空。 |
 | [`directory-pathname x`](../reference/path/directory-pathname.zh-CN.md) | 返回目录 pathname，把文件形式的最后一个分量视为目录名。例如 `"a.txt"` 会变为 `"a.txt/"`。 |
 | [`parent-directory-pathname x`](../reference/path/parent-directory-pathname.zh-CN.md) | 去掉文件 pathname 的 name 和 type，得到所在目录。传入目录 pathname 时返回该目录本身，例如 `"/work/reports/"` 得到 `#P"/work/reports/"`。 |
@@ -48,4 +48,6 @@
 | [`temporary-directory`](../reference/path/temporary-directory.zh-CN.md) | 依次从 `TMPDIR`、`TEMP`、`TMP`、`/tmp/` 选取临时目录，返回目录 pathname。创建临时文件时由调用方选择唯一的子路径。 |
 | [`help &optional stream`](../reference/path/help.zh-CN.md)、[`version &optional stream`](../reference/path/version.zh-CN.md) | 返回帮助文本或版本字符串，默认同时写到 `*standard-output*`。传 `nil` 只取字符串。 |
 
-磁盘操作委托给宿主层。文件锁和 UTF-8 追加写入见 [han.host](host.zh-CN.md)。导出列表和更多例子见[包定义](../../path/package.lisp)与[测试](../../path/test.lisp)。
+需要在读者可能仍打开旧文件时替换它，可以在目标所在文件系统准备一个普通文件，将两个字面文件名交给宿主层。已有文件名字符串可以直接传入。如果持有 pathname 对象，可先用 `han.path:->namestring` 取得其字符串表示。[原子替换文件](../reference/host/atomic-replace-file.zh-CN.md)
+
+文件锁和 UTF-8 追加写入见 [han.host](host.zh-CN.md)。导出列表和更多例子见[包定义](../../path/package.lisp)与[测试](../../path/test.lisp)。

@@ -14,6 +14,8 @@
 
 Looks up an environment variable by name. Returns its string value if set, including the empty string, or the supplied fallback object if unset. The fallback need not be a string.
 
+On ECL, long UTF-8 values retain their full text. [Environment lookup](../host/getenv.md)
+
 ## Examples
 
 Use the current environment setting when present and return the keyword `:missing` when it is unset.
@@ -30,9 +32,9 @@ Preserve an intentionally empty setting while using a non-string default for a m
 ```lisp
 (nth-value 2
   (han.host:run-program-sync
-   (list "/usr/bin/env" "-u" "HAN_DOCS_OPTION" "HAN_DOCS_TAG=" #+ecl (first (han.host:argv t)) #-ecl (han.host:find-executable "sbcl")
-         #+ecl "--norc" #-ecl "--no-userinit"
-         #+ecl "--nodebug" #-ecl "--non-interactive"
+   (list "/usr/bin/env" "-u" "HAN_DOCS_OPTION" "HAN_DOCS_TAG=" #+(or ecl ccl) (first (han.host:argv t)) #-(or ecl ccl) (han.host:find-executable "sbcl")
+         #+ecl "--norc" #+ccl "--no-init" #-(or ecl ccl) "--no-userinit"
+         #+ecl "--nodebug" #+ccl "--batch" #-(or ecl ccl) "--non-interactive"
          "--load" (namestring (asdf:system-relative-pathname "han" "load-han.lisp"))
          "--eval" "(assert (equal (list (han.os:getenv-default \"HAN_DOCS_OPTION\" :auto) (han.os:getenv-default \"HAN_DOCS_TAG\" :auto)) '(:auto \"\")))" "--eval" "(han.host:quit)")))
 ;; => 0

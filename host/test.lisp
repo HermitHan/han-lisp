@@ -54,7 +54,7 @@
     (check-true (search "fd 2" help-string))
     (check-true (search "closed stderr returns NIL" help-string))
     (check-true (search "run-program" help-string)))
-  (check-equal "0.2.0" (han.host:version nil)))
+  (check-equal "0.3.0" (han.host:version nil)))
 
 (deftest test-host-argv ()
   (let ((argv (han.host:argv)))
@@ -63,6 +63,26 @@
     (check-equal
      (every #'stringp argv)
      t)))
+
+#+ecl
+(deftest test-host-ecl-long-utf8-argv-and-environment ()
+  (let ((text (with-output-to-string (out nil :element-type 'character)
+                (loop repeat 2048 do (write-string "样本-1-é😀-" out)))))
+    (uiop:with-temporary-file (:stream out :pathname script :type "lisp" :external-format :utf-8)
+      (write-line "(require :asdf)" out)
+      (format out "(asdf:load-asd ~S)~%(asdf:load-system \"han\")~%" (asdf:system-source-file "han"))
+      ;; Read the expected value from the script, independently of the OS strings.
+      (format out "(let ((expected ~S) (args (rest (member \"--\" (han.host:argv) :test #'string=))))~%"
+              text)
+      (write-line "  (han.host:quit (if (and (equal args (list expected \"\"))" out)
+      (write-line "                           (equal expected (han.host:getenv \"HAN_LONG_UTF8\"))) 0 1)))" out)
+      :close-stream
+      (check-equal 0
+                   (nth-value 2
+                     (han.host:run-program-sync
+                      (list "/usr/bin/env" (concatenate 'string "HAN_LONG_UTF8=" text)
+                            (first (han.host:argv t)) "-norc" "-shell" (namestring script)
+                            "--" text "")))))))
 
 (deftest test-host-configure-runtime-io ()
   (check-true (han.host:prepare-runtime-io))
@@ -162,14 +182,26 @@
     (check-equal 1 warnings)
     (check-equal 1 conditions)))
 
-#+sbcl
+(deftest test-host-exit-flush-preserves-requested-status ()
+  (let ((*standard-output* (make-string-output-stream))
+        (*error-output* (make-string-output-stream)))
+    (write-string "out" *standard-output*)
+    (write-string "err" *error-output*)
+    (check-equal 0 (han.host::%finish-exit-output 0))
+    (check-equal 7 (han.host::%finish-exit-output 7))
+    (check-equal "out" (get-output-stream-string *standard-output*))
+    (check-equal "err" (get-output-stream-string *error-output*))))
+
+#+(or sbcl ecl ccl)
 (deftest test-host-cli-boundary-interrupt-exits-without-debugger ()
   (let ((*error-output* (make-string-output-stream)))
     (flet ((han.host:quit (&optional (code 0)) (throw 'cli-exit code)))
       (check-equal 1
                    (catch 'cli-exit
                      (han.host::%with-cli-error-boundary ("[TEST]")
-                       (signal 'sb-sys:interactive-interrupt)))))
+                       (signal #+sbcl 'sb-sys:interactive-interrupt
+                               #+ecl 'ext:interactive-interrupt
+                               #+ccl 'ccl::interrupt-signal-condition)))))
     (check-equal (format nil "[TEST] Interrupted.~%")
                  (get-output-stream-string *error-output*))))
 
@@ -246,10 +278,10 @@
     (check-equal (han.host:process-exit-code process) 7)
     (han.host:process-close process)))
 
-#+(or sbcl lispworks ecl)
+#+(or sbcl lispworks ecl ccl)
 (deftest test-host-child-terminated-by-sigterm ()
   (let* ((command '("/bin/sh" "-c" "printf out; printf err >&2; kill -TERM $$"))
-         (expected #+sbcl 15 #+(or lispworks ecl) 143))
+         (expected #+sbcl 15 #+(or lispworks ecl ccl) 143))
     (check-equal '("" "" 15)
                  (multiple-value-list (han.host:run-program-sync '("/bin/sh" "-c" "exit 15"))))
     (check-equal (list "out" "err" expected)
@@ -320,7 +352,7 @@
            (check-error (error) (han.host:run-program (merge-pathnames "absent" root) :directory root)))
       (han.host:delete-directory-tree root))))
 
-#+(and (or lispworks (and ecl unicode)) (or darwin macosx linux))
+#+(and (or lispworks ccl (and ecl unicode)) (or darwin macosx linux))
 (deftest test-host-async-relative-program ()
   (let* ((parent (%han-host-test-directory))
          (child (merge-pathnames "child/" parent))
@@ -375,8 +407,9 @@
                (han.host:process-close child))))
       (han.host:delete-directory-tree directory))))
 
-#+ecl
-(deftest test-host-ecl-sync-rejects-unowned-pipes-before-launch ()
+#+(or ecl ccl)
+(deftest #+ecl test-host-ecl-sync-rejects-unowned-pipes-before-launch
+         #+ccl test-host-ccl-sync-rejects-unowned-pipes-before-launch ()
   (let* ((marker (%han-host-temp-file "han-host-started" nil))
          (argv (list "/bin/sh" "-c" "printf started > \"$1\"" "sh" (namestring marker))))
     (unwind-protect
@@ -385,19 +418,21 @@
            (check-false (probe-file marker)))
       (when (probe-file marker) (delete-file marker)))))
 
-#+ecl
-(deftest test-host-ecl-sync-path-search-with-separate-captures ()
+#+(or ecl ccl)
+(deftest #+ecl test-host-ecl-sync-path-search-with-separate-captures
+         #+ccl test-host-ccl-sync-path-search-with-separate-captures ()
   (check-equal '("out" "err" 7)
                (multiple-value-list
                 (han.host:run-program-sync '("sh" "-c" "printf out; printf err >&2; exit 7")))))
 
-#+ecl
-(deftest test-host-ecl-async-input-and-status ()
+#+(or ecl ccl)
+(deftest #+ecl test-host-ecl-async-input-and-status
+         #+ccl test-host-ccl-async-input-and-status ()
   ;; The child cannot exit until we close its stdin.
   (let ((child (han.host:run-program "/bin/cat" :input :stream)))
     (unwind-protect
          (let ((input (han.host:host-process-input-stream child)))
-           (check-equal :ecl (han.host:host-process-backend child))
+           (check-equal #+ecl :ecl #+ccl :ccl (han.host:host-process-backend child))
            (check-true (plusp (han.host:host-process-pid child)))
            (check-equal :running (han.host:process-status child))
            (check-false (han.host:process-exit-code child))
@@ -409,8 +444,9 @@
            (check-equal 0 (han.host:process-exit-code child)))
       (han.host:process-close child))))
 
-#+ecl
-(deftest test-host-ecl-reports-exec-failure-before-returning ()
+#+(or ecl ccl)
+(deftest #+ecl test-host-ecl-reports-exec-failure-before-returning
+         #+ccl test-host-ccl-reports-exec-failure-before-returning ()
   (let ((file (%han-host-temp-file "han-missing-interpreter" "sh")))
     (unwind-protect
          (progn
@@ -422,8 +458,9 @@
            (check-error (error) (han.host:run-program-sync (list (namestring file)))))
       (when (probe-file file) (delete-file file)))))
 
-#+ecl
-(deftest test-host-ecl-async-directory-and-environment ()
+#+(or ecl ccl)
+(deftest #+ecl test-host-ecl-async-directory-and-environment
+         #+ccl test-host-ccl-async-directory-and-environment ()
   (let ((root (%han-host-test-directory)))
     (unwind-protect
          (progn
@@ -446,6 +483,114 @@
                     (check-equal :eof (read-line (han.host:host-process-output-stream child) nil :eof)))
                (han.host:process-close child))))
       (han.host:delete-directory-tree root))))
+
+#+ccl
+(deftest test-host-ccl-native-environment-and-parent-directory ()
+  (let* ((root (%han-host-test-directory))
+         (directory (merge-pathnames "子目录 = ' 😀/" root))
+         (environment '("PWD=given-pwd" "OLDPWD=given-oldpwd" "HAN_TEXT=有 空格😀"))
+         (parent (han.host:run-program-sync '("/bin/pwd" "-P"))))
+    (unwind-protect
+         (progn
+           (ensure-directories-exist (merge-pathnames "anchor" directory))
+           ;; env observes the exact environment; a shell may rewrite PWD itself.
+           (let ((child (han.host:run-program "/usr/bin/env" :directory directory
+                                              :environment environment)))
+             (unwind-protect
+                  (let ((lines (uiop:slurp-stream-lines (han.host:host-process-output-stream child))))
+                    (han.host:process-wait child)
+                    (check-equal 0 (han.host:process-exit-code child))
+                    (check-equal (sort (copy-list environment) #'string<) (sort lines #'string<)))
+               (han.host:process-close child)))
+           (han.host:run-program-sync
+            (list "/bin/ln" "-s" "/bin/sh" (namestring (merge-pathnames "native-shell" directory)))
+            :ignore-error-status nil)
+           (let* ((argument "有空格 ' ; $HOME")
+                  (child (han.host:run-program
+                          "./native-shell" :directory directory :environment environment
+                          :arguments (list "-c" "pwd -P; printf '%s\\n' \"$$\" \"$0\" \"$1\" \"$HAN_TEXT\"; printf diagnostic >&2; kill -TERM $$"
+                                           "./native-shell" argument))))
+             (unwind-protect
+                  (let ((out (han.host:host-process-output-stream child)))
+                    (han.host:process-wait child)
+                    (check-equal 143 (han.host:process-exit-code child))
+                    (check-equal (truename directory) (truename (read-line out)))
+                    (check-equal (han.host:host-process-pid child) (parse-integer (read-line out)))
+                    (check-equal "./native-shell" (read-line out))
+                    (check-equal argument (read-line out))
+                    (check-equal "有 空格😀" (read-line out))
+                    (check-equal "diagnostic" (read-line (han.host:host-process-error-stream child))))
+               (han.host:process-close child)))
+           (check-error (error) (han.host:run-program "./absent" :directory directory))
+           (check-error (error)
+             (han.host:run-program "/bin/pwd" :directory (merge-pathnames "missing/" directory)))
+           (check-equal parent (han.host:run-program-sync '("/bin/pwd" "-P"))))
+      (han.host:delete-directory-tree root))))
+
+#+ccl
+(deftest test-host-ccl-sync-text-capture-is-utf8 ()
+  (let ((ccl:*default-file-character-encoding* :iso-8859-1)
+        (text "汉 é 😀"))
+    (with-input-from-string (in text)
+      (check-equal (list text "خطأ 😀" 7)
+                   (multiple-value-list
+                    (han.host:run-program-sync
+                     '("/bin/sh" "-c" "cat; printf '%s' \"$1\" >&2; exit 7" "sh" "خطأ 😀")
+                     :input in))))))
+
+#+ccl
+(deftest test-host-ccl-invalid-process-strings-do-not-start-child ()
+  (let* ((marker (%han-host-temp-file "han-host-started" nil))
+         (command (list "/bin/sh" "-c" "printf started > \"$1\"" "sh" (namestring marker)))
+         (nul (format nil "value~Ctail" (code-char 0))))
+    (unwind-protect
+         (progn
+           (check-error (error) (han.host:run-program-sync (append command (list nul))))
+           (dolist (bad (list "missing-equals" "=missing-name" (concatenate 'string "HAN=" nul)))
+             (check-error (error) (han.host:run-program (first command) :arguments (rest command)
+                                                        :environment (list bad))))
+           (check-false (probe-file marker)))
+      (when (probe-file marker) (delete-file marker)))))
+
+#+ccl
+(deftest test-host-ccl-async-input-starts-at-logical-stream-position ()
+  (flet ((check-input (input)
+           (check-equal #\A (read-char input))
+           (let ((child (han.host:run-program "/bin/cat" :input input)))
+             (unwind-protect
+                  (progn
+                    (han.host:process-wait child)
+                    (check-equal 0 (han.host:process-exit-code child))
+                    (check-equal "BC汉" (uiop:slurp-stream-string
+                                         (han.host:host-process-output-stream child))))
+               (han.host:process-close child)))
+           (check-true (open-stream-p input))
+           (check-equal :eof (read-char input nil :eof))))
+    (with-input-from-string (input "ABC汉") (check-input input))
+    (uiop:with-temporary-file (:stream out :pathname file :external-format :utf-8)
+      (write-string "ABC汉" out)
+      :close-stream
+      (han.host:with-open-utf8-file (input file) (check-input input)))))
+
+#+ccl
+(deftest test-host-ccl-argv-and-quit-in-fresh-kernel ()
+  (let ((args '("有 空格😀" "" "--literal" "';$HOME")))
+    (uiop:with-temporary-file (:stream out :pathname script :type "lisp")
+      (write-line "(require :asdf)" out)
+      (format out "(asdf:load-asd ~S)~%(asdf:load-system \"han\")~%"
+              (asdf:system-source-file "han"))
+      (write-line "(assert (equal (han.host:argv) (rest (han.host:argv t))))" out)
+      (format out "(assert (equal '~S (rest (member \"--\" (han.host:argv) :test #'string=))))~%"
+              args)
+      (write-line "(han.host:quit 23)" out)
+      :close-stream
+      (multiple-value-bind (stdout stderr code)
+          (han.host:run-program-sync
+           (append (list (first ccl:*command-line-argument-list*) "--no-init" "--batch" "--quiet"
+                         "--load" (namestring script) "--")
+                   args))
+        (unless (eql code 23)
+          (error "Child CCL exited with ~S (expected 23).~%~A~%~A" code stdout stderr))))))
 
 (deftest test-host-run-program-sync-default-input-is-eof ()
   (multiple-value-bind (out err code)
@@ -765,3 +910,88 @@
       (ignore-errors
         (when (han.host:directory-exists-p root)
           (han.host:delete-directory-tree root))))))
+
+(deftest test-host-atomic-replace-file-publishes-exact-name-and-mode ()
+  (let* ((root (%han-host-test-directory))
+         (source (namestring (merge-pathnames "staging/payload.tmp" root)))
+         (target (concatenate 'string (namestring root) "运行 [v1]*?")))
+    (ensure-directories-exist source)
+    (unwind-protect
+         (dolist (payload '("first complete version" "new"))
+           (with-open-file (out source :direction :output :if-exists :error)
+             (write-string payload out))
+           (han.host:run-program-sync (list "/bin/chmod" "751" source) :ignore-error-status nil)
+           (check-equal '(t) (multiple-value-list (han.host:atomic-replace-file source target)))
+           (check-false (probe-file source))
+           (check-equal payload
+                        (han.host:run-program-sync (list "/bin/cat" target) :ignore-error-status nil))
+           (check-equal (format nil "0751~%")
+                        (han.host:run-program-sync
+                         (list "/usr/bin/find" target "-prune" "-perm" "0751"
+                               "-exec" "/bin/echo" "0751" ";")
+                         :ignore-error-status nil)))
+      (han.host:delete-directory-tree root))))
+
+(deftest test-host-atomic-replace-open-reader-sees-old-file ()
+  (let* ((root (%han-host-test-directory))
+         (source (namestring (merge-pathnames "staged.tmp" root)))
+         (target (namestring (merge-pathnames "journal.json" root))))
+    (ensure-directories-exist source)
+    (unwind-protect
+         (progn
+           (with-open-file (out target :direction :output :if-exists :error) (write-string "old" out))
+           (with-open-file (out source :direction :output :if-exists :error) (write-string "new" out))
+           (with-open-file (old-reader target)
+             (han.host:atomic-replace-file source target)
+             (check-equal "old" (read-line old-reader)))
+           (with-open-file (new-reader target)
+             (check-equal "new" (read-line new-reader))))
+      (han.host:delete-directory-tree root))))
+
+(deftest test-host-atomic-replace-refuses-nonfiles-and-aliases ()
+  (let* ((root (%han-host-test-directory))
+         (source (namestring (merge-pathnames "staged.tmp" root)))
+         (old (namestring (merge-pathnames "old" root)))
+         (dir (namestring (merge-pathnames "directory" root)))
+         (hard (namestring (merge-pathnames "alias" root)))
+         (link (namestring (merge-pathnames "link" root)))
+         (missing (namestring (merge-pathnames "absent" root)))
+         (dangling (namestring (merge-pathnames "dangling" root)))
+         (fifo (namestring (merge-pathnames "fifo" root))))
+    (ensure-directories-exist source)
+    (unwind-protect
+         (progn
+           (with-open-file (out source :direction :output :if-exists :error) (write-string "new" out))
+           (with-open-file (out old :direction :output :if-exists :error) (write-string "old" out))
+           (dolist (command (list (list "/bin/mkdir" dir) (list "/bin/ln" source hard)
+                                  (list "/bin/ln" "-s" old link) (list "/bin/ln" "-s" missing dangling)
+                                  (list "/usr/bin/mkfifo" fifo)))
+             (han.host:run-program-sync command :ignore-error-status nil))
+           (dolist (destination (list dir hard link dangling fifo source))
+             (check-error (file-error) (han.host:atomic-replace-file source destination)))
+           (dolist (invalid-source (list dir link dangling fifo missing))
+             (check-error (file-error) (han.host:atomic-replace-file invalid-source old)))
+           (check-error (file-error) (han.host:atomic-replace-file dir missing))
+           (check-false (probe-file missing))
+           (dolist (entry (list hard source))
+             (with-open-file (in entry) (check-equal "new" (read-line in))))
+           (check-equal (format nil "~A~%" old)
+                        (han.host:run-program-sync (list "/usr/bin/readlink" link) :ignore-error-status nil))
+           (with-open-file (in old) (check-equal "old" (read-line in))))
+      (han.host:delete-directory-tree root))))
+
+(deftest test-host-atomic-replace-rejects-invalid-path-text ()
+  (let* ((root (%han-host-test-directory))
+         (file (namestring (merge-pathnames "keep" root)))
+         (nul-name (concatenate 'string file (string (code-char 0)) ".extra")))
+    (ensure-directories-exist file)
+    (unwind-protect
+         (progn
+           (with-open-file (out file :direction :output :if-exists :error) (write-string "keep" out))
+           (dolist (bad (list nul-name ""))
+             (check-error (file-error) (han.host:atomic-replace-file bad file))
+             (check-error (file-error) (han.host:atomic-replace-file file bad)))
+           (check-error (type-error) (han.host:atomic-replace-file #p"source" file))
+           (check-error (type-error) (han.host:atomic-replace-file file nil))
+           (with-open-file (in file) (check-equal "keep" (read-line in))))
+      (han.host:delete-directory-tree root))))

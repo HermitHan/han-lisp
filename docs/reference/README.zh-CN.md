@@ -2,7 +2,7 @@
 
 [English](README.md) · [按符号名查找](symbols.zh-CN.md) · [用户手册](../user/README.zh-CN.md)
 
-知道包名时可以从下表进入，只记得符号名时可以查字母索引。每个条目都有调用形式、参数、返回值和示例。先加载 `han`，再任选一个代码块试运行；各例之间没有先后依赖。
+知道包名时可以从下表进入，只记得符号名时可以查字母索引。每个条目都标明符号种类，并用示例展示它的用法。函数条目列出参数和返回值。先加载 `han`，再任选一个示例独立运行。
 
 | 末行标注 | 核对内容 |
 | --- | --- |
@@ -43,7 +43,7 @@
 | 终端与字符 | [`standard-input-terminal-p`](host/standard-input-terminal-p.zh-CN.md) · [`standard-error-terminal-p`](host/standard-error-terminal-p.zh-CN.md) · [`prepare-runtime-io`](host/prepare-runtime-io.zh-CN.md) · [`configure-runtime-io`](host/configure-runtime-io.zh-CN.md) · [`with-character-output-to-string`](host/with-character-output-to-string.zh-CN.md) · [`escape-sh-token`](host/escape-sh-token.zh-CN.md) |
 | 进程控制 | [`run-program`](host/run-program.zh-CN.md) · [`run-program-sync`](host/run-program-sync.zh-CN.md) · [`process-status`](host/process-status.zh-CN.md) · [`process-exit-code`](host/process-exit-code.zh-CN.md) · [`process-wait`](host/process-wait.zh-CN.md) · [`process-close`](host/process-close.zh-CN.md) |
 | 进程句柄 | [`host-process`](host/host-process.zh-CN.md) · [`make-host-process`](host/make-host-process.zh-CN.md) · [`host-process-backend`](host/host-process-backend.zh-CN.md) · [`host-process-native-handle`](host/host-process-native-handle.zh-CN.md) · [`host-process-pid`](host/host-process-pid.zh-CN.md) · [`host-process-input-stream`](host/host-process-input-stream.zh-CN.md) · [`host-process-output-stream`](host/host-process-output-stream.zh-CN.md) · [`host-process-error-stream`](host/host-process-error-stream.zh-CN.md) |
-| 文件与锁 | [`append-utf8-line`](host/append-utf8-line.zh-CN.md) · [`call-with-exclusive-file-lock`](host/call-with-exclusive-file-lock.zh-CN.md) · [`temporary-directory`](host/temporary-directory.zh-CN.md) · [`file-exists-p`](host/file-exists-p.zh-CN.md) · [`directory-exists-p`](host/directory-exists-p.zh-CN.md) · [`directory-files`](host/directory-files.zh-CN.md) · [`subdirectories`](host/subdirectories.zh-CN.md) · [`copy-file`](host/copy-file.zh-CN.md) · [`delete-directory-tree`](host/delete-directory-tree.zh-CN.md) |
+| 文件与锁 | [`append-utf8-line`](host/append-utf8-line.zh-CN.md) · [`atomic-replace-file`](host/atomic-replace-file.zh-CN.md) · [`call-with-exclusive-file-lock`](host/call-with-exclusive-file-lock.zh-CN.md) · [`temporary-directory`](host/temporary-directory.zh-CN.md) · [`file-exists-p`](host/file-exists-p.zh-CN.md) · [`directory-exists-p`](host/directory-exists-p.zh-CN.md) · [`directory-files`](host/directory-files.zh-CN.md) · [`subdirectories`](host/subdirectories.zh-CN.md) · [`copy-file`](host/copy-file.zh-CN.md) · [`delete-directory-tree`](host/delete-directory-tree.zh-CN.md) |
 | 包信息 | [`help`](host/help.zh-CN.md) · [`version`](host/version.zh-CN.md) |
 
 ## Json

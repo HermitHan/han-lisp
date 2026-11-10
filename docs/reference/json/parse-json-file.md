@@ -14,7 +14,7 @@
 
 Open the pathname designator for character input with UTF-8 encoding, read its entire contents, then parse one JSON value. The input stream is closed on exit. Syntax errors signal `json-error`. File access errors propagate; handling of malformed UTF-8 bytes belongs to the host stream decoder. The example uses a temporary file managed by the UIOP included with ASDF.
 
-For a file containing `22 F0 9F`, ECL 26.5.5 reaches EOF during UTF-8 decoding. The parser then signals `han.json:json-error` for the unclosed string. SBCL and LispWorks signal their stream-decoding errors while reading those bytes. [UTF-8 input](../host/with-open-utf8-file.md)
+For a file containing `22 F0 9F`, ECL 26.5.5 and CCL 1.14 reach EOF during UTF-8 decoding. The parser then signals `han.json:json-error` for the unclosed string. SBCL and LispWorks signal their stream-decoding errors while reading those bytes. With `22 C3 28 22`, CCL returns a JSON string containing one U+FFFD replacement character. [UTF-8 input](../host/with-open-utf8-file.md)
 
 ## Examples
 

@@ -73,6 +73,7 @@
 - [`han.args:args-spec-command`](args/args-spec-command.zh-CN.md)
 - [`han.args:args-spec-p`](args/args-spec-p.zh-CN.md)
 - [`han.host:argv`](host/argv.zh-CN.md)
+- [`han.host:atomic-replace-file`](host/atomic-replace-file.zh-CN.md)
 
 ## B
 

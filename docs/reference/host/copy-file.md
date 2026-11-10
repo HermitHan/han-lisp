@@ -14,6 +14,8 @@
 
 Copies the bytes of the source file, creating parent directories as needed and replacing any existing target contents. Returns the original target argument. File errors propagate. Choose distinct paths for the source and destination. The example creates two temporary files.
 
+Use [`atomic-replace-file`](atomic-replace-file.md) to publish a finished file under its final name in a single step.
+
 ## Examples
 
 Copy a file containing one line and read the line from the destination.

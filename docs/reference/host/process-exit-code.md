@@ -12,7 +12,7 @@
 
 ## Description
 
-Returns the exit status when it is available, otherwise `nil`. Inspect it after `process-wait` for a completed child. All three adapters preserve ordinary exit codes, including zero. On Unix, when a signal terminates the child, SBCL returns the signal number and LispWorks and ECL return 128 plus that number. For example, SIGTERM gives 15 on SBCL and 143 on LispWorks and ECL. An ordinary exit can use the same integer.
+Returns the exit status when it is available, otherwise `nil`. Inspect it after `process-wait` for a completed child. All four adapters preserve ordinary exit codes, including zero. On Unix, when a signal terminates the child, SBCL returns the signal number and LispWorks, ECL and CCL return 128 plus that number. For example, SIGTERM gives 15 on SBCL and 143 on LispWorks, ECL and CCL. An ordinary exit can use the same integer.
 
 ## Examples
 
@@ -43,4 +43,4 @@ Translate a worker's exit status into a caller-defined decision.
 ;; => :BAD-INPUT
 ```
 
-[`han.host:process-wait`](process-wait.md) · [`han.host:run-program-sync`](run-program-sync.md) · [sbcl.lisp](../../../host/sbcl.lisp) · [lispworks.lisp](../../../host/lispworks.lisp) · [ecl.lisp](../../../host/ecl.lisp) · [Index](../README.md)
+[`han.host:process-wait`](process-wait.md) · [`han.host:run-program-sync`](run-program-sync.md) · [sbcl.lisp](../../../host/sbcl.lisp) · [lispworks.lisp](../../../host/lispworks.lisp) · [ecl.lisp](../../../host/ecl.lisp) · [ccl.lisp](../../../host/ccl.lisp) · [Index](../README.md)

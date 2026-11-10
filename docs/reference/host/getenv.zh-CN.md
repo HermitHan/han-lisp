@@ -12,7 +12,7 @@
 
 ## 说明
 
-以字符串变量名查询当前进程的环境。未设置时返回 `nil`，已设置为空值时返回空字符串。
+以字符串变量名查询当前进程的环境。未设置时返回 `nil`，已设置为空值时返回空字符串。ECL 使用 UTF-8 处理变量名和值，含多字节字符的长值会完整返回。
 
 ## 示例
 
@@ -29,12 +29,12 @@
 ```lisp
 (nth-value 2
   (han.host:run-program-sync
-   (list "/usr/bin/env" "-u" "HAN_DOCS_ABSENT" "HAN_DOCS_EMPTY=" #+ecl (first (han.host:argv t)) #-ecl (han.host:find-executable "sbcl")
-         #+ecl "--norc" #-ecl "--no-userinit"
-         #+ecl "--nodebug" #-ecl "--non-interactive"
+   (list "/usr/bin/env" "-u" "HAN_DOCS_ABSENT" "HAN_DOCS_EMPTY=" #+(or ecl ccl) (first (han.host:argv t)) #-(or ecl ccl) (han.host:find-executable "sbcl")
+         #+ecl "--norc" #+ccl "--no-init" #-(or ecl ccl) "--no-userinit"
+         #+ecl "--nodebug" #+ccl "--batch" #-(or ecl ccl) "--non-interactive"
          "--load" (namestring (asdf:system-relative-pathname "han" "load-han.lisp"))
          "--eval" "(assert (equal (list (han.host:getenv \"HAN_DOCS_EMPTY\") (han.host:getenv \"HAN_DOCS_ABSENT\")) '(\"\" nil)))" "--eval" "(han.host:quit)")))
 ;; => 0
 ```
 
-[`han.os:getenv-default`](../os/getenv-default.zh-CN.md) · [`han.os:require-env`](../os/require-env.zh-CN.md) · [sbcl.lisp](../../../host/sbcl.lisp) · [lispworks.lisp](../../../host/lispworks.lisp) · [ecl.lisp](../../../host/ecl.lisp) · [unsupported.lisp](../../../host/unsupported.lisp) · [索引](../README.zh-CN.md)
+[`han.os:getenv-default`](../os/getenv-default.zh-CN.md) · [`han.os:require-env`](../os/require-env.zh-CN.md) · [sbcl.lisp](../../../host/sbcl.lisp) · [lispworks.lisp](../../../host/lispworks.lisp) · [ecl.lisp](../../../host/ecl.lisp) · [ccl.lisp](../../../host/ccl.lisp) · [unsupported.lisp](../../../host/unsupported.lisp) · [索引](../README.zh-CN.md)

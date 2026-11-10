@@ -12,7 +12,7 @@
 
 ## Description
 
-Reads the backend slot of a `host-process`. Live handles are tagged `:sbcl`, `:lispworks` or `:ecl` by the active adapter. The slot can be set with `setf`. Changing it does not convert the underlying OS resource.
+Reads the backend slot of a `host-process`. Live handles are tagged `:sbcl`, `:lispworks`, `:ecl` or `:ccl` by the active adapter. The slot can be set with `setf`. Changing it does not convert the underlying OS resource.
 
 ## Examples
 
@@ -30,7 +30,7 @@ Check the adapter tag of a real child before entering backend-specific diagnosti
   (unwind-protect
        (progn
          (han.host:process-wait child)
-         (not (null (member (han.host:host-process-backend child) '(:sbcl :lispworks :ecl)))))
+         (not (null (member (han.host:host-process-backend child) '(:sbcl :lispworks :ecl :ccl)))))
     (han.host:process-close child)))
 ;; => T
 ```

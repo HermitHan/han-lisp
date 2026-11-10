@@ -12,7 +12,7 @@ han.host:unsupported-host-function → condition type in fallback builds
 
 ## Description
 
-The fallback backend defines this `error` subtype for operations such as `argv` or `run-program` that require a supported Lisp implementation. The SBCL, LispWorks and ECL adapters export the symbol without defining a condition class. Han selects the ECL adapter on macOS and Linux when ECL is built with Unicode. Other ECL builds use the fallback. The example checks whether a defined class is an error subtype without calling an unsupported operation.
+The fallback backend defines this `error` subtype for operations such as `argv` or `run-program` that require a supported Lisp implementation. The SBCL, LispWorks, ECL and CCL adapters export the symbol without defining a condition class. Han selects the ECL adapter on macOS and Linux when ECL is built with Unicode. Han selects the CCL adapter on 64-bit Darwin and Linux. Other ECL and CCL targets use the fallback. The example checks whether a defined class is an error subtype without calling an unsupported operation.
 
 ## Examples
 

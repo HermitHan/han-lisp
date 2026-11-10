@@ -30,7 +30,7 @@ A high surrogate alone does not represent a character.
 ;; => NIL
 ```
 
-On Unicode-enabled ECL, Unicode-capable SBCL or LispWorks 8, U+1F600 is one character in a Lisp string.
+On CCL 1.14, Unicode-enabled ECL, Unicode-capable SBCL or LispWorks 8, U+1F600 is one character in a Lisp string.
 
 ```lisp
 (length (string (han.host:unicode-scalar-char #x1F600)))

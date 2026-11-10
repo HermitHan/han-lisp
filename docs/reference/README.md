@@ -2,7 +2,7 @@
 
 [简体中文](README.zh-CN.md) · [A–Z index](symbols.md) · [User guide](../user/README.md)
 
-Choose a package below, or use the alphabetical index if you only know the symbol name. Each entry gives the calling syntax, arguments, return values and examples. Load `han` before trying a block. Each block stands on its own; you can try the last example without running the first.
+Choose a package below, or use the alphabetical index if you only know the symbol name. Each entry identifies the kind of symbol and shows how to use it. Function entries give the arguments and return values. Load `han` before trying an example. Each block runs independently.
 
 | Last line | What it checks |
 | --- | --- |
@@ -43,7 +43,7 @@ For example, [`get-json`](json/get-json.md) distinguishes an explicitly false fi
 | Terminal and text | [`standard-input-terminal-p`](host/standard-input-terminal-p.md) · [`standard-error-terminal-p`](host/standard-error-terminal-p.md) · [`prepare-runtime-io`](host/prepare-runtime-io.md) · [`configure-runtime-io`](host/configure-runtime-io.md) · [`with-character-output-to-string`](host/with-character-output-to-string.md) · [`escape-sh-token`](host/escape-sh-token.md) |
 | Control a child | [`run-program`](host/run-program.md) · [`run-program-sync`](host/run-program-sync.md) · [`process-status`](host/process-status.md) · [`process-exit-code`](host/process-exit-code.md) · [`process-wait`](host/process-wait.md) · [`process-close`](host/process-close.md) |
 | Process handles | [`host-process`](host/host-process.md) · [`make-host-process`](host/make-host-process.md) · [`host-process-backend`](host/host-process-backend.md) · [`host-process-native-handle`](host/host-process-native-handle.md) · [`host-process-pid`](host/host-process-pid.md) · [`host-process-input-stream`](host/host-process-input-stream.md) · [`host-process-output-stream`](host/host-process-output-stream.md) · [`host-process-error-stream`](host/host-process-error-stream.md) |
-| Files and locks | [`append-utf8-line`](host/append-utf8-line.md) · [`call-with-exclusive-file-lock`](host/call-with-exclusive-file-lock.md) · [`temporary-directory`](host/temporary-directory.md) · [`file-exists-p`](host/file-exists-p.md) · [`directory-exists-p`](host/directory-exists-p.md) · [`directory-files`](host/directory-files.md) · [`subdirectories`](host/subdirectories.md) · [`copy-file`](host/copy-file.md) · [`delete-directory-tree`](host/delete-directory-tree.md) |
+| Files and locks | [`append-utf8-line`](host/append-utf8-line.md) · [`atomic-replace-file`](host/atomic-replace-file.md) · [`call-with-exclusive-file-lock`](host/call-with-exclusive-file-lock.md) · [`temporary-directory`](host/temporary-directory.md) · [`file-exists-p`](host/file-exists-p.md) · [`directory-exists-p`](host/directory-exists-p.md) · [`directory-files`](host/directory-files.md) · [`subdirectories`](host/subdirectories.md) · [`copy-file`](host/copy-file.md) · [`delete-directory-tree`](host/delete-directory-tree.md) |
 | Package information | [`help`](host/help.md) · [`version`](host/version.md) |
 
 ## Json

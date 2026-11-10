@@ -14,9 +14,7 @@
   (lw:environment-variable name))
 
 (defun quit (&optional (code 0))
-  (ignore-errors (finish-output *standard-output*))
-  (ignore-errors (finish-output *error-output*))
-  (lw:quit :status code))
+  (lw:quit :status (%finish-exit-output code)))
 
 (defmacro prepare-runtime-io ()
   "Prepare Unicode character policy before configuring live process streams."
@@ -61,6 +59,35 @@
 
 #+(or darwin macosx linux)
 (progn
+  (fli:define-foreign-function (%lispworks-readlink "readlink")
+      ((path (:pointer :void)) (buffer (:pointer :void)) (size :size-t))
+    :result-type :ssize-t)
+
+  (fli:define-foreign-function (%lispworks-rename "rename")
+      ((old (:pointer :void)) (new (:pointer :void))) :result-type :int)
+
+  (defun %literal-file-stat (name)
+    ;; GET-FILE-STAT follows links. Identify the final link, including a
+    ;; dangling one, before asking LispWorks for its native stat structure.
+    (fli:with-dynamic-foreign-objects ((buffer :char))
+      (let* ((path (fli:convert-to-dynamic-foreign-string name :external-format :utf-8))
+             (result (%lispworks-readlink path buffer 1)))
+        (if (minusp result)
+            (let ((errno (lw:errno-value)))
+              (if (= errno 22) ; EINVAL: final entry is not a symbolic link
+                  (multiple-value-bind (stat stat-errno) (sys:get-file-stat name)
+                    (if stat (values (sys:file-stat-mode stat) (sys:file-stat-device stat)
+                                     (sys:file-stat-inode stat))
+                        (- stat-errno)))
+                  (- errno)))
+            #o120000)))) ; S_IFLNK
+
+  (defun %literal-rename-errno (source target)
+    (fli:with-dynamic-foreign-objects ()
+      (let ((old (fli:convert-to-dynamic-foreign-string source :external-format :utf-8))
+            (new (fli:convert-to-dynamic-foreign-string target :external-format :utf-8)))
+        (if (zerop (%lispworks-rename old new)) 0 (lw:errno-value)))))
+
   (fli:define-foreign-function (%lispworks-open "open")
       ((path (:pointer :void)) (flags :int) (mode :int))
     :variadic-num-of-fixed 2

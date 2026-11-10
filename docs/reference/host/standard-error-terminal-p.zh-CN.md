@@ -30,12 +30,12 @@
 ```lisp
 (nth-value 2
   (han.host:run-program-sync
-   (list #+ecl (first (han.host:argv t)) #-ecl (han.host:find-executable "sbcl")
-         #+ecl "--norc" #-ecl "--no-userinit"
-         #+ecl "--nodebug" #-ecl "--non-interactive"
+   (list #+(or ecl ccl) (first (han.host:argv t)) #-(or ecl ccl) (han.host:find-executable "sbcl")
+         #+ecl "--norc" #+ccl "--no-init" #-(or ecl ccl) "--no-userinit"
+         #+ecl "--nodebug" #+ccl "--batch" #-(or ecl ccl) "--non-interactive"
          "--load" (namestring (asdf:system-relative-pathname "han" "load-han.lisp"))
          "--eval" "(han.host:quit (if (han.host:standard-error-terminal-p) 1 0))" "--eval" "(han.host:quit)")))
 ;; => 0
 ```
 
-[`han.host:standard-input-terminal-p`](standard-input-terminal-p.zh-CN.md) · [`han.host:configure-runtime-io`](configure-runtime-io.zh-CN.md) · [sbcl.lisp](../../../host/sbcl.lisp) · [lispworks.lisp](../../../host/lispworks.lisp) · [ecl.lisp](../../../host/ecl.lisp) · [unsupported.lisp](../../../host/unsupported.lisp) · [索引](../README.zh-CN.md)
+[`han.host:standard-input-terminal-p`](standard-input-terminal-p.zh-CN.md) · [`han.host:configure-runtime-io`](configure-runtime-io.zh-CN.md) · [sbcl.lisp](../../../host/sbcl.lisp) · [lispworks.lisp](../../../host/lispworks.lisp) · [ecl.lisp](../../../host/ecl.lisp) · [ccl.lisp](../../../host/ccl.lisp) · [unsupported.lisp](../../../host/unsupported.lisp) · [索引](../README.zh-CN.md)

@@ -1,4 +1,4 @@
-;;;; Run with sbcl --script or ecl -norc -shell scripts/check-reference.lisp.
+;;;; Run via sbcl --script, ecl -norc -shell, or CCL --no-init --batch --load.
 ;;;; Use fresh writable TMPDIR and XDG_CACHE_HOME directories for temporary
 ;;;; files and ASDF compilation. Examples run in separate Lisp processes.
 (require :asdf)
@@ -103,7 +103,9 @@
          #+sbcl (list (namestring sb-ext:*runtime-pathname*) "--noinform" "--no-sysinit"
                       "--no-userinit" "--disable-debugger" "--script" (namestring *script*) "--example")
          #+ecl (list (ext:argv 0) "-norc" "-shell" (namestring *script*) "--" "--example")
-         #-(or ecl sbcl) (error "Run the reference checker under ECL or SBCL.")
+         #+ccl (list (first ccl:*command-line-argument-list*) "--no-init" "--batch" "--quiet"
+                     "--load" (namestring *script*) "--" "--example")
+         #-(or ccl ecl sbcl) (error "Run the reference checker under CCL, ECL or SBCL.")
          :input in :output :lines :error-output :string :ignore-error-status t)
       (unless (and (eql status 0) (equal (car (last out)) "HAN-REFERENCE-EXAMPLE-PASSED"))
         (error "Example worker exited with status ~S. ~A~%~{~A~%~}" status err out)))))
@@ -229,7 +231,8 @@
       (load-checkout)
       (cond ((null (uiop:command-line-arguments)) (check-reference))
             ((equal (uiop:command-line-arguments) '("--example")) (verify-input))
-            (t (error "Unexpected script arguments."))))
+            (t (error "Unexpected script arguments.")))
+      #+ccl (uiop:quit 0))
   (error (condition)
     (format *error-output* "~&Reference check failed: ~A~%" condition)
     (uiop:quit 1)))

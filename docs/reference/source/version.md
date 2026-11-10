@@ -20,7 +20,7 @@ Returns this package’s version as a string. When `stream` is non-nil it also w
 
 ```lisp
 (han.source:version nil)
-;; => "0.2.0"
+;; => "0.3.0"
 ```
 
 **Capture the formatted version line as well as the bare value**

@@ -40,11 +40,11 @@
 | [`escape-sh-token value`](../reference/os/escape-sh-token.zh-CN.md) | 把单个参数写成带引号的 POSIX shell 词。`nil` 会转为空字符串的引号形式。拼接 shell 文本时可用它嵌入一个参数。 |
 | [`run-shell-command command &key (wait t) (lines t) shell`](../reference/os/run-shell-command.zh-CN.md) | 通过 shell 的 `-c` 执行命令文本。可用 `shell` 指定可执行文件路径，默认先查找 `bash` 再查找 `sh`。等待模式下返回标准输出行列表、标准错误行列表和退出码。传 `:lines nil` 可得到字符串，保留输出结尾的换行符。 |
 
-要让 argv 调用在各个后端都能启动，请传入可执行文件的完整路径。只有程序名时，可先用 [find-executable](../reference/host/find-executable.zh-CN.md) 查找并检查结果是否为 `nil`。当 curl 等子程序报告连接失败时，诊断文本和退出码来自本机实际运行的程序。调用方可以用退出码判定失败，并保留标准错误以便排查。
+要让 argv 调用在各个后端都能启动，请传入可执行文件的完整路径。只有程序名时，可用 `han.os:find-executable` 查找，确认结果非 `nil` 后再启动。curl 等子程序报告连接失败时，退出码和标准错误来自该程序。如果子进程被 Unix 信号终止，SBCL 返回信号编号，LispWorks、ECL 和 CCL 返回 128 加该编号。[查找可执行文件](../reference/os/find-executable.zh-CN.md) · [子进程的返回值](../reference/host/run-program-sync.zh-CN.md)
 
-ECL 的同步调用若给输入或任一输出传 `:stream`，会在启动前发出 `simple-error`。需要管道时，请用 [han.host:run-program](../reference/host/run-program.zh-CN.md) 启动子进程。
+ECL 和 CCL 的同步调用若给输入或任一输出传 `:stream`，会在启动前发出 `simple-error`。需要管道时，请用 [han.host:run-program](../reference/host/run-program.zh-CN.md) 启动子进程。
 
-通过 `:input t` 从终端提供输入时，LispWorks 和 ECL 会等到 EOF 才启动子进程。捕获的标准输出和标准错误按宿主默认文本编码读取。[同步进程参考](../reference/host/run-program-sync.zh-CN.md)
+通过 `:input t` 从终端提供输入时，LispWorks、ECL 和 CCL 会等到 EOF 才启动子进程。CCL 按 UTF-8 读取捕获的标准输出和标准错误。SBCL、LispWorks 和 ECL 沿用宿主默认文本编码。[同步进程参考](../reference/host/run-program-sync.zh-CN.md)
 
 有重定向时可以交给 shell。下面的参数包含单引号和美元符号，二者都会按原样传给 `printf`。即使退出码非零，调用方也能取到错误输出。
 
@@ -63,7 +63,7 @@ ECL 的同步调用若给输入或任一输出传 `:stream`，会在启动前发
 
 | 操作 | 返回值 |
 | --- | --- |
-| [`getenv-default name default`](../reference/os/getenv-default.zh-CN.md)、[`require-env name`](../reference/os/require-env.zh-CN.md) | 读取环境变量的字符串值。未设置时，前者返回传入的默认值，后者报错。变量已设为空字符串时也算存在。 |
+| [`getenv-default name default`](../reference/os/getenv-default.zh-CN.md)、[`require-env name`](../reference/os/require-env.zh-CN.md) | 读取环境变量的字符串值。未设置时，前者返回传入的默认值，后者报错。变量已设为空字符串时也算存在。ECL 会保留长 UTF-8 值的完整内容。 |
 | [`current-user &optional (default "World")`](../reference/os/current-user.zh-CN.md) | 依次尝试 `USER`、`LOGNAME` 和指定的默认值。 |
 | [`current-directory`](../reference/os/current-directory.zh-CN.md)、[`home-directory`](../reference/os/home-directory.zh-CN.md) | 返回目录名称字符串，无法取得时为 `nil`。主目录优先选用确实存在的 `HOME`，然后尝试 Lisp 的用户主目录。 |
 | [`find-executable program`](../reference/os/find-executable.zh-CN.md) | 看起来像路径的字符串会先按原路径尝试。对于单个程序名，依次搜索 `PATH` 和内置的 Unix 目录。主返回值是第一个匹配的文件路径，未找到时为 `nil`，其余匹配可能作为后续值返回。它只检查文件是否存在。 |

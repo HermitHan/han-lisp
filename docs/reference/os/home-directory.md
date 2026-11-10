@@ -30,11 +30,11 @@ Point HOME at a real scratch location in a child and verify that it is selected.
 ```lisp
 (nth-value 2
   (han.host:run-program-sync
-   (list "/usr/bin/env" (format nil "HOME=~A" (namestring (uiop:temporary-directory))) #+ecl (first (han.host:argv t)) #-ecl (han.host:find-executable "sbcl")
-         #+ecl "--norc" #-ecl "--no-userinit"
-         #+ecl "--nodebug" #-ecl "--non-interactive"
+   (list "/usr/bin/env" (format nil "HOME=~A" (namestring (uiop:temporary-directory))) #+(or ecl ccl) (first (han.host:argv t)) #-(or ecl ccl) (han.host:find-executable "sbcl")
+         #+ecl "--norc" #+ccl "--no-init" #-(or ecl ccl) "--no-userinit"
+         #+ecl "--nodebug" #+ccl "--batch" #-(or ecl ccl) "--non-interactive"
          "--load" (namestring (asdf:system-relative-pathname "han" "load-han.lisp"))
-         "--eval" "(assert (string= (namestring (truename (han.os:home-directory))) (namestring (truename (uiop:temporary-directory)))))" "--eval" "(han.host:quit)")))
+         "--eval" "(assert (equal (truename (han.os:home-directory)) (truename (han.host:getenv \"HOME\"))))" "--eval" "(han.host:quit)")))
 ;; => 0
 ```
 

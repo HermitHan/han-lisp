@@ -4,7 +4,16 @@
 
 ## Load the library in your program
 
-Use SBCL, LispWorks or Unicode-enabled ECL on macOS or Linux. With ECL, start the REPL with `ecl -norc`. From a REPL in the checkout, `(load "load-han.lisp")` loads the runtime and all seven packages. To load it explicitly with ASDF from the same directory, evaluate these forms in order.
+The following commands load all seven packages. Run the shell commands from the Han checkout, in the directory containing `han.asd`.
+
+| Lisp | How to load Han |
+| --- | --- |
+| SBCL | `sbcl --load load-han.lisp` |
+| LispWorks | In the Listener, evaluate `(load "/path/to/han-lisp/load-han.lisp")` with the actual path to the checkout. |
+| ECL 26.5.5 with Unicode | `ecl -norc -load load-han.lisp` |
+| 64-bit Clozure CL 1.14 | Set `CCL_BIN` to the absolute path to the kernel in the unpacked CCL distribution (`darm64cl` on Apple Silicon macOS, `lx86cl64` on x86-64 Linux). Run `"$CCL_BIN" --no-init --load load-han.lisp`. |
+
+To load Han directly with ASDF instead, evaluate these forms in order from a REPL in the checkout.
 
 ```lisp
 (require :asdf)
@@ -33,14 +42,14 @@ The second value says the field exists. Change the JSON to `"{}"` to get `(NIL N
 
 ## Find an interface
 
-| I want to… | Package reference |
+| I want to… | Package guide |
 | --- | --- |
 | Accept flags, positional arguments or named blocks, and report input errors | [han.args](args.md) |
 | Read lines, look up an environment variable or capture a command's output | [han.os](os.md) |
 | Construct a pathname, list a directory or copy a file | [han.path](path.md) |
-| Keep a running process handle, inspect a terminal or coordinate writers with a lock | [han.host](host.md) |
+| Manage a child process, inspect a terminal, lock a file or atomically replace it | [han.host](host.md) |
 | Read a configuration or emit JSON while preserving false and null | [han.json](json.md) |
 | Look ahead in text, restore the cursor or extract the text matched by a parser | [han.source](source.md) |
 | Register a test case and assert results in Lisp | [han.test](test.md) |
 
-Each reference covers its exported interface. To run the library's own tests or work on an implementation, see the [development workflow](../developer/workflow.md).
+Each package guide links to the individual symbol entries. If you know the name already, open the [A–Z index](../reference/symbols.md). To run Han's own tests or work on an implementation, see the [development workflow](../developer/workflow.md).

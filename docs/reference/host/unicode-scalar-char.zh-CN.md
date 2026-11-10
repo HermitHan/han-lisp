@@ -30,7 +30,7 @@
 ;; => NIL
 ```
 
-在启用 Unicode 的 ECL、支持 Unicode 的 SBCL 或 LispWorks 8 上，U+1F600 在 Lisp 字符串中只占一个字符。
+在 CCL 1.14、启用 Unicode 的 ECL、支持 Unicode 的 SBCL 或 LispWorks 8 上，U+1F600 在 Lisp 字符串中只占一个字符。
 
 ```lisp
 (length (string (han.host:unicode-scalar-char #x1F600)))

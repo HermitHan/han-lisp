@@ -12,7 +12,7 @@
 
 ## 说明
 
-非阻塞查询实际进程句柄。SBCL 和 ECL 将原生状态映射为 `:running`、`:exited` 或 `:unknown`（如暂停状态）。LispWorks 在取得退出码之前报告 `:running`，之后返回 `:exited`。示例先等待结束以取得确定结果。
+非阻塞查询实际进程句柄。SBCL、ECL 和 CCL 将原生状态映射为 `:running`、`:exited` 或 `:unknown`（如暂停状态）。暂停的子进程恢复执行后，CCL 1.14 仍可能返回 `:unknown`，直到它观察到进程终止。LispWorks 在取得退出码之前报告 `:running`，之后返回 `:exited`。示例先等待结束以取得确定结果。
 
 ## 示例
 
@@ -47,4 +47,4 @@
 ;; => (:RUNNING :EXITED)
 ```
 
-[`han.host:process-wait`](process-wait.zh-CN.md) · [`han.host:process-exit-code`](process-exit-code.zh-CN.md) · [sbcl.lisp](../../../host/sbcl.lisp) · [lispworks.lisp](../../../host/lispworks.lisp) · [ecl.lisp](../../../host/ecl.lisp) · [索引](../README.zh-CN.md)
+[`han.host:process-wait`](process-wait.zh-CN.md) · [`han.host:process-exit-code`](process-exit-code.zh-CN.md) · [sbcl.lisp](../../../host/sbcl.lisp) · [lispworks.lisp](../../../host/lispworks.lisp) · [ecl.lisp](../../../host/ecl.lisp) · [ccl.lisp](../../../host/ccl.lisp) · [索引](../README.zh-CN.md)

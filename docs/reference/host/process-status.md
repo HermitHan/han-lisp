@@ -12,7 +12,7 @@
 
 ## Description
 
-Queries a live handle without waiting. SBCL and ECL map the native state to `:running`, `:exited` or `:unknown` (for example, a stopped process). LispWorks reports `:running` until an exit code is available, then `:exited`. Waiting first makes this example deterministic.
+Queries a live handle without waiting. SBCL, ECL and CCL map the native state to `:running`, `:exited` or `:unknown` (for example, a stopped process). CCL 1.14 can continue to report `:unknown` after a stopped child resumes, until it observes termination. LispWorks reports `:running` until an exit code is available, then `:exited`. Waiting first makes this example deterministic.
 
 ## Examples
 
@@ -47,4 +47,4 @@ Inspect a running worker before releasing its file gate and waiting for exit.
 ;; => (:RUNNING :EXITED)
 ```
 
-[`han.host:process-wait`](process-wait.md) · [`han.host:process-exit-code`](process-exit-code.md) · [sbcl.lisp](../../../host/sbcl.lisp) · [lispworks.lisp](../../../host/lispworks.lisp) · [ecl.lisp](../../../host/ecl.lisp) · [Index](../README.md)
+[`han.host:process-wait`](process-wait.md) · [`han.host:process-exit-code`](process-exit-code.md) · [sbcl.lisp](../../../host/sbcl.lisp) · [lispworks.lisp](../../../host/lispworks.lisp) · [ecl.lisp](../../../host/ecl.lisp) · [ccl.lisp](../../../host/ccl.lisp) · [Index](../README.md)

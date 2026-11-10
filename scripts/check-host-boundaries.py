@@ -130,6 +130,8 @@ def run_in_listener(driver, cases_file, results_file, start_timeout):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--ccl", metavar="EXECUTABLE",
+                      help="run the probe using this Clozure CL kernel")
     mode.add_argument("--ecl", metavar="EXECUTABLE",
                       help="run the probe using this ECL executable")
     mode.add_argument("--lispworks", metavar="EXECUTABLE",
@@ -145,7 +147,9 @@ def main():
     curl = shutil.which("curl")
     if not curl:
         parser.error("curl must be on PATH")
-    if args.ecl:
+    if args.ccl:
+        command = [args.ccl, "--no-init", "--batch", "--quiet", "--load", driver]
+    elif args.ecl:
         command = [args.ecl, "-norc", "-shell", driver]
     elif args.lispworks:
         command = [args.lispworks, "-build", driver]

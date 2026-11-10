@@ -1,13 +1,17 @@
 (in-package :han.host)
 
-(ffi:clines "#include <errno.h>" "#include <fcntl.h>" "#include <sys/file.h>"
+(ffi:clines "#include <errno.h>" "#include <fcntl.h>" "#include <stdio.h>" "#include <sys/file.h>"
             "#include <sys/stat.h>" "#include <unistd.h>")
 
 ;; ECL returns argv and getenv as base strings containing the original bytes.
 (defun %ecl-decode-os-string (bytes)
   (when bytes
-    (ext:octets-to-string (map '(vector (unsigned-byte 8)) #'char-code bytes)
-                          :external-format :utf-8)))
+    ;; A UTF-8 string has at most one character per byte. Read it in one
+    ;; pass: ECL 26.5.5's OCTETS-TO-STRING miscounts long decoded strings.
+    (with-open-stream (input (ext:make-sequence-input-stream bytes :external-format :utf-8))
+      (let* ((buffer (make-string (length bytes) :element-type 'character))
+             (end (read-sequence buffer input)))
+        (if (= end (length buffer)) buffer (subseq buffer 0 end))))))
 
 (defun %ecl-c-string (text)
   (when (find (code-char 0) text)
@@ -23,9 +27,7 @@
   (%ecl-decode-os-string (ext:getenv (%ecl-c-string name))))
 
 (defun quit (&optional (code 0))
-  (ignore-errors (finish-output *standard-output*))
-  (ignore-errors (finish-output *error-output*))
-  (ext:quit code))
+  (ext:quit (%finish-exit-output code)))
 
 (defmacro prepare-runtime-io () t)
 
@@ -38,6 +40,22 @@
 
 (defun standard-input-terminal-p () (%ecl-isatty 0))
 (defun standard-error-terminal-p () (%ecl-isatty 2))
+
+(defun %literal-file-stat (name)
+  (ffi:c-inline ((%ecl-c-string name)) (:cstring)
+                (values :int :uint64-t :uint64-t)
+    "{ struct stat st;
+       if (lstat(#0, &st) < 0) {
+         @(return 0) = -errno; @(return 1) = 0; @(return 2) = 0;
+       } else {
+         @(return 0) = st.st_mode;
+         @(return 1) = st.st_dev;
+         @(return 2) = st.st_ino;
+       } }"))
+
+(defun %literal-rename-errno (source target)
+  (ffi:c-inline ((%ecl-c-string source) (%ecl-c-string target)) (:cstring :cstring)
+                :int "rename(#0, #1) == 0 ? 0 : errno" :one-liner t))
 
 (defun %prepare-native-file (path)
   ;; ECL rejects wildcard characters in OPEN and ENSURE-DIRECTORIES-EXIST,

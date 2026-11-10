@@ -6,7 +6,7 @@
 
 ;; These implementations number their characters by Unicode (or a subset
 ;; such as Latin-1). ANSI CL itself makes no such promise about CHAR-CODE.
-#+(or sbcl lispworks clisp (and ecl unicode))
+#+(or sbcl lispworks clisp (and ccl openmcl-unicode-strings) (and ecl unicode))
 (progn
   (defun %scalar-to-char (code)
     (when (< code char-code-limit) (code-char code)))
@@ -14,7 +14,7 @@
   (defun %char-to-scalar (char)
     (char-code char)))
 
-#-(or sbcl lispworks clisp (and ecl unicode))
+#-(or sbcl lispworks clisp (and ccl openmcl-unicode-strings) (and ecl unicode))
 (progn
   ;; Do not guess a Unicode encoding from a few matching CHAR-CODE values.
   (defparameter *ascii-characters*

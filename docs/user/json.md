@@ -6,7 +6,7 @@ Use `han.json` to read a configuration document, inspect it as ordinary Lisp dat
 
 ## Read a nested record
 
-Suppose a configuration lists jobs. The first job has explicitly disabled retries and has left its timeout unset. You also want a default priority for jobs that omit that field.
+Suppose a configuration lists jobs. The first job disables retries, sets the timeout to `null`, and omits the priority field. Use 3 as the default priority for jobs that omit it.
 
 ```lisp
 (let* ((config (han.json:parse-json
@@ -47,7 +47,7 @@ Object keys are written in the host Lisp’s `string<` order; this is not a prom
 
 A Unicode escape such as `\u6C49` becomes one Lisp character. Two escapes such as `\uD83D\uDE00` also become one character (U+1F600). An isolated surrogate or a scalar the host cannot map signals [`json-error`](../reference/json/json-error.md). When writing a string, Han escapes characters outside printable ASCII, so literal text and its equivalent Unicode escapes produce the same output. File functions select UTF-8; a stream passed to `write-json` keeps the encoding it was opened with.
 
-For malformed UTF-8 in a file, the condition depends on where reading stops. ECL 26.5.5 can reach EOF in a partial multibyte character, leaving an incomplete JSON string for the parser to report. [File decoding example](../reference/json/parse-json-file.md)
+For malformed UTF-8 in a file, the condition depends on where reading stops. ECL 26.5.5 and CCL 1.14 can reach EOF in a partial multibyte character, leaving an incomplete JSON string for the parser to report. [File decoding example](../reference/json/parse-json-file.md)
 
 Integer literals are exact. A decimal point or exponent selects the host’s `double-float`: some decimal values are rounded, and extreme exponents can signal an arithmetic condition. For example, use an integer count of cents if a price must remain exact. When writing, integers are always decimal; finite float spellings may differ between Lisp implementations. You do not need to bind Lisp printer variables.
 

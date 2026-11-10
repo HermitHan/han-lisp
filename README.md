@@ -12,11 +12,11 @@ Han is a Common Lisp library for command-line tools. It handles work these tools
 
 ## Load Han
 
-Clone the checkout and start a Lisp REPL with Han loaded. The command below uses SBCL. On macOS or Linux with Unicode-enabled ECL 26.5.5, use `ecl -norc -load load-han.lisp` for the last line. In a LispWorks Listener, evaluate `(load "load-han.lisp")` from the checkout.
+This source tree has been tested on Apple Silicon macOS and x86-64 Linux with SBCL, LispWorks, Unicode-enabled ECL 26.5.5 and 64-bit Clozure CL (CCL) 1.14. ECL support shipped in v0.2.0. CCL support and `han.host:atomic-replace-file` are available in v0.3.0. If your project pins v0.2.0, use its [versioned documentation](https://github.com/HermitHan/han-lisp/blob/v0.2.0/docs/README.md).
+
+Download the source archive for your chosen version from [GitHub Releases](https://github.com/HermitHan/han-lisp/releases), or use an existing checkout. From the directory containing `han.asd`, start a REPL with Han loaded. The command below uses SBCL. The user guide gives the startup commands for each supported Lisp. [Loading instructions](docs/user/README.md#load-the-library-in-your-program)
 
 ```sh
-git clone https://github.com/HermitHan/han-lisp.git
-cd han-lisp
 sbcl --load load-han.lisp
 ```
 
@@ -38,9 +38,9 @@ To use Han from your own ASDF system, add `"han"` to its `:depends-on` list once
 
 ## Design philosophy
 
-The six runtime packages outside `han.host` use one ANSI Common Lisp codebase. Implementation calls, operating-system conventions and reader conditionals such as `#+` and `#-` belong in `han.host`. ASDF selects the SBCL, LispWorks or ECL adapter. For example, `han.json` parses four hex digits and combines surrogate pairs; the host maps the resulting Unicode scalar to a Lisp character and opens files in UTF-8.
+The six runtime packages outside `han.host` use one ANSI Common Lisp codebase. Implementation calls, operating-system conventions and reader conditionals such as `#+` and `#-` belong in `han.host`. ASDF selects the SBCL, LispWorks, ECL or CCL adapter. For example, `han.json` parses four hex digits and combines surrogate pairs; the host maps the resulting Unicode scalar to a Lisp character and opens files in UTF-8.
 
-A shared interface promises the same meaning, not identical observations from different machines. Executable lookup preserves each machine’s search order; a child’s live status reflects what its backend can observe. To obtain an ordinary exit code, wait for the child first. [Portability contracts and limits](docs/developer/README.md#portability-boundary)
+Han defines what a caller can rely on. For example, `han.path:->namestring` returns a filename string or signals a file error for a pathname the host cannot spell. A CLI that requests success exits with status 1 if flushing its result to standard output fails. Executable lookup still follows each machine’s search order, and a child’s final status is available after it exits. [Portability contracts and limits](docs/developer/README.md#portability-boundary)
 
 Each new host adapter is tested alongside the existing ones. A change to an existing backend starts with a reproducible defect. Before delivery, we also run TAFFISH against the candidate Han sources in its `vendor/han` directory. [Developer workflow](docs/developer/workflow.md#check-taffish-as-a-consumer)
 
@@ -51,7 +51,7 @@ Each new host adapter is tested alongside the existing ones. A change to an exis
 | [`han.args`](docs/user/args.md) | Declare options and positional arguments, bind input and inspect diagnostics. | [`get-arg`](docs/reference/args/get-arg.md) |
 | [`han.path`](docs/user/path.md) | Construct paths, list directories and copy files. | [`join-path`](docs/reference/path/join-path.md) |
 | [`han.os`](docs/user/os.md) | Read text, look up environment variables and capture command output. | [`run-program`](docs/reference/os/run-program.md) |
-| [`han.host`](docs/user/host.md) | Work with live process handles, terminal streams and file locks. | [`process-wait`](docs/reference/host/process-wait.md) |
+| [`han.host`](docs/user/host.md) | Manage child processes, inspect terminals, lock files and atomically replace a file. | [`atomic-replace-file`](docs/reference/host/atomic-replace-file.md) |
 | [`han.json`](docs/user/json.md) | Parse or write JSON and look up fields in an object. | [`get-json`](docs/reference/json/get-json.md) |
 | [`han.source`](docs/user/source.md) | Build a text parser with a character cursor, saved positions and source spans. | [`source-reset`](docs/reference/source/source-reset.md) |
 | [`han.test`](docs/user/test.md) | Define tests, make assertions and run registered cases. | [`deftest`](docs/reference/test/deftest.md) |
@@ -59,7 +59,7 @@ Each new host adapter is tested alongside the existing ones. A change to an exis
 ## Run the tests
 
 - **Library tests.** From a fresh REPL in the checkout, load `load-han.dev.lisp` and call `(han.test:run-all-tests)`. [Shell command and prerequisites](docs/developer/workflow.md#run-the-suite-from-the-checkout)
-- **Reference examples.** Run `sbcl --script scripts/check-reference.lisp` or `ecl -norc -shell scripts/check-reference.lisp` in the checkout to check the exported symbols and execute the examples printed in the reference. [How examples are checked](docs/developer/workflow.md#verify-the-symbol-reference)
+- **Reference examples.** Run the checker from the checkout to verify the exported symbols and execute their examples. Use `sbcl --script scripts/check-reference.lisp`, `ecl -norc -shell scripts/check-reference.lisp` or `"$CCL_BIN" --no-init --batch --quiet --load scripts/check-reference.lisp` with the CCL kernel path. [How examples are checked](docs/developer/workflow.md#verify-the-symbol-reference)
 
 ## Origin and license
 

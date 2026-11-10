@@ -2,7 +2,7 @@
   :description "Han foundational Common Lisp utilities"
   :author "Kaiyuan Han"
   :license "MIT"
-  :version "0.2.0"
+  :version "0.3.0"
   :depends-on ("uiop")
   :serial t
   :components
@@ -25,7 +25,10 @@
      (:file "sbcl")
      #+(and ecl unicode (or darwin linux))
      (:file "ecl")
-     #-(or lispworks sbcl (and ecl unicode (or darwin linux)))
+     #+(and ccl 64-bit-target (or darwin linux))
+     (:file "ccl")
+     #-(or lispworks sbcl (and ecl unicode (or darwin linux))
+           (and ccl 64-bit-target (or darwin linux)))
      (:file "unsupported")
      (:file "test")))
    (:module "source"

@@ -64,7 +64,7 @@
 
 | 函数 | 参数 | 行为与返回值 |
 | --- | --- | --- |
-| [`parse-args-input`](../reference/args/parse-args-input.zh-CN.md) | `(&optional raw-input-args add-cmd)` | 将 `add-cmd` 列表放到输入字符串列表之前，取首项为命令，其余为参数。省略输入时读取 `(han.host:argv t)`。使用 ECL 脚本时，可显式传入分隔符 `--` 后的参数，用 `add-cmd` 补上命令名。返回 [`args-input`](../reference/args/args-input.zh-CN.md)。 |
+| [`parse-args-input`](../reference/args/parse-args-input.zh-CN.md) | `(&optional raw-input-args add-cmd)` | 将 `add-cmd` 列表放到输入字符串列表之前，取首项为命令，其余为参数。省略输入时读取 `(han.host:argv t)`。使用 ECL 或 CCL 脚本时，可显式传入分隔符 `--` 后的参数，用 `add-cmd` 补上命令名。返回 [`args-input`](../reference/args/args-input.zh-CN.md)。 |
 | [`parse-arg-spec`](../reference/args/parse-arg-spec.zh-CN.md) | `(spec-string)` | 解析并校验一条规格字符串，返回 [`arg-spec`](../reference/args/arg-spec.zh-CN.md)。 |
 | [`parse-args-spec`](../reference/args/parse-args-spec.zh-CN.md) | `(spec-list &optional command)` | 把 `arg-spec` 对象列表合并为 [`args-spec`](../reference/args/args-spec.zh-CN.md)。命令名默认是 `"my-args"`。同名声明中相容的字段会合并。字段冲突或不同参数使用相同入口时会报错。 |
 | [`bind-args`](../reference/args/bind-args.zh-CN.md) | `(args-spec args-input &optional builtin-table)` | 绑定值并把诊断收集到 [`args-result`](../reference/args/args-result.zh-CN.md)。如需注入内置值，`builtin-table` 应是从名称映射到带状态的 [`arg-binding`](../reference/args/arg-binding.zh-CN.md) 对象的哈希表。省略该参数时会创建空表。用 `equalp` 建表可按字符串名称忽略大小写查询。 |

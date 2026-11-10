@@ -42,19 +42,25 @@
     (handler-case (han.json:read-json-file file)
       (error (c)
         (format t "~&OBS ~A condition=~S json-error=~S~%"
-                name (class-name (class-of c)) (typep c 'han.json:json-error)))
+                name (class-name (class-of c)) (typep c 'han.json:json-error))
+        c)
       (:no-error (value)
         (check-type value string)
-        (format t "~&OBS ~A returned=~S~%" name
-                (map 'list #'han.host:char-unicode-scalar value))))))
+        (let ((scalars (map 'list #'han.host:char-unicode-scalar value)))
+          (format t "~&OBS ~A returned=~S~%" name scalars)
+          scalars)))))
 
 (defun run-probe (cases-file results-file)
   (format t "~&Runtime: ~A ~A on ~A~%" (lisp-implementation-type)
           (lisp-implementation-version) (software-type))
   (let ((cases (han.json:read-json-file cases-file)))
     (han.json:write-json-file results-file (map 'vector #'check-curl-failure cases)))
-  (observe-invalid-utf8 "BAD-CONTINUATION" #(#x22 #xC3 #x28 #x22))
-  (observe-invalid-utf8 "TRUNCATED-AT-EOF" #(#x22 #xF0 #x9F)))
+  (let ((bad (observe-invalid-utf8 "BAD-CONTINUATION" #(#x22 #xC3 #x28 #x22)))
+        (short (observe-invalid-utf8 "TRUNCATED-AT-EOF" #(#x22 #xF0 #x9F))))
+    (declare (ignorable bad short))
+    #+ccl
+    (progn (assert (equal '(#xFFFD) bad))
+           (assert (typep short 'han.json:json-error)))))
 
 (cond (cl-user::*han-probe-listener-files*
        (apply #'run-probe cl-user::*han-probe-listener-files*))

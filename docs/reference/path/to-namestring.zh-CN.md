@@ -12,7 +12,9 @@
 
 ## 说明
 
-先按 `->pathname` 处理，再取 namestring。调用需要文件名字符串的接口时可以使用它，例如准备外部程序的参数列表。分隔符及转义遵循当前 Lisp 实现。
+先按 `->pathname` 处理，再取 namestring。分隔符及转义遵循当前 Lisp 实现。准备外部程序的参数或调用 `han.host:atomic-replace-file` 时，如果手中已有 Unix 文件名字符串，直接传原串即可。将它解析为 pathname 再转回字符串，可能改变特殊字符的拼写。
+
+已命名的物理文件可用 `:unspecific` 表示没有扩展名。如果宿主无法直接表示这个 pathname，Han 仅以空 type 分量重试，保留其余分量。仍无法表示时触发 `file-error`，其 `file-error-pathname` 是经过 `->pathname` 处理的路径。转换不要求文件存在。
 
 ## 示例
 
@@ -32,4 +34,13 @@
 ;; => ("data/" "data/counts.tsv")
 ```
 
-[`han.path:->pathname`](to-pathname.zh-CN.md) · [`han.path:join-path`](join-path.zh-CN.md) · [源码](../../../path/core.lisp) · [索引](../README.zh-CN.md)
+将没有扩展名的命令路径传给操作系统。
+
+```lisp
+(han.path:->namestring
+ (make-pathname :directory '(:relative "bin") :name "wrapper"
+                :type :unspecific :version :newest))
+;; => "bin/wrapper"
+```
+
+[`han.path:->pathname`](to-pathname.zh-CN.md) · [`han.path:join-path`](join-path.zh-CN.md) · [`han.host:atomic-replace-file`](../host/atomic-replace-file.zh-CN.md) · [源码](../../../path/core.lisp) · [索引](../README.zh-CN.md)

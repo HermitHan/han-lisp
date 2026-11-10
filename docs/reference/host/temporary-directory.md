@@ -38,9 +38,9 @@ Check the directory Han selects when TMPDIR, TEMP, and TMP are all absent.
 ```lisp
 (nth-value 2
   (han.host:run-program-sync
-   (list "/usr/bin/env" "-u" "TMPDIR" "-u" "TEMP" "-u" "TMP" #+ecl (first (han.host:argv t)) #-ecl (han.host:find-executable "sbcl")
-         #+ecl "--norc" #-ecl "--no-userinit"
-         #+ecl "--nodebug" #-ecl "--non-interactive"
+   (list "/usr/bin/env" "-u" "TMPDIR" "-u" "TEMP" "-u" "TMP" #+(or ecl ccl) (first (han.host:argv t)) #-(or ecl ccl) (han.host:find-executable "sbcl")
+         #+ecl "--norc" #+ccl "--no-init" #-(or ecl ccl) "--no-userinit"
+         #+ecl "--nodebug" #+ccl "--batch" #-(or ecl ccl) "--non-interactive"
          "--load" (namestring (asdf:system-relative-pathname "han" "load-han.lisp"))
          "--eval" "(assert (string= \"/tmp/\" (namestring (han.host:temporary-directory))))" "--eval" "(han.host:quit)")))
 ;; => 0

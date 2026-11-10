@@ -20,7 +20,7 @@
 
 ```lisp
 (han.args:version nil)
-;; => "0.2.0"
+;; => "0.3.0"
 ```
 
 把面向用户的版本行写入指定流，并同时取得纯版本值。
@@ -29,7 +29,7 @@
 (let* ((stream (make-string-output-stream))
        (version (han.args:version stream)))
   (values version (string-right-trim '(#\Newline) (get-output-stream-string stream))))
-;; => values ("0.2.0" "han.args v0.2.0")
+;; => values ("0.3.0" "han.args v0.3.0")
 ```
 
 [`han.args:help`](help.zh-CN.md) · [源码](../../../args/package.lisp) · [索引](../README.zh-CN.md)

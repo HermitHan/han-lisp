@@ -14,6 +14,8 @@
 
 返回指定环境变量的字符串值，包括显式设置的空字符串。变量缺失时触发错误。示例根据实际环境验证有值和缺失两种情形。
 
+在 ECL 上，长 UTF-8 环境变量值会完整返回。[环境变量查询](../host/getenv.zh-CN.md)
+
 ## 示例
 
 变量已设置时核对它的值，未设置时捕获错误。
@@ -33,9 +35,9 @@
 ```lisp
 (nth-value 2
   (han.host:run-program-sync
-   (list "/usr/bin/env" "-u" "HAN_DOCS_DATASET" #+ecl (first (han.host:argv t)) #-ecl (han.host:find-executable "sbcl")
-         #+ecl "--norc" #-ecl "--no-userinit"
-         #+ecl "--nodebug" #-ecl "--non-interactive"
+   (list "/usr/bin/env" "-u" "HAN_DOCS_DATASET" #+(or ecl ccl) (first (han.host:argv t)) #-(or ecl ccl) (han.host:find-executable "sbcl")
+         #+ecl "--norc" #+ccl "--no-init" #-(or ecl ccl) "--no-userinit"
+         #+ecl "--nodebug" #+ccl "--batch" #-(or ecl ccl) "--non-interactive"
          "--load" (namestring (asdf:system-relative-pathname "han" "load-han.lisp"))
          "--eval" "(handler-case (progn (han.os:require-env \"HAN_DOCS_DATASET\") (han.host:quit 0)) (error () (han.host:quit 64)))" "--eval" "(han.host:quit)")))
 ;; => 64

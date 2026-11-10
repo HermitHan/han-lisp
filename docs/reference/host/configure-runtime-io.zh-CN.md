@@ -12,7 +12,7 @@
 
 ## 说明
 
-配置 CLI 运行时的输出流。LispWorks 设置 Unicode 和 UTF-8，用描述符 1 输出标准输出，用描述符 2 输出错误和 trace。SBCL 和 ECL 返回 `t`，保留原有流。示例在子进程内配置输入输出，父进程可继续交互。
+配置 CLI 运行时的输出流。LispWorks 设置 Unicode 和 UTF-8，用描述符 1 输出标准输出，用描述符 2 输出错误和 trace。SBCL、ECL 和 CCL 返回 `t`，保留原有流。示例在子进程内配置输入输出，父进程可继续交互。
 
 ## 示例
 
@@ -21,9 +21,9 @@
 ```lisp
 (nth-value 2
   (han.host:run-program-sync
-   (list #+ecl (first (han.host:argv t)) #-ecl (han.host:find-executable "sbcl")
-         #+ecl "--norc" #-ecl "--no-userinit"
-         #+ecl "--nodebug" #-ecl "--non-interactive"
+   (list #+(or ecl ccl) (first (han.host:argv t)) #-(or ecl ccl) (han.host:find-executable "sbcl")
+         #+ecl "--norc" #+ccl "--no-init" #-(or ecl ccl) "--no-userinit"
+         #+ecl "--nodebug" #+ccl "--batch" #-(or ecl ccl) "--non-interactive"
          "--load" (namestring (asdf:system-relative-pathname "han" "load-han.lisp"))
          "--eval" "(progn (han.host:prepare-runtime-io) (assert (han.host:configure-runtime-io)))"
          "--eval" "(han.host:quit)")))
@@ -39,10 +39,10 @@
        (let* ((file (merge-pathnames "diagnostic" root))
               (code (nth-value 2
                       (han.host:run-program-sync
-                       (list #+ecl (first (han.host:argv t))
-                             #-ecl (han.host:find-executable "sbcl")
-                             #+ecl "--norc" #-ecl "--no-userinit"
-                             #+ecl "--nodebug" #-ecl "--non-interactive"
+                       (list #+(or ecl ccl) (first (han.host:argv t))
+                             #-(or ecl ccl) (han.host:find-executable "sbcl")
+                             #+ecl "--norc" #+ccl "--no-init" #-(or ecl ccl) "--no-userinit"
+                             #+ecl "--nodebug" #+ccl "--batch" #-(or ecl ccl) "--non-interactive"
                              "--load" (namestring (asdf:system-relative-pathname "han" "load-han.lisp"))
                              "--eval" "(progn (han.host:configure-runtime-io) (format *error-output* \"~&han-probe=~C~%\" (code-char #x8BFB)) (finish-output *error-output*))"
                              "--eval" "(han.host:quit)")
@@ -53,4 +53,4 @@
 ;; => (0 T)
 ```
 
-[`han.host:prepare-runtime-io`](prepare-runtime-io.zh-CN.md) · [`han.host:standard-error-terminal-p`](standard-error-terminal-p.zh-CN.md) · [sbcl.lisp](../../../host/sbcl.lisp) · [lispworks.lisp](../../../host/lispworks.lisp) · [ecl.lisp](../../../host/ecl.lisp) · [unsupported.lisp](../../../host/unsupported.lisp) · [索引](../README.zh-CN.md)
+[`han.host:prepare-runtime-io`](prepare-runtime-io.zh-CN.md) · [`han.host:standard-error-terminal-p`](standard-error-terminal-p.zh-CN.md) · [sbcl.lisp](../../../host/sbcl.lisp) · [lispworks.lisp](../../../host/lispworks.lisp) · [ecl.lisp](../../../host/ecl.lisp) · [ccl.lisp](../../../host/ccl.lisp) · [unsupported.lisp](../../../host/unsupported.lisp) · [索引](../README.zh-CN.md)

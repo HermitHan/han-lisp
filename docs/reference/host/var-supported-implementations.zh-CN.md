@@ -12,7 +12,7 @@ han.host:*supported-implementations* → list of implementation names
 
 ## 说明
 
-初始值列出 SBCL、LispWorks 和 ECL 三个宿主实现，可用于显示或提示。实际后端由 ASDF 装载时的读取器条件选择，重新绑定此变量不会安装另一套适配。
+初始值在各个安装环境中都列出 Han 提供的四种适配器，可用来显示库支持的实现。ASDF 在加载系统时选择当前使用的适配器。要查询某个子进程使用的后端，读取其句柄的 [`host-process-backend`](host-process-backend.zh-CN.md)。
 
 ## 示例
 
@@ -27,7 +27,7 @@ han.host:*supported-implementations* → list of implementation names
 
 ```lisp
 (format nil "~{~A~^ / ~}" han.host:*supported-implementations*)
-;; => "SBCL / LispWorks / ECL"
+;; => "SBCL / LispWorks / ECL / CCL"
 ```
 
 [`han.host:unsupported-host-function`](unsupported-host-function.zh-CN.md) · [`han.host:version`](version.zh-CN.md) · [parameters.lisp](../../../host/parameters.lisp) · [索引](../README.zh-CN.md)

@@ -19,7 +19,7 @@ A caller supplies a directory with or without a trailing slash. Treat it as a di
 
 | Operation | Result |
 | --- | --- |
-| [`->pathname x`](../reference/path/to-pathname.md), [`->namestring x`](../reference/path/to-namestring.md) | Accept a string or pathname. The first returns a pathname with a normalized directory component. The second returns its namestring. Namestring syntax follows the Lisp implementation. |
+| [`->pathname x`](../reference/path/to-pathname.md), [`->namestring x`](../reference/path/to-namestring.md) | Accept a string or pathname. The first returns a pathname with a normalized directory component. The second returns its namestring. A named physical file with an explicit `:unspecific` type can be rendered without an extension. If the host has no spelling, the function signals a `file-error` carrying the path in `file-error-pathname`. |
 | [`directory-pathname-p x`](../reference/path/directory-pathname-p.md) | Tests pathname shape. A directory pathname has no name or type component. |
 | [`directory-pathname x`](../reference/path/directory-pathname.md) | Returns a directory pathname, moving a file-like last component into the directory list. For example, `"a.txt"` becomes `"a.txt/"`. |
 | [`parent-directory-pathname x`](../reference/path/parent-directory-pathname.md) | Drops the name and type of a file pathname. A directory pathname already denotes its own directory, so `"/work/reports/"` returns `#P"/work/reports/"`. |
@@ -48,4 +48,6 @@ A shape test works on a name alone. An existence check probes the filesystem and
 | [`temporary-directory`](../reference/path/temporary-directory.md) | Returns a directory pathname from `TMPDIR`, `TEMP`, `TMP`, then `/tmp/`. Callers choose their own unique child names. |
 | [`help &optional stream`](../reference/path/help.md), [`version &optional stream`](../reference/path/version.md) | Return the help text or version string and print to the supplied stream (default `*standard-output*`). Pass `nil` for just the string. |
 
-Filesystem operations call the host layer. For file locking or UTF-8 append, see [han.host](host.md). For the list of exports and pathname examples, see the [package definition](../../path/package.lisp) and [tests](../../path/test.lisp).
+To replace a file while readers may still have it open, stage a regular file on the target filesystem and pass the two literal filenames to the host operation. Pass existing filename strings directly. When starting with a pathname object, obtain its spelling with `han.path:->namestring`. [Atomic file replacement](../reference/host/atomic-replace-file.md)
+
+For file locking or UTF-8 append, see [han.host](host.md). For the list of exports and pathname examples, see the [package definition](../../path/package.lisp) and [tests](../../path/test.lisp).

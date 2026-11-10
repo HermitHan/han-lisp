@@ -13,7 +13,7 @@
 
 ## Description
 
-Lex a list of argument strings, optionally prepending the strings in `add-cmd`. The first combined item is the command. Each subsequent item receives a zero-based token position and belongs to a top-level or named segment. Omitting `raw-input-args` uses [the host argv](../host/argv.md). In an ECL script this includes interpreter options. To parse only application arguments after ECL’s `--`, pass that tail and supply your command name in `add-cmd`. Lexical warnings are stored on the returned input.
+Lex a list of argument strings, optionally prepending the strings in `add-cmd`. The first combined item is the command. Each subsequent item receives a zero-based token position and belongs to a top-level or named segment. Omitting `raw-input-args` uses [the host argv](../host/argv.md). With ECL or CCL this includes interpreter options. To parse only application arguments after `--`, pass that tail and supply your command name in `add-cmd`. Lexical warnings are stored on the returned input.
 
 ## Examples
 

@@ -4,4 +4,6 @@
 *.64xfasl
 *.64yfasl
 *.ofasl
+*.da64fsl
+*.lx64fsl
 __pycache__/

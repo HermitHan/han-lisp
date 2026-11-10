@@ -5,7 +5,7 @@
     (check-true (stringp help-string))
     (check-true (search "han.path" help-string))
     (check-true (search "join-path" help-string)))
-  (check-equal "0.2.0" (han.path:version nil)))
+  (check-equal "0.3.0" (han.path:version nil)))
 
 (deftest test-->pathname ()
   (check-true (pathnamep (han.path:->pathname ".")))
@@ -33,6 +33,27 @@
 (deftest test-->namestring ()
   (check-true (stringp (han.path:->namestring #P"/bin/sh")))
   (check-equal (han.path:->namestring #P"/bin/sh") "/bin/sh"))
+
+(deftest test-namestring-extensionless-physical-file ()
+  (let* ((path (make-pathname :directory '(:relative "bin") :name "wrapper"
+                              :type :unspecific :version :newest))
+         (original-type (pathname-type path)))
+    (check-equal "bin/wrapper" (han.path:->namestring path))
+    (check-equal original-type (pathname-type path)))
+  (let ((pattern #P"reports/*.tsv"))
+    (check-equal (namestring pattern) (han.path:->namestring pattern)))
+  (check-error (type-error) (han.path:->namestring 42)))
+
+(deftest test-namestring-without-file-name ()
+  ;; Some hosts can spell this combination. Preserve their native spelling.
+  (let* ((path (make-pathname :directory '(:relative "bin") :name nil :type "txt"))
+         (native (ignore-errors (namestring path))))
+    (if native
+        (check-equal native (han.path:->namestring path))
+        (handler-case (progn (han.path:->namestring path)
+                             (error "Expected a FILE-ERROR for a pathname without a namestring."))
+          (file-error (condition)
+            (check-true (eq path (file-error-pathname condition))))))))
 
 (deftest test-han-path-directory-pathname-p ()
   (check-equal (han.path:directory-pathname-p #P"/tmp/") t)

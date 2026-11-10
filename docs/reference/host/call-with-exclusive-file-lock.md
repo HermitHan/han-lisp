@@ -12,7 +12,7 @@
 
 ## Description
 
-On macOS and Linux with SBCL, LispWorks or ECL, opens or creates a stable lock file and takes an exclusive `flock` before invoking the zero-argument function. All cooperating processes must keep using the same lock file, including between calls. Returns all callback values and releases the lock on exit. A nonnegative timeout is in seconds. Zero allows one attempt. Failure to obtain the lock by the deadline signals an error. Each example uses its own temporary lock file.
+On macOS and Linux with SBCL, LispWorks, ECL or CCL, opens or creates a stable lock file and takes an exclusive `flock` before invoking the zero-argument function. All cooperating processes must keep using the same lock file, including between calls. Returns all callback values and releases the lock on exit. A nonnegative timeout is in seconds. Zero allows one attempt. Failure to obtain the lock by the deadline signals an error. Each example uses its own temporary lock file.
 
 ## Examples
 
@@ -55,4 +55,4 @@ Abandon one record from inside the callback, then acquire the lock again for the
 ;; => (:REJECTED :RETRIED)
 ```
 
-[`han.host:append-utf8-line`](append-utf8-line.md) · [`han.host:file-exists-p`](file-exists-p.md) · [common.lisp](../../../host/common.lisp) · [sbcl.lisp](../../../host/sbcl.lisp) · [lispworks.lisp](../../../host/lispworks.lisp) · [ecl.lisp](../../../host/ecl.lisp) · [Index](../README.md)
+[`han.host:append-utf8-line`](append-utf8-line.md) · [`han.host:file-exists-p`](file-exists-p.md) · [common.lisp](../../../host/common.lisp) · [sbcl.lisp](../../../host/sbcl.lisp) · [lispworks.lisp](../../../host/lispworks.lisp) · [ecl.lisp](../../../host/ecl.lisp) · [ccl.lisp](../../../host/ccl.lisp) · [Index](../README.md)

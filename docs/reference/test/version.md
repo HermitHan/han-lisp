@@ -20,7 +20,7 @@ Read the package version quietly for a programmatic check.
 
 ```lisp
 (han.test:version nil)
-;; => "0.2.0"
+;; => "0.3.0"
 ```
 
 Capture the human-readable banner while retaining the version string separately.
@@ -30,7 +30,7 @@ Capture the human-readable banner while retaining the version string separately.
        (version (han.test:version out))
        (banner (get-output-stream-string out)))
   (list version (with-input-from-string (in banner) (read-line in))))
-;; => ("0.2.0" "han.test v0.2.0")
+;; => ("0.3.0" "han.test v0.3.0")
 ```
 
 [`help`](help.md) · [Source](../../../test/package.lisp#L53) · [Index](../README.md)

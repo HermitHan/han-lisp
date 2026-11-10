@@ -14,7 +14,7 @@
 
 接受 pathname 或 namestring，以 `:absolute` 或 `:relative` 开头的列表返回目录分量。缺少目录分量时返回 `(:relative)`。若目录分量本身是字符串，它表示一个顶层目录。返回的列表可能与原 pathname 共享，请按只读数据使用。
 
-若目录分量仅为 `:wild`，由该 pathname 的宿主选择支持的通配形式。若宿主仍然无法给出目录层级，或目录分量为 `:unspecific`，函数会报错。[Common Lisp HyperSpec，目录分量](https://www.lispworks.com/documentation/HyperSpec/Body/19_bbdc.htm)
+若目录分量仅为 `:wild`，由该 pathname 的宿主选择支持的通配形式。若宿主仍然无法给出目录层级，或目录分量为 `:unspecific`，函数会报错。[Common Lisp HyperSpec，MAKE-PATHNAME](https://www.lispworks.com/documentation/HyperSpec/Body/f_mk_pn.htm)
 
 ## 示例
 

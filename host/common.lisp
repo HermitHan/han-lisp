@@ -1,5 +1,7 @@
 (in-package :han.host)
 
+(defvar *cli-error-prefix* nil)
+
 (defun %report-cli-error (prefix condition)
   ;; Reporting must never fail recursively or fall back to protocol stdout.
   (ignore-errors
@@ -7,17 +9,31 @@
     (finish-output *error-output*))
   nil)
 
+(defun %finish-exit-output (code)
+  ;; A result may first reach stdout's descriptor at exit. Diagnostics can
+  ;; still contain buffered bytes from a progress write the caller handled.
+  (prog1 (handler-case (progn (finish-output *standard-output*) code)
+           (error (condition)
+             (when (and (zerop code) *cli-error-prefix*)
+               (%report-cli-error *cli-error-prefix* condition))
+             (if (zerop code) 1 code)))
+    (ignore-errors (finish-output *error-output*))))
+
 (defmacro %with-cli-error-boundary ((prefix) &body body)
   "Internal boundary for executable entry points, not library operations."
-  `(handler-case
-       (progn ,@body)
-     #+sbcl
-     (sb-sys:interactive-interrupt ()
-       (%report-cli-error ,prefix "Interrupted.")
-       (quit 1))
-     (error (condition)
-       (%report-cli-error ,prefix condition)
-       (quit 1))))
+  `(let ((*cli-error-prefix* ,prefix))
+     (handler-case
+         #+ccl (%call-with-ccl-cli-interrupt (lambda () ,@body))
+         #-ccl (progn ,@body)
+       #+(or sbcl ecl ccl)
+       (#+sbcl sb-sys:interactive-interrupt
+        #+ecl ext:interactive-interrupt
+        #+ccl ccl::interrupt-signal-condition ()
+         (%report-cli-error *cli-error-prefix* "Interrupted.")
+         (quit 1))
+       (error (condition)
+         (%report-cli-error *cli-error-prefix* condition)
+         (quit 1)))))
 
 (defun %call-with-character-output-string (function)
   "Call FUNCTION with an output stream backed by a full CHARACTER string."
@@ -155,7 +171,51 @@ Signal an error if the pathname host cannot represent those levels."
 (defun %native-open-name (path)
   (etypecase path
     (string path)
-    (pathname (namestring path))))
+    (pathname #+ccl (ccl:native-translated-namestring path)
+              #-ccl (namestring path))))
+
+(define-condition %replacement-file-error (file-error)
+  ((reason :initarg :reason :reader %replacement-error-reason))
+  (:report (lambda (condition stream)
+             (format stream "Atomic file replacement failed for ~S: ~A"
+                     (file-error-pathname condition)
+                     (%replacement-error-reason condition)))))
+
+(defun %replacement-file-id (name allow-missing)
+  (check-type name string)
+  (when (or (zerop (length name)) (find (code-char 0) name)
+            (find-if-not #'char-unicode-scalar name))
+    (error '%replacement-file-error :pathname name
+           :reason "expected a nonempty UTF-8 filename without NUL"))
+  (multiple-value-bind (mode device inode) (%literal-file-stat name)
+    ;; Backends return a negative errno or the mode from lstat(2).
+    (cond ((and allow-missing (= mode -2)) (values nil nil)) ; ENOENT
+          ((minusp mode)
+           (error '%replacement-file-error :pathname name
+                  :reason (format nil "cannot inspect file (errno ~D)" (- mode))))
+          ((/= #o100000 (logand mode #o170000))
+           (error '%replacement-file-error :pathname name :reason "expected a regular file"))
+          (t (values device inode)))))
+
+(defun atomic-replace-file (source target)
+  "Atomically rename regular file SOURCE onto literal UTF-8 filename TARGET.
+Return T. TARGET may be absent. A symlink or other non-regular endpoint,
+identical file identities, or a failed rename signals FILE-ERROR. The caller
+must control concurrent changes to the two directory entries."
+  #+(and (or sbcl lispworks (and ccl 64-bit-target) (and ecl unicode)) (or darwin macosx linux))
+  (multiple-value-bind (source-device source-inode) (%replacement-file-id source nil)
+    (multiple-value-bind (target-device target-inode) (%replacement-file-id target t)
+      (when (and (eql source-device target-device) (eql source-inode target-inode))
+        ;; POSIX rename would silently succeed without removing the source.
+        (error '%replacement-file-error :pathname target :reason "source and target are the same file"))
+      (let ((errno (%literal-rename-errno source target)))
+        (unless (zerop errno)
+          (error '%replacement-file-error :pathname target
+                 :reason (format nil "rename from ~S failed (errno ~D)" source errno))))
+      t))
+  #-(and (or sbcl lispworks (and ccl 64-bit-target) (and ecl unicode)) (or darwin macosx linux))
+  (error "Atomic file replacement is unsupported on ~A/~A (~S to ~S)."
+         (lisp-implementation-type) (software-type) source target))
 
 (defun call-with-exclusive-file-lock (lock-path function &key (timeout 5))
   "Call FUNCTION with no arguments while holding an exclusive flock on LOCK-PATH.
@@ -163,7 +223,7 @@ All cooperating processes must keep and use the same lock file. Return the
 callback's values. On contention, wait at most TIMEOUT seconds before
 signaling an error. Zero makes a single nonblocking attempt."
   (check-type timeout (real 0))
-  #+(and (or sbcl lispworks (and ecl unicode)) (or darwin macosx linux))
+  #+(and (or sbcl lispworks (and ccl 64-bit-target) (and ecl unicode)) (or darwin macosx linux))
   (let* ((file (%prepare-native-file lock-path))
          ;; O_WRONLY | O_CREAT | O_NONBLOCK | O_CLOEXEC (Darwin and Linux
          ;; x86-64/arm64 ABIs). Never truncate or unlink this stable inode.
@@ -185,7 +245,7 @@ signaling an error. Zero makes a single nonblocking attempt."
                         (error "Timed out waiting for lock ~A." file))
                       (sleep (min 1/100 (/ remaining internal-time-units-per-second)))))
         (%close-lock-file fd))))
-  #-(and (or sbcl lispworks (and ecl unicode)) (or darwin macosx linux))
+  #-(and (or sbcl lispworks (and ccl 64-bit-target) (and ecl unicode)) (or darwin macosx linux))
   (error "File locking is unsupported on ~A/~A (lock ~A for ~S)."
          (lisp-implementation-type) (software-type) lock-path function))
 
@@ -464,7 +524,7 @@ When SHELL is NIL, search for bash first, then sh. An explicit SHELL names a fil
 
 (defun %read-file-to-string (path)
   (if (file-exists-p path)
-      (with-open-file (in path :direction :input)
+      (with-open-file (in path :direction :input #+ccl :external-format #+ccl :utf-8)
         (with-output-to-string (out)
           (loop for char = (read-char in nil nil)
                 while char
@@ -473,6 +533,7 @@ When SHELL is NIL, search for bash first, then sh. An explicit SHELL names a fil
 
 (defun %copy-stream-to-file (stream path)
   (with-open-file (out path :direction :output
+                            #+ccl :external-format #+ccl :utf-8
                             :if-exists :supersede
                             :if-does-not-exist :create)
     (loop for char = (read-char stream nil nil)
@@ -490,11 +551,11 @@ When SHELL is NIL, search for bash first, then sh. An explicit SHELL names a fil
          (declare (ignorable out)))
        (values path (cons path temp-files))))
     ((eq input t)
-     #+(or lispworks ecl)
+     #+(or lispworks ecl (and ccl 64-bit-target (or darwin linux)))
      (let ((path (%host-temp-file "han-host-stdin" "tmp")))
        (%copy-stream-to-file *standard-input* path)
        (values path (cons path temp-files)))
-     #-(or lispworks ecl)
+     #-(or lispworks ecl (and ccl 64-bit-target (or darwin linux)))
      (values *standard-input* temp-files))
     ((streamp input)
      (let ((path (%host-temp-file "han-host-input" "tmp")))

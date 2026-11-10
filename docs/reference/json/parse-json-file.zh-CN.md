@@ -14,7 +14,7 @@
 
 按路径指示符打开 UTF-8 字符输入流，将文件完整读入后解析一个 JSON 值。退出时会关闭输入流。语法错误触发 `json-error`。文件访问错误向外传递；非法 UTF-8 字节由宿主流的解码器处理。示例由 ASDF 自带的 UIOP 管理临时文件。
 
-文件内容为 `22 F0 9F` 时，ECL 26.5.5 的 UTF-8 解码器读到 EOF，解析器随后因字符串未闭合而发出 `han.json:json-error`。SBCL 和 LispWorks 在读取这些字节时由解码器报错。[UTF-8 输入](../host/with-open-utf8-file.zh-CN.md)
+文件内容为 `22 F0 9F` 时，ECL 26.5.5 和 CCL 1.14 的 UTF-8 解码器读到 EOF，解析器随后因字符串未闭合而发出 `han.json:json-error`。SBCL 和 LispWorks 在读取这些字节时由解码器报错。对于 `22 C3 28 22`，CCL 返回只含一个 U+FFFD 替换字符的 JSON 字符串。[UTF-8 输入](../host/with-open-utf8-file.zh-CN.md)
 
 ## 示例
 

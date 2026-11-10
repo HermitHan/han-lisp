@@ -12,7 +12,7 @@
 
 ## 说明
 
-在 macOS 或 Linux 的 SBCL、LispWorks 或 ECL 上打开或创建稳定的锁文件，取得 `flock` 独占锁后调用无参函数。合作进程应持续使用同一锁文件，两次调用之间也应保留。返回回调的全部值，退出时释放锁。超时以秒计且必须非负，零表示仅尝试一次，超时未取得锁则报错。每个示例均使用各自的临时锁文件。
+在 macOS 或 Linux 的 SBCL、LispWorks、ECL 或 CCL 上打开或创建稳定的锁文件，取得 `flock` 独占锁后调用无参函数。合作进程应持续使用同一锁文件，两次调用之间也应保留。返回回调的全部值，退出时释放锁。超时以秒计且必须非负，零表示仅尝试一次，超时未取得锁则报错。每个示例均使用各自的临时锁文件。
 
 ## 示例
 
@@ -55,4 +55,4 @@
 ;; => (:REJECTED :RETRIED)
 ```
 
-[`han.host:append-utf8-line`](append-utf8-line.zh-CN.md) · [`han.host:file-exists-p`](file-exists-p.zh-CN.md) · [common.lisp](../../../host/common.lisp) · [sbcl.lisp](../../../host/sbcl.lisp) · [lispworks.lisp](../../../host/lispworks.lisp) · [ecl.lisp](../../../host/ecl.lisp) · [索引](../README.zh-CN.md)
+[`han.host:append-utf8-line`](append-utf8-line.zh-CN.md) · [`han.host:file-exists-p`](file-exists-p.zh-CN.md) · [common.lisp](../../../host/common.lisp) · [sbcl.lisp](../../../host/sbcl.lisp) · [lispworks.lisp](../../../host/lispworks.lisp) · [ecl.lisp](../../../host/ecl.lisp) · [ccl.lisp](../../../host/ccl.lisp) · [索引](../README.zh-CN.md)

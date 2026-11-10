@@ -16,7 +16,7 @@ Quotes a value as a single POSIX shell word by delegating to `han.host:escape-sh
 
 ## Examples
 
-Compare a quoted word with the same value passed as a separate argument. The shell checks the accent, apostrophe, space and literal dollar sign and reports the result through its exit status. Text captured from a process uses the host’s default external format.
+Compare a quoted word with the same value passed as a separate argument. The shell checks the accent, apostrophe, space and literal dollar sign and reports the result through its exit status. CCL reads captured text as UTF-8. Other adapters use the host’s default external format.
 
 ```lisp
 (let ((word "l'été $HOME"))

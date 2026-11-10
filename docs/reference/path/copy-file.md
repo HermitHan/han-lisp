@@ -12,7 +12,7 @@
 
 ## Description
 
-Copies bytes from an existing source into `target`, creating missing parent directories and replacing an existing target. Returns the original target argument. The operation can signal file errors. The example uses a temporary destination managed by UIOP.
+Copies bytes from an existing source into `target`, creating missing parent directories and replacing an existing target. Use distinct source and destination files. Returns the original target argument. File errors propagate. To publish a prepared file so readers see complete contents throughout the switch, use [`han.host:atomic-replace-file`](../host/atomic-replace-file.md).
 
 ## Examples
 

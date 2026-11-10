@@ -20,7 +20,7 @@
 
 ```lisp
 (han.json:version nil)
-;; => "0.2.0"
+;; => "0.3.0"
 ```
 
 捕获面向读者的版本提示行，同时保留可供程序处理的版本字符串。
@@ -30,7 +30,7 @@
        (version (han.json:version out))
        (banner (get-output-stream-string out)))
   (list version (with-input-from-string (in banner) (read-line in))))
-;; => ("0.2.0" "han.json v0.2.0")
+;; => ("0.3.0" "han.json v0.3.0")
 ```
 
 [`help`](help.zh-CN.md) · [源码](../../../json/package.lisp#L66) · [索引](../README.zh-CN.md)

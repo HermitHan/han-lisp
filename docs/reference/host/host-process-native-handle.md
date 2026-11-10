@@ -12,7 +12,7 @@
 
 ## Description
 
-Reads the native resource slot of a `host-process`. ECL and SBCL store their respective process objects. LispWorks stores the status-bearing output stream. This settable accessor exposes implementation-specific data. Use the public wait/status functions when the same code must run on multiple backends.
+Reads the native resource slot of a `host-process`. ECL, CCL and SBCL store their respective process objects. LispWorks stores the status-bearing output stream. This settable accessor exposes implementation-specific data. Use the public wait/status functions when the same code must run on multiple backends.
 
 ## Examples
 
@@ -33,7 +33,7 @@ Use the live native resource to check how the active adapter tracks exit status.
          (han.host:process-wait child)
          (let ((native (han.host:host-process-native-handle child)))
            (ecase (han.host:host-process-backend child)
-             ((:sbcl :ecl) (not (null native)))
+             ((:sbcl :ecl :ccl) (not (null native)))
              (:lispworks (streamp native)))))
     (han.host:process-close child)))
 ;; => T
